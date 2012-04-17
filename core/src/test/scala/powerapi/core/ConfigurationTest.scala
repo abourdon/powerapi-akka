@@ -21,8 +21,6 @@ import org.junit.Test
 import org.junit.Assert
 import org.junit.Ignore
 
-case class SimpleFrequency(frequency: Int, voltage: Double)
-
 @Test
 class ConfigurationTest extends Configuration {
 
@@ -49,11 +47,12 @@ class ConfigurationTest extends Configuration {
   }
 
   @Test
-  def testFrequenciesFromConf {
-    val result = fromConf[SimpleFrequency]("frequency") { elt => SimpleFrequency((elt \\ "@value").text.toInt, (elt \\ "@voltage").text.toDouble) }
+  def testItemsFromConf {
+    case class Item(id: Int, value: Double)
+    val result = fromConf[Item]("item") { elt => Item((elt \\ "@id").text.toInt, (elt \\ "@value").text.toDouble) }
     Assert.assertEquals(2, result.size)
-    Assert.assertEquals(SimpleFrequency(2000000, 1.5), result(0))
-    Assert.assertEquals(SimpleFrequency(2500000, 2.0), result(1))
+    Assert.assertEquals(Item(1, 1.5), result(0))
+    Assert.assertEquals(Item(2, 2.0), result(1))
   }
 
 }

@@ -14,8 +14,8 @@
 		<int value="3" />
 	</ints>
 
-	<frequencies>
-		<frequency value="2000000" voltage="1.5" />
-		<frequency value="2500000" voltage="2.0" />
-	</frequencies>
+	<items>
+		<item id="1" value="1.5" />
+		<item id="2" value="2.0" />
+	</items>
 </powerapi>
