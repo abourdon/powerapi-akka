@@ -19,13 +19,41 @@
 package powerapi.core
 import org.junit.Test
 import org.junit.Assert
+import org.junit.Ignore
+
+case class SimpleFrequency(frequency: Int, voltage: Double)
 
 @Test
 class ConfigurationTest extends Configuration {
 
   @Test
-  def testFromConfiguration {
-    Assert.assertEquals("test", (fromConfiguration \\ "key" \\ "@value").text)
+  def testKeyFromConf {
+    val result = fromConf[String]("key") { elt => (elt \\ "@value").text }
+    Assert.assertEquals(1, result.size)
+    Assert.assertEquals("value", result(0))
+  }
+
+  @Test
+  def testStringsFromConf {
+    val result = fromConf[String]("string") { elt => (elt \\ "@value").text }
+    Assert.assertEquals(3, result.size)
+    Assert.assertEquals("string1", result(0))
+    Assert.assertEquals("string2", result(1))
+    Assert.assertEquals("string3", result(2))
+  }
+
+  @Test
+  def testIntsFromConf {
+    val result = fromConf[Int]("int") { elt => (elt \\ "@value").text.toInt }
+    Assert.assertEquals(6, result.reduceLeft((acc, x) => acc + x))
+  }
+
+  @Test
+  def testFrequenciesFromConf {
+    val result = fromConf[SimpleFrequency]("frequency") { elt => SimpleFrequency((elt \\ "@value").text.toInt, (elt \\ "@voltage").text.toDouble) }
+    Assert.assertEquals(2, result.size)
+    Assert.assertEquals(SimpleFrequency(2000000, 1.5), result(0))
+    Assert.assertEquals(SimpleFrequency(2500000, 2.0), result(1))
   }
 
 }

@@ -1,4 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <powerapi>
-	<key value="test" />
+	<key value="value" />
+
+	<strings>
+		<string value="string1" />
+		<string value="string2" />
+		<string value="string3" />
+	</strings>
+
+	<ints>
+		<int value="1" />
+		<int value="2" />
+		<int value="3" />
+	</ints>
+
+	<frequencies>
+		<frequency value="2000000" voltage="1.5" />
+		<frequency value="2500000" voltage="2.0" />
+	</frequencies>
 </powerapi>
