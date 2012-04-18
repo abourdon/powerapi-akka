@@ -36,6 +36,7 @@
 		<maven.compiler.target>1.5</maven.compiler.target>
 		<encoding>UTF-8</encoding>
 		<scala.version>2.9.1</scala.version>
+		<akka.version>2.0.1</akka.version>
 		<firstAuthor.name>Aurelien Bourdon</firstAuthor.name>
 		<firstAuthor.email>aurelien.bourdon@inria.fr</firstAuthor.email>
 	</properties>
@@ -57,10 +58,16 @@
 		<dependency>
 			<groupId>com.typesafe.akka</groupId>
 			<artifactId>akka-actor</artifactId>
-			<version>2.0.1</version>
+			<version>${akka.version}</version>
 		</dependency>
-		
-		<!--  Test scope -->
+
+		<!-- Test scope -->
+		<dependency>
+			<groupId>com.typesafe.akka</groupId>
+			<artifactId>akka-testkit</artifactId>
+			<version>${akka.version}</version>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
