@@ -34,6 +34,8 @@ import akka.util.duration._
 import scala.collection.mutable.Map
 import scala.collection.mutable.HashMap
 import scala.collection.mutable.SynchronizedMap
+import org.scalatest.junit.JUnitSuite
+import org.scalatest.junit.ShouldMatchersForJUnit
 
 case object Result
 
@@ -52,8 +54,7 @@ class ClockReceiver extends Actor with ActorLogging {
   }
 }
 
-@Test
-class ClockTest {
+class ClockSuite extends JUnitSuite with ShouldMatchersForJUnit {
   val system = ActorSystem("ClockTest")
   val clock = system.actorOf(Props(new Clock), name = "clock")
 
@@ -76,8 +77,8 @@ class ClockTest {
     implicit val timeout = Timeout(5 seconds)
     val receivedTicks = (Await result ((clockReceiver ? Result), timeout.duration)).asInstanceOf[Map[TickSubscription, Int]]
 
-    Assert.assertEquals(6, receivedTicks getOrElse (TickSubscription(Process(123), 500 milliseconds), 0))
-    Assert.assertEquals(5, receivedTicks getOrElse (TickSubscription(Process(124), 1000 milliseconds), 0))
-    Assert.assertEquals(4, receivedTicks getOrElse (TickSubscription(Process(125), 1500 milliseconds), 0))
+    receivedTicks getOrElse (TickSubscription(Process(123), 500 milliseconds), 0) should equal(6)
+    receivedTicks getOrElse (TickSubscription(Process(124), 1000 milliseconds), 0) should equal(5)
+    receivedTicks getOrElse (TickSubscription(Process(125), 1500 milliseconds), 0) should equal(4)
   }
 }

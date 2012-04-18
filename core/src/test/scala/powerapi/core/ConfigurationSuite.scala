@@ -20,39 +20,43 @@ package powerapi.core
 import org.junit.Test
 import org.junit.Assert
 import org.junit.Ignore
+import org.scalatest.junit.JUnitSuite
+import org.scalatest.junit.ShouldMatchersForJUnit
+import org.scalatest.FunSuite
+import org.scalatest.junit.JUnitRunner
+import org.junit.runner.RunWith
 
-@Test
-class ConfigurationTest extends Configuration {
+class ConfigurationSuite extends JUnitSuite with ShouldMatchersForJUnit with Configuration {
 
   @Test
   def testKeyFromConf {
     val result = fromConf[String]("key") { elt => (elt \\ "@value").text }
-    Assert.assertEquals(1, result.size)
-    Assert.assertEquals("value", result(0))
+    result.size should equal(1)
+    result(0) should equal("value")
   }
 
   @Test
   def testStringsFromConf {
     val result = fromConf[String]("string") { elt => (elt \\ "@value").text }
-    Assert.assertEquals(3, result.size)
-    Assert.assertEquals("string1", result(0))
-    Assert.assertEquals("string2", result(1))
-    Assert.assertEquals("string3", result(2))
+    result.size should equal(3)
+    result(0) should equal("string1")
+    result(1) should equal("string2")
+    result(2) should equal("string3")
   }
 
   @Test
   def testIntsFromConf {
     val result = fromConf[Int]("int") { elt => (elt \\ "@value").text.toInt }
-    Assert.assertEquals(6, result.reduceLeft((acc, x) => acc + x))
+    result.reduceLeft((acc, x) => acc + x) should equal(6)
   }
 
   @Test
   def testItemsFromConf {
     case class Item(id: Int, value: Double)
     val result = fromConf[Item]("item") { elt => Item((elt \\ "@id").text.toInt, (elt \\ "@value").text.toDouble) }
-    Assert.assertEquals(2, result.size)
-    Assert.assertEquals(Item(1, 1.5), result(0))
-    Assert.assertEquals(Item(2, 2.0), result(1))
+    result.size should equal(2)
+    result(0) should equal(Item(1, 1.5))
+    result(1) should equal(Item(2, 2.0))
   }
 
 }
