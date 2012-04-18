@@ -18,13 +18,8 @@
  */
 package powerapi.core
 import org.junit.Test
-import org.junit.Assert
-import org.junit.Ignore
 import org.scalatest.junit.JUnitSuite
 import org.scalatest.junit.ShouldMatchersForJUnit
-import org.scalatest.FunSuite
-import org.scalatest.junit.JUnitRunner
-import org.junit.runner.RunWith
 
 class ConfigurationSuite extends JUnitSuite with ShouldMatchersForJUnit with Configuration {
 

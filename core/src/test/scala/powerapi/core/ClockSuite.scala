@@ -18,24 +18,23 @@
  */
 package powerapi.core
 
+import scala.collection.mutable.SynchronizedMap
+import scala.collection.mutable.HashMap
+import scala.collection.mutable.Map
+
 import org.junit.Test
+import org.scalatest.junit.JUnitSuite
+import org.scalatest.junit.ShouldMatchersForJUnit
+
+import akka.actor.actorRef2Scala
 import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.ActorSystem
 import akka.actor.Props
+import akka.dispatch.Await
 import akka.pattern.ask
-import akka.event.LoggingBus
 import akka.util.duration.intToDurationInt
 import akka.util.Timeout
-import akka.dispatch.Await
-import org.junit.Assert
-import akka.util.Duration
-import akka.util.duration._
-import scala.collection.mutable.Map
-import scala.collection.mutable.HashMap
-import scala.collection.mutable.SynchronizedMap
-import org.scalatest.junit.JUnitSuite
-import org.scalatest.junit.ShouldMatchersForJUnit
 
 case object Result
 
@@ -56,11 +55,11 @@ class ClockReceiver extends Actor with ActorLogging {
 
 class ClockSuite extends JUnitSuite with ShouldMatchersForJUnit {
   val system = ActorSystem("ClockTest")
-  val clock = system.actorOf(Props(new Clock), name = "clock")
+  val clock = system.actorOf(Props[Clock], name = "clock")
 
   @Test
   def testReceivedTicks {
-    val clockReceiver = system.actorOf(Props(new ClockReceiver), name = "clockReceiver")
+    val clockReceiver = system.actorOf(Props[ClockReceiver], name = "clockReceiver")
     system.eventStream.subscribe(clockReceiver, classOf[Tick])
 
     clock ! Subscribe(TickSubscription(Process(123), 500 milliseconds))
