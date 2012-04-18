@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<powerapi>
+	<tdp value="42" />
+	<coreNumber value="4" />
+	<frequencies>
+		<frequency value="300000" voltage="0.85" />
+		<frequency value="600000" voltage="0.94" />
+		<frequency value="900001" voltage="1.04" />
+		<frequency value="1200001" voltage="1.13" />
+		<frequency value="1500001" voltage="1.22" />
+		<frequency value="1800002" voltage="1.31" />
+		<frequency value="2100002" voltage="1.41" />
+		<frequency value="2400003" voltage="1.5" />
+	</frequencies>
+</powerapi>
