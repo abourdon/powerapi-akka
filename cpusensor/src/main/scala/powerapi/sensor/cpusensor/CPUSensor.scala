@@ -16,26 +16,13 @@
  * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
  * Boston, MA  02110-1301, USA.
  */
-package powerapi.cpusensor
+package powerapi.sensor.cpusensor
 import akka.actor.Actor
 import powerapi.core.Configuration
 import powerapi.core.Tick
 
-case object Tdp
-case object NumberOfCores
-case object Frequencies
-case class Frequency(value: Int, voltage: Double)
-
 class CPUSensor extends Actor with Configuration {
-  // Environment specific values (from the configuration file)
-  lazy val tdp = fromConf[Double]("tdp") { node => (node \\ "@value").text.toDouble }(0)
-  lazy val numberOfCores = fromConf[Int]("numberOfCores") { node => (node \\ "@value").text.toInt }(0)
-  lazy val frequencies = fromConf[Frequency]("frequency") { node => Frequency((node \\ "@value").text.toInt, (node \\ "@voltage").text.toDouble) }
-
   def receive = {
-    case Tdp => tdp
-    case NumberOfCores => numberOfCores
-    case Frequencies => frequencies
     case tick: Tick => process(tick)
   }
 
