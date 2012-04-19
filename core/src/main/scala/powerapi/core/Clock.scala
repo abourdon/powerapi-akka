@@ -26,8 +26,11 @@ import akka.actor.Cancellable
 import akka.util.duration.intToDurationInt
 import akka.util.Duration
 
+/** Messages definition */
+case class TickSubscription(process: Process, duration: Duration)
 case class Subscribe(subscription: TickSubscription)
 case class Unsubscribe(subscription: TickSubscription)
+case class Tick(subscription: TickSubscription, timestamp: Long = System.currentTimeMillis)
 
 class Clock extends Actor with ActorLogging {
   val subscriptions = new HashMap[Duration, Set[TickSubscription]] with SynchronizedMap[Duration, Set[TickSubscription]]

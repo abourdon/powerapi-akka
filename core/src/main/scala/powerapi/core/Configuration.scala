@@ -23,8 +23,5 @@ import scala.xml.Node
 trait Configuration {
   lazy val conf = XML.load(getClass.getResourceAsStream("/powerapi.xml"))
 
-  def fromConf[A](tag: String)(f: Node => A): Seq[A] = {
-    val nodes = conf \\ tag
-    for (node <- nodes) yield (f(node))
-  }
+  def fromConf[A](tag: String)(f: Node => A): Seq[A] = for (node <- conf \\ tag) yield (f(node))
 }
