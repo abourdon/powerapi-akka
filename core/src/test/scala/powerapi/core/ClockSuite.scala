@@ -21,11 +21,9 @@ package powerapi.core
 import scala.collection.mutable.SynchronizedMap
 import scala.collection.mutable.HashMap
 import scala.collection.mutable.Map
-
 import org.junit.Test
 import org.scalatest.junit.JUnitSuite
 import org.scalatest.junit.ShouldMatchersForJUnit
-
 import akka.actor.actorRef2Scala
 import akka.actor.Actor
 import akka.actor.ActorLogging
@@ -35,6 +33,7 @@ import akka.dispatch.Await
 import akka.pattern.ask
 import akka.util.duration.intToDurationInt
 import akka.util.Timeout
+import akka.testkit.TestActorRef
 
 case object Result
 
@@ -54,12 +53,12 @@ class ClockReceiver extends Actor with ActorLogging {
 }
 
 class ClockSuite extends JUnitSuite with ShouldMatchersForJUnit {
-  val system = ActorSystem("ClockTest")
-  val clock = system.actorOf(Props[Clock], name = "clock")
+  implicit val system = ActorSystem("ClockTest")
+  val clock = TestActorRef[Clock]
 
   @Test
   def testReceivedTicks {
-    val clockReceiver = system.actorOf(Props[ClockReceiver], name = "clockReceiver")
+    val clockReceiver = TestActorRef[ClockReceiver]
     system.eventStream.subscribe(clockReceiver, classOf[Tick])
 
     clock ! Subscribe(TickSubscription(Process(123), 500 milliseconds))
@@ -73,9 +72,7 @@ class ClockSuite extends JUnitSuite with ShouldMatchersForJUnit {
     clock ! Unsubscribe(TickSubscription(Process(124), 500 milliseconds))
     clock ! Unsubscribe(TickSubscription(Process(125), 1500 milliseconds))
 
-    implicit val timeout = Timeout(5 seconds)
-    val receivedTicks = (Await result ((clockReceiver ? Result), timeout.duration)).asInstanceOf[Map[TickSubscription, Int]]
-
+    val receivedTicks = clockReceiver.underlyingActor.receivedTicks
     receivedTicks getOrElse (TickSubscription(Process(123), 500 milliseconds), 0) should equal(6)
     receivedTicks getOrElse (TickSubscription(Process(124), 1000 milliseconds), 0) should equal(5)
     receivedTicks getOrElse (TickSubscription(Process(125), 1500 milliseconds), 0) should equal(4)
