@@ -75,9 +75,9 @@ class CPUSensor extends Actor with Configuration with ActorLogging {
     def globalElapsedTime = {
       val statFile = new File(globalStatFile)
       if (statFile canRead) {
-        val line = Source.fromFile(statFile).getLine(0)
+        val line = Source.fromFile(statFile).getLines.toIndexedSeq(0)
         line match {
-          case GlobalStatFormat(times) => List.fromString(times, ' ').foldLeft(0) { (acc, x) => (acc + x.toInt) }
+          case GlobalStatFormat(times) => times.split(' ').foldLeft(0) { (acc, x) => (acc + x.toInt) }
           case _ => {
             log.warning("unable to parse line \"" + line + "\" from file \"" + statFile)
             -1
@@ -93,7 +93,7 @@ class CPUSensor extends Actor with Configuration with ActorLogging {
     def processElapsedTime(implicit process: Process) = {
       val statFile = new File(processStatFile.replace("%?", process.pid.toString))
       if (statFile canRead) {
-        val line = Source.fromFile(statFile).getLine(0) split ("""\s""")
+        val line = Source.fromFile(statFile).getLines.toIndexedSeq(0) split ("""\s""")
         // User time + System time + Block IO waiting time
         line(13).toInt + line(14).toInt + line(41).toInt
       } else {
