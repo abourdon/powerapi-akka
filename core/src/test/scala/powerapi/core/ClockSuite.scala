@@ -61,16 +61,16 @@ class ClockSuite extends JUnitSuite with ShouldMatchersForJUnit {
     val clockReceiver = TestActorRef[ClockReceiver]
     system.eventStream.subscribe(clockReceiver, classOf[Tick])
 
-    clock ! Subscribe(TickSubscription(Process(123), 500 milliseconds))
-    clock ! Subscribe(TickSubscription(Process(124), 1000 milliseconds))
-    clock ! Subscribe(TickSubscription(Process(125), 1500 milliseconds))
+    clock ! TickIt(TickSubscription(Process(123), 500 milliseconds))
+    clock ! TickIt(TickSubscription(Process(124), 1000 milliseconds))
+    clock ! TickIt(TickSubscription(Process(125), 1500 milliseconds))
     Thread.sleep(3200)
 
-    clock ! Unsubscribe(TickSubscription(Process(123), 500 milliseconds))
+    clock ! UnTickIt(TickSubscription(Process(123), 500 milliseconds))
     Thread.sleep(2200)
 
-    clock ! Unsubscribe(TickSubscription(Process(124), 500 milliseconds))
-    clock ! Unsubscribe(TickSubscription(Process(125), 1500 milliseconds))
+    clock ! UnTickIt(TickSubscription(Process(124), 500 milliseconds))
+    clock ! UnTickIt(TickSubscription(Process(125), 1500 milliseconds))
 
     val receivedTicks = clockReceiver.underlyingActor.receivedTicks
     receivedTicks getOrElse (TickSubscription(Process(123), 500 milliseconds), 0) should equal(6)

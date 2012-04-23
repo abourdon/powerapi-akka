@@ -28,8 +28,8 @@ import akka.util.Duration
 
 /** Messages definition */
 case class TickSubscription(process: Process, duration: Duration)
-case class Subscribe(subscription: TickSubscription)
-case class Unsubscribe(subscription: TickSubscription)
+case class TickIt(subscription: TickSubscription)
+case class UnTickIt(subscription: TickSubscription)
 case class Tick(subscription: TickSubscription, timestamp: Long = System.currentTimeMillis)
 
 class Clock extends Actor with ActorLogging {
@@ -37,12 +37,12 @@ class Clock extends Actor with ActorLogging {
   val schedulers = new HashMap[Duration, Cancellable]
   val system = context.system
 
-  def subscribe(implicit tickIt: Subscribe) {
+  def subscribe(implicit tickIt: TickIt) {
     val currentSubscriptions = subscriptions getOrElse (tickIt.subscription.duration, Set[TickSubscription]())
     subscriptions += (tickIt.subscription.duration -> (currentSubscriptions + tickIt.subscription))
   }
 
-  private def scheduleRegistration(implicit tickIt: Subscribe) {
+  private def scheduleRegistration(implicit tickIt: TickIt) {
     val duration = tickIt.subscription.duration
     if (!(schedulers contains duration)) {
       schedulers += (duration -> system.scheduler.schedule(0 second, duration)(schedule(duration)))
@@ -56,19 +56,19 @@ class Clock extends Actor with ActorLogging {
     }
   }
 
-  def makeItTick(implicit tickIt: Subscribe) {
+  def makeItTick(implicit tickIt: TickIt) {
     subscribe
     scheduleRegistration
   }
 
-  private def unsubscribe(implicit untickIt: Unsubscribe) {
+  private def unsubscribe(implicit untickIt: UnTickIt) {
     val currentSubscriptions = subscriptions getOrElse (untickIt.subscription.duration, Set[TickSubscription]())
     if (!currentSubscriptions.isEmpty) {
       subscriptions += (untickIt.subscription.duration -> (currentSubscriptions - untickIt.subscription))
     }
   }
 
-  private def unschedule(implicit untickIt: Unsubscribe) {
+  private def unschedule(implicit untickIt: UnTickIt) {
     val duration = untickIt.subscription.duration
     val currentSubscriptions = subscriptions getOrElse (untickIt.subscription.duration, Set[TickSubscription]())
 
@@ -88,14 +88,14 @@ class Clock extends Actor with ActorLogging {
     }
   }
 
-  def unmakeItTick(implicit untickIt: Unsubscribe) {
+  def unmakeItTick(implicit untickIt: UnTickIt) {
     unsubscribe
     unschedule
   }
 
   def receive = {
-    case subscribe: Subscribe => makeItTick(subscribe)
-    case unsubscribe: Unsubscribe => unmakeItTick(unsubscribe)
+    case subscribe: TickIt => makeItTick(subscribe)
+    case unsubscribe: UnTickIt => unmakeItTick(unsubscribe)
     case unknown => throw new UnsupportedOperationException("unable to process message " + unknown)
   }
 }
