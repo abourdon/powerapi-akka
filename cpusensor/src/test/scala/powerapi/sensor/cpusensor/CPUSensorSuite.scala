@@ -20,18 +20,19 @@ package powerapi.sensor.cpusensor
 import org.junit.Test
 import org.scalatest.junit.JUnitSuite
 import org.scalatest.junit.ShouldMatchersForJUnit
+
+import akka.actor.Actor
 import akka.actor.ActorSystem
+import akka.actor.Props
 import akka.testkit.TestActorRef
 import akka.util.duration.intToDurationInt
+import powerapi.core.Clock
 import powerapi.core.Process
 import powerapi.core.Tick
+import powerapi.core.TickIt
+import powerapi.core.UnTickIt
 import powerapi.core.TickSubscription
-import akka.actor.Actor
 import powerapi.core.TickSubscription
-import akka.actor.Props
-import powerapi.core.Clock
-import powerapi.core.Subscribe
-import powerapi.core.Unsubscribe
 
 class CPUSensorReceiver extends Actor {
   var receivedData: Option[CPUSensorValues] = None
@@ -84,9 +85,9 @@ class CPUSensorSuite extends JUnitSuite with ShouldMatchersForJUnit {
     system.eventStream.subscribe(cpuSensor, classOf[Tick])
     system.eventStream.subscribe(cpuSensorReceiver, classOf[CPUSensorValues])
 
-    clock ! Subscribe(TickSubscription(Process(123), 10 seconds))
+    clock ! TickIt(TickSubscription(Process(123), 10 seconds))
     Thread.sleep(1000)
-    clock ! Unsubscribe(TickSubscription(Process(123), 10 seconds))
+    clock ! UnTickIt(TickSubscription(Process(123), 10 seconds))
 
     cpuSensorReceiver.underlyingActor.receivedData match {
       case None => fail
