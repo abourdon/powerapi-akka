@@ -1,13 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <powerapi>
-	<timeInFrequencyFiles>
-		<timeInFrequencyFile
-			value="/sys/devices/system/cpu/cpu0/cpufreq/stats/time_in_state" />
-		<timeInFrequencyFile
-			value="/sys/devices/system/cpu/cpu1/cpufreq/stats/time_in_state" />
-		<timeInFrequencyFile
-			value="/sys/devices/system/cpu/cpu2/cpufreq/stats/time_in_state" />
-		<timeInFrequencyFile
-			value="/sys/devices/system/cpu/cpu3/cpufreq/stats/time_in_state" />
-	</timeInFrequencyFiles>
+	<cores value="4" />
+	<globalStat value="/proc/stat" />
+	<processStat value="/proc/%?/stat" />
+	<timesInState
+		value="/sys/devices/system/cpu/cpu%?/cpufreq/stats/time_in_state" />
 </powerapi>
