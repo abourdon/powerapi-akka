@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <powerapi>
-	<tdp value="42" />
-	<coreNumber value="4" />
+	<tdp value="105" />
+	<cores value="4" />
 	<frequencies>
 		<frequency value="300000" voltage="0.85" />
 		<frequency value="600000" voltage="0.94" />
