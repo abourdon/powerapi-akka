@@ -29,7 +29,10 @@ import akka.actor.Props
 import java.io.File
 
 /** Messages definition */
-case class TimeInStates(times: Map[Int, Int])
+case class TimeInStates(times: Map[Int, Int]) {
+  def -(that: TimeInStates) =
+    TimeInStates((for ((frequency, time) <- times) yield (frequency, time - that.times.getOrElse(frequency, 0))).toMap)
+}
 case class GlobalElapsedTime(time: Int)
 case class ProcessElapsedTime(time: Int)
 case class CPUSensorValues(
@@ -111,10 +114,17 @@ class CPUSensor extends Actor with Configuration with ActorLogging {
   }
 
   lazy val frequency = new Frequency
+  def timeInStates = frequency.timeInStates
+
   lazy val time = new Time
+  def elapsedTime(implicit process: Process = Process(-1)) = time.elapsedTime
 
   def receive = {
     case tick: Tick => process(tick)
+  }
+
+  def publish(sensorValues: CPUSensorValues) {
+    context.system.eventStream publish sensorValues
   }
 
   def process(tick: Tick) {
@@ -126,11 +136,4 @@ class CPUSensor extends Actor with Configuration with ActorLogging {
         tick))
   }
 
-  def timeInStates = frequency.timeInStates
-
-  def elapsedTime(implicit process: Process = Process(-1)) = time.elapsedTime
-
-  def publish(sensorValues: CPUSensorValues) {
-    context.system.eventStream publish sensorValues
-  }
 }
