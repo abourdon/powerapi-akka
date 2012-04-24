@@ -72,7 +72,7 @@ class Clock extends Actor with ActorLogging {
     val duration = untickIt.subscription.duration
     val currentSubscriptions = subscriptions getOrElse (untickIt.subscription.duration, Set[TickSubscription]())
 
-    // iff subscriptions associated to the specified duration is empty,
+    // Iff subscriptions associated to the specified duration is empty,
     // then we have to stop schedule and delete duration reference from maps
     if (currentSubscriptions.isEmpty) {
       // Stop schedule associated to the associated duration
