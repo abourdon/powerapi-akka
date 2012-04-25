@@ -16,14 +16,16 @@
  * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
  * Boston, MA  02110-1301, USA.
  */
-package powerapi.sensor.cpusensor
+package powerapi.formula.cpuformula
 import java.lang.management.ManagementFactory
+
 import scala.io.Source
 import scala.util.Random
-import org.junit.Ignore
+
 import org.junit.Test
 import org.scalatest.junit.JUnitSuite
 import org.scalatest.junit.ShouldMatchersForJUnit
+
 import akka.actor.actorRef2Scala
 import akka.actor.Actor
 import akka.actor.ActorLogging
@@ -38,11 +40,11 @@ import powerapi.core.Process
 import powerapi.core.TickIt
 import powerapi.core.TickSubscription
 import powerapi.core.UnTickIt
-import powerapi.formula.cpuformula.CPUFormulaValues
-import powerapi.formula.cpuformula.CPUFormula
-import java.io.File
-import java.io.BufferedInputStream
-import java.io.FileInputStream
+import powerapi.sensor.cpusensor.CPUSensorValues
+import powerapi.sensor.cpusensor.CPUSensor
+import powerapi.sensor.cpusensor.GlobalElapsedTime
+import powerapi.sensor.cpusensor.ProcessElapsedTime
+import powerapi.sensor.cpusensor.TimeInStates
 
 class CPUFormulaReceiver extends Actor with ActorLogging {
   def receive = {
