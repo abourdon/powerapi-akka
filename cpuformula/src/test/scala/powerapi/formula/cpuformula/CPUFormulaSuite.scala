@@ -18,15 +18,12 @@
  */
 package powerapi.formula.cpuformula
 import java.lang.management.ManagementFactory
-
 import scala.io.Source
 import scala.util.Random
-
 import org.junit.Ignore
 import org.junit.Test
 import org.scalatest.junit.JUnitSuite
 import org.scalatest.junit.ShouldMatchersForJUnit
-
 import akka.actor.actorRef2Scala
 import akka.actor.Actor
 import akka.actor.ActorLogging
@@ -46,6 +43,7 @@ import powerapi.sensor.cpusensor.CPUSensor
 import powerapi.sensor.cpusensor.GlobalElapsedTime
 import powerapi.sensor.cpusensor.ProcessElapsedTime
 import powerapi.sensor.cpusensor.TimeInStates
+import scala.xml.XML
 
 class CPUFormulaReceiver extends Actor with ActorLogging {
   def receive = {
@@ -206,8 +204,12 @@ class CPUFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
   def testGivenProcess {
     val clock = system.actorOf(Props[Clock])
     val cpuformulaReceiver = system.actorOf(Props[CPUFormulaReceiver], name = "cpuformulareceiver")
-    val cpusensor = system.actorOf(Props(new CPUSensor with ConfigurationMock), name = "cpusensor")
-    val cpuFormula = system.actorOf(Props(new CPUFormula with ConfigurationMock), name = "cpuformula")
+    val cpusensor = system.actorOf(Props(new CPUSensor with Configuration {
+      override lazy val conf = XML.load(getClass.getResourceAsStream("/powerapi-dellprecision.xml"))
+    }), name = "cpusensor")
+    val cpuFormula = system.actorOf(Props(new CPUFormula with Configuration {
+      override lazy val conf = XML.load(getClass.getResourceAsStream("/powerapi-dellprecision.xml"))
+    }), name = "cpuformula")
 
     system.eventStream subscribe (cpusensor, classOf[Tick])
     system.eventStream subscribe (cpuFormula, classOf[CPUSensorValues])
