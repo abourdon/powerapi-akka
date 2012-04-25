@@ -18,14 +18,12 @@
  */
 package powerapi.sensor.cpusensor
 import java.lang.management.ManagementFactory
-
 import scala.io.Source
 import scala.util.Random
-
+import org.junit.Ignore
 import org.junit.Test
 import org.scalatest.junit.JUnitSuite
 import org.scalatest.junit.ShouldMatchersForJUnit
-
 import akka.actor.actorRef2Scala
 import akka.actor.Actor
 import akka.actor.ActorLogging
@@ -42,10 +40,19 @@ import powerapi.core.TickSubscription
 import powerapi.core.UnTickIt
 import powerapi.formula.cpuformula.CPUFormulaValues
 import powerapi.formula.cpuformula.CPUFormula
+import java.io.File
+import java.io.BufferedInputStream
+import java.io.FileInputStream
 
 class CPUFormulaReceiver extends Actor with ActorLogging {
   def receive = {
-    case cpuFormulaValues: CPUFormulaValues => log.debug(cpuFormulaValues.energy.toString)
+    case cpuFormulaValues: CPUFormulaValues =>
+      if (cpuFormulaValues.energy.power > 0) {
+        log.info("\n" +
+          "Process: " + cpuFormulaValues.tick.subscription.process + "\n" +
+          "Energy: " + cpuFormulaValues.energy
+        )
+      }
   }
 }
 
@@ -65,7 +72,7 @@ class CPUFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
   @Test
   def testVoltages {
-    cpuformula.voltages.size should equal(3)
+    cpuformula.voltages should have size (3)
     cpuformula.voltages(1800002) should equal(1.31)
     cpuformula.voltages(2100002) should equal(1.41)
     cpuformula.voltages(2400003) should equal(1.5)
@@ -78,10 +85,33 @@ class CPUFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
   @Test
   def testPowers {
-    cpuformula.powers.size should equal(3)
+    cpuformula.powers should have size (3)
     cpuformula.powers.foreach(power => power._2 should equal(
       cpuformula.constant * power._1 * math.pow(cpuformula.voltages(power._1), 2)
     ))
+  }
+
+  @Test
+  def testRefreshCache {
+    val old = CPUSensorValues(
+      TimeInStates(Map[Int, Int]()),
+      GlobalElapsedTime(100),
+      ProcessElapsedTime(50),
+      Tick(TickSubscription(Process(123), 500 milliseconds))
+    )
+    cpuformula.refreshCache(old)
+    cpuformula.cache getOrElse (500 milliseconds, null) should equal(old)
+
+    val now = CPUSensorValues(
+      TimeInStates(Map[Int, Int]()),
+      GlobalElapsedTime(300),
+      ProcessElapsedTime(80),
+      Tick(TickSubscription(Process(123), 500 milliseconds))
+    )
+    cpuformula.refreshCache(now)
+    cpuformula.cache getOrElse (500 milliseconds, null) should equal(now)
+
+    cpuformula.cache getOrElse (123 milliseconds, null) should be(null)
   }
 
   @Test
@@ -149,23 +179,46 @@ class CPUFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
   }
 
   @Test
-  def testAll {
+  def testCurrentProcess {
     val clock = system.actorOf(Props[Clock])
-    val cpuformulaReceiver = system.actorOf(Props[CPUFormulaReceiver])
-    val cpusensor = system.actorOf(Props(new CPUSensor with ConfigurationMock))
-    val cpuFormula = system.actorOf(Props(new CPUFormula with ConfigurationMock))
+    val cpuformulaReceiver = system.actorOf(Props[CPUFormulaReceiver], name = "cpuformulareceiver")
+    val cpusensor = system.actorOf(Props(new CPUSensor with ConfigurationMock), name = "cpusensor")
+    val cpuFormula = system.actorOf(Props(new CPUFormula with ConfigurationMock), name = "cpuformula")
 
     system.eventStream subscribe (cpusensor, classOf[Tick])
     system.eventStream subscribe (cpuFormula, classOf[CPUSensorValues])
     system.eventStream subscribe (cpuformulaReceiver, classOf[CPUFormulaValues])
 
-    clock ! TickIt(TickSubscription(Process(ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt), 1 seconds))
+    clock ! TickIt(TickSubscription(Process(ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt), 1 second))
     Thread.sleep(2000)
     clock ! TickIt(TickSubscription(Process(ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt), 500 milliseconds))
     Thread.sleep(5000)
     clock ! UnTickIt(TickSubscription(Process(ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt), 500 milliseconds))
     Thread.sleep(2000)
-    clock ! UnTickIt(TickSubscription(Process(ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt), 1 seconds))
+    clock ! UnTickIt(TickSubscription(Process(ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt), 1 second))
+  }
+
+  @Test
+  def testIntensive {
+    val clock = system.actorOf(Props[Clock])
+    val cpuformulaReceiver = system.actorOf(Props[CPUFormulaReceiver], name = "cpuformulareceiver")
+    val cpusensor = system.actorOf(Props(new CPUSensor with ConfigurationMock), name = "cpusensor")
+    val cpuFormula = system.actorOf(Props(new CPUFormula with ConfigurationMock), name = "cpuformula")
+
+    system.eventStream subscribe (cpusensor, classOf[Tick])
+    system.eventStream subscribe (cpuFormula, classOf[CPUSensorValues])
+    system.eventStream subscribe (cpuformulaReceiver, classOf[CPUFormulaValues])
+
+    val PSFormat = """^\s*(\d+).*""".r
+    val pids = Source.fromInputStream(Runtime.getRuntime.exec(Array("ps", "-A")).getInputStream).getLines.toList.map({ pid =>
+      pid match {
+        case PSFormat(pid) => pid.toInt
+        case _             => 1
+      }
+    })
+    pids.foreach(pid => clock ! TickIt(TickSubscription(Process(pid), 50 milliseconds)))
+    Thread.sleep(5000)
+    pids.foreach(pid => clock ! UnTickIt(TickSubscription(Process(pid), 50 milliseconds)))
   }
 
 }

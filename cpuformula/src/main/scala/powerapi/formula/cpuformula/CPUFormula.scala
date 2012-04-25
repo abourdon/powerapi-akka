@@ -18,7 +18,6 @@
  */
 package powerapi.formula.cpuformula
 import scala.collection.mutable.HashMap
-
 import akka.actor.Actor
 import akka.util.Duration
 import powerapi.core.Configuration
@@ -28,11 +27,12 @@ import powerapi.sensor.cpusensor.CPUSensorValues
 import powerapi.sensor.cpusensor.GlobalElapsedTime
 import powerapi.sensor.cpusensor.ProcessElapsedTime
 import powerapi.sensor.cpusensor.TimeInStates
+import akka.actor.ActorLogging
 
 /** Messages definition */
 case class CPUFormulaValues(energy: Energy, tick: Tick)
 
-class CPUFormula extends Actor with Configuration {
+class CPUFormula extends Actor with Configuration with ActorLogging {
   // Environment specific values (from the configuration file)
   lazy val tdp = fromConf("tdp") { node => (node \\ "@value").text.toDouble }(0)
   lazy val cores = fromConf("cores") { elt => (elt \\ "@value").text.toInt }(0)
@@ -54,24 +54,30 @@ class CPUFormula extends Actor with Configuration {
     refreshCache
   }
 
-  def usage(old: CPUSensorValues, now: CPUSensorValues): Double =
-    math.max(
-      0.0,
-      math.min(
-        (now.processElapsedTime.time - old.processElapsedTime.time).toDouble / ((now.globalElapsedTime.time - old.globalElapsedTime.time).toDouble / cores),
-        1.0
-      )
-    )
+  def usage(old: CPUSensorValues, now: CPUSensorValues): Double = {
+    val processUsage = (now.processElapsedTime.time - old.processElapsedTime.time).toDouble
+    val globalUsage = (now.globalElapsedTime.time - old.globalElapsedTime.time).toDouble / cores
+    if (globalUsage == 0) {
+      0.0
+    } else {
+      math.max(0.0, math.min(processUsage / globalUsage, 1.0))
+    }
+  }
 
   def power(old: CPUSensorValues, now: CPUSensorValues): Double = {
     val timeInStates = now.timeInStates - old.timeInStates
     val totalPower = powers.foldLeft(0: Double) { (acc, power) => acc + (power._2 * timeInStates.times.getOrElse(power._1, 0)) }
-    totalPower / timeInStates.times.foldLeft(0) { (acc, time) => acc + time._2 }
+    val time = timeInStates.times.foldLeft(0) { (acc, time) => acc + time._2 }
+    if (time == 0) {
+      0.0
+    } else {
+      totalPower / time
+    }
+
   }
 
   def compute(implicit now: CPUSensorValues): CPUFormulaValues = {
     val old = cache getOrElse (now.tick.subscription.duration, defaultSensorValue)
-
     val computed = power(old, now) * usage(old, now)
     CPUFormulaValues(Energy.fromPower(computed), now.tick)
   }
