@@ -71,7 +71,7 @@ class CPUFormula extends Actor with Configuration with ActorLogging {
     if (time == 0) {
       0.0
     } else {
-      totalPower / time
+      totalPower / time / cores
     }
 
   }

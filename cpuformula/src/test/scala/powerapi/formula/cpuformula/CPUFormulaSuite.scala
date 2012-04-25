@@ -155,7 +155,7 @@ class CPUFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
     val totalPowers = diffTimeInStates.times.foldLeft(0: Double) { (acc, time) => acc + (cpuformula.powers(time._1) * time._2) }
     val totalTimes = diffTimeInStates.times.foldLeft(0) { (acc, time) => acc + time._2 }
 
-    cpuformula.power(old, now) should equal(totalPowers / totalTimes)
+    cpuformula.power(old, now) should equal(totalPowers / totalTimes / cpuformula.cores)
   }
 
   trait ConfigurationMock extends Configuration {
