@@ -27,6 +27,10 @@ import akka.actor.ActorLogging
 import scala.concurrent.ops
 import akka.actor.Props
 import java.io.File
+import java.io.FileNotFoundException
+import java.io.IOException
+import java.io.FileInputStream
+import java.io.BufferedInputStream
 
 /** Messages definition */
 case class TimeInStates(times: Map[Int, Int]) {
@@ -53,21 +57,26 @@ class CPUSensor extends Actor with Configuration with ActorLogging {
 
     def timeInStates = {
       val result = collection.mutable.HashMap[Int, Int]()
-
-      // TODO inform when time_in_state file is inaccessible 
-      for {
-        timeInStateFile <- timeInStateFiles
-        file = new File(timeInStateFile)
-        if (file canRead)
-        line <- Source.fromFile(file).getLines
-      } {
-        line match {
-          case TimeInStateFormat(frequency, time) =>
-            result += (frequency.toInt -> (time.toInt + (result getOrElse (frequency.toInt, 0))))
-          case _ => log.warning("unable to parse line \"" + line + "\" from file \"" + timeInStateFile)
+      for (timeInStateFile <- timeInStateFiles) {
+        try {
+          val input = new FileInputStream(timeInStateFile)
+          try {
+            for (line <- Source.fromInputStream(input).getLines) {
+              line match {
+                case TimeInStateFormat(frequency, time) => result += (frequency.toInt -> (time.toInt + (result getOrElse (frequency.toInt, 0))))
+                case _                                  => log.warning("unable to parse line \"" + line + "\" from file \"" + timeInStateFile)
+              }
+            }
+          } catch {
+            case ioe: IOException => log.warning("i/o " + ioe.getMessage)
+            case e: Exception     => log.warning("e " + e.getMessage)
+          } finally {
+            input.close
+          }
+        } catch {
+          case fnfe: FileNotFoundException => log.warning("unable to read file " + timeInStateFile)
         }
       }
-
       result.toMap[Int, Int]
     }
   }
@@ -76,33 +85,51 @@ class CPUSensor extends Actor with Configuration with ActorLogging {
     lazy val globalStatFile = fromConf("globalStat")(elt => (elt \\ "@value").text)(0)
     lazy val GlobalStatFormat = """cpu\s+([\d\s]+)""".r
     def globalElapsedTime = {
-      val statFile = new File(globalStatFile)
-      if (statFile canRead) {
-        val line = Source.fromFile(statFile).getLines.toIndexedSeq(0)
-        line match {
-          case GlobalStatFormat(times) => times.split(' ').foldLeft(0) { (acc, x) => (acc + x.toInt) }
-          case _ => {
-            log.warning("unable to parse line \"" + line + "\" from file \"" + statFile)
-            -1
+      var result = 0
+      try {
+        val input = new FileInputStream(globalStatFile)
+        try {
+          result = {
+            Source.fromInputStream(input).getLines.toIndexedSeq(0) match {
+              case GlobalStatFormat(times) => times.split(' ').foldLeft(0: Int) { (acc, x) => (acc + x.toInt) }
+              case _ => {
+                log.warning("unable to parse line from file \"" + globalStatFile)
+                0
+              }
+            }
           }
+        } catch {
+          case ioe: IOException => log.warning("i/o " + ioe.getMessage)
+          case e: Exception     => log.warning("e " + e.getMessage)
+        } finally {
+          input.close
         }
-      } else {
-        log.warning("unable to read file \"" + statFile + "\"")
-        -1
+      } catch {
+        case fnfe: FileNotFoundException => log.warning("unable to read global stat file " + globalStatFile);
       }
+      result
     }
 
     lazy val processStatFile = fromConf("processStat")(elt => (elt \\ "@value").text)(0)
     def processElapsedTime(implicit process: Process) = {
-      val statFile = new File(processStatFile.replace("%?", process.pid.toString))
-      if (statFile canRead) {
-        val line = Source.fromFile(statFile).getLines.toIndexedSeq(0) split ("""\s""")
-        // User time + System time + Block IO waiting time
-        line(13).toInt + line(14).toInt + line(41).toInt
-      } else {
-        log.warning("unable to read file \"" + statFile + "\"")
-        -1
+      var result = 0
+      try {
+        val input = new FileInputStream(processStatFile.replace("%?", process.pid.toString))
+        try {
+          val line = Source.fromInputStream(input).getLines.toIndexedSeq(0) split ("\\s")
+          // User time + System time + Block IO waiting time
+          result = (line(13).toInt + line(14).toInt + line(41).toInt)
+        } catch {
+
+          case ioe: IOException => log.warning("i/o " + ioe.getMessage)
+          case e: Exception     => log.warning("e " + e.getMessage)
+        } finally {
+          input.close
+        }
+      } catch {
+        case fnfe: FileNotFoundException => log.warning("unable to read process stat file for process " + process);
       }
+      result
     }
 
     def elapsedTime(implicit process: Process = Process(-1)) = {
