@@ -22,6 +22,7 @@ import java.lang.management.ManagementFactory
 import scala.io.Source
 import scala.util.Random
 
+import org.junit.Ignore
 import org.junit.Test
 import org.scalatest.junit.JUnitSuite
 import org.scalatest.junit.ShouldMatchersForJUnit
@@ -200,6 +201,23 @@ class CPUFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
     clock ! UnTickIt(TickSubscription(Process(ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt), 1 second))
   }
 
+  @Ignore
+  @Test
+  def testGivenProcess {
+    val clock = system.actorOf(Props[Clock])
+    val cpuformulaReceiver = system.actorOf(Props[CPUFormulaReceiver], name = "cpuformulareceiver")
+    val cpusensor = system.actorOf(Props(new CPUSensor with ConfigurationMock), name = "cpusensor")
+    val cpuFormula = system.actorOf(Props(new CPUFormula with ConfigurationMock), name = "cpuformula")
+
+    system.eventStream subscribe (cpusensor, classOf[Tick])
+    system.eventStream subscribe (cpuFormula, classOf[CPUSensorValues])
+    system.eventStream subscribe (cpuformulaReceiver, classOf[CPUFormulaValues])
+
+    clock ! TickIt(TickSubscription(Process(1234), 500 milliseconds))
+    Thread.sleep(300000)
+    clock ! UnTickIt(TickSubscription(Process(1234), 500 milliseconds))
+  }
+  
   @Test
   def testIntensive {
     val clock = system.actorOf(Props[Clock])
@@ -222,5 +240,5 @@ class CPUFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
     Thread.sleep(5000)
     pids.foreach(pid => clock ! UnTickIt(TickSubscription(Process(pid), 50 milliseconds)))
   }
-
+  
 }
