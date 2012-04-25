@@ -26,14 +26,14 @@ class ConfigurationSuite extends JUnitSuite with ShouldMatchersForJUnit with Con
   @Test
   def testKeyFromConf {
     val result = fromConf[String]("key") { elt => (elt \\ "@value").text }
-    result.size should equal(1)
+    result should have size (1)
     result(0) should equal("value")
   }
 
   @Test
   def testStringsFromConf {
     val result = fromConf[String]("string") { elt => (elt \\ "@value").text }
-    result.size should equal(3)
+    result should have size (3)
     result(0) should equal("string1")
     result(1) should equal("string2")
     result(2) should equal("string3")
@@ -49,7 +49,7 @@ class ConfigurationSuite extends JUnitSuite with ShouldMatchersForJUnit with Con
   def testItemsFromConf {
     case class Item(id: Int, value: Double)
     val result = fromConf[Item]("item") { elt => Item((elt \\ "@id").text.toInt, (elt \\ "@value").text.toDouble) }
-    result.size should equal(2)
+    result should have size (2)
     result(0) should equal(Item(1, 1.5))
     result(1) should equal(Item(2, 2.0))
   }
