@@ -12,7 +12,7 @@
 		<frequency value="2100002" voltage="1.41" />
 		<frequency value="2400003" voltage="1.5" />
 	</frequencies>
-	<globalStat value="/proc/stat" />
-	<processStat value="/proc/%?/stat" />
-	<timesInState value="/sys/devices/system/cpu/cpu%?/cpufreq/stats/time_in_state" />
+	<globalStat url="file:///proc/stat" />
+	<processStat url="file:///proc/%?/stat" />
+	<timesInState url="file:///sys/devices/system/cpu/cpu%?/cpufreq/stats/time_in_state" />
 </powerapi>

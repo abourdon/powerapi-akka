@@ -18,12 +18,17 @@
  */
 package powerapi.formula.cpuformula
 import java.lang.management.ManagementFactory
+import java.net.URL
+
 import scala.io.Source
 import scala.util.Random
+import scala.xml.XML
+
 import org.junit.Ignore
 import org.junit.Test
 import org.scalatest.junit.JUnitSuite
 import org.scalatest.junit.ShouldMatchersForJUnit
+
 import akka.actor.actorRef2Scala
 import akka.actor.Actor
 import akka.actor.ActorLogging
@@ -43,9 +48,9 @@ import powerapi.sensor.cpusensor.CPUSensor
 import powerapi.sensor.cpusensor.GlobalElapsedTime
 import powerapi.sensor.cpusensor.ProcessElapsedTime
 import powerapi.sensor.cpusensor.TimeInStates
-import scala.xml.XML
+import scalax.io.Resource
 
-class CPUFormulaReceiver extends Actor with ActorLogging {
+class CPUFormulaLoggingReceiver extends Actor with ActorLogging {
   def receive = {
     case cpuFormulaValues: CPUFormulaValues =>
       if (cpuFormulaValues.energy.power > 0) {
@@ -160,9 +165,9 @@ class CPUFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
   }
 
   trait ConfigurationMock extends Configuration {
-    val timeInState = "/sys/devices/system/cpu/cpu%?/cpufreq/stats/time_in_state"
-    val frequencies = {
-      val lines = Source.fromFile(timeInState.replace("%?", "1")).getLines
+    lazy val timeInState = new URL("file", "/sys/devices/system/cpu/cpu%?/cpufreq/stats/time_in_state", "").toString
+    lazy val frequencies = {
+      val lines = Resource.fromURL(timeInState.replace("%?", "1")).lines().toList
       (for (line <- lines) yield (line.split("\\s")(0), Random.nextDouble.toString)).map(item => <frequency value={ item._1 } voltage={ item._2 }/>)
     }
 
@@ -170,9 +175,9 @@ class CPUFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
       <powerapi>
         <tdp value="105"/>
         <cores value="4"/>
-        <globalStat value="/proc/stat/"/>
-        <processStat value="/proc/%?/stat"/>
-        <timesInState value={ timeInState }/>
+        <globalStat url="file:///proc/stat"/>
+        <processStat url="file:///proc/%?/stat"/>
+        <timesInState url={ timeInState }/>
         <frequencies>
           { frequencies }
         </frequencies>
@@ -182,7 +187,7 @@ class CPUFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
   @Test
   def testCurrentProcess {
     val clock = system.actorOf(Props[Clock])
-    val cpuformulaReceiver = system.actorOf(Props[CPUFormulaReceiver], name = "cpuformulareceiver")
+    val cpuformulaReceiver = system.actorOf(Props[CPUFormulaLoggingReceiver], name = "cpuformulareceiver")
     val cpusensor = system.actorOf(Props(new CPUSensor with ConfigurationMock), name = "cpusensor")
     val cpuFormula = system.actorOf(Props(new CPUFormula with ConfigurationMock), name = "cpuformula")
 
@@ -203,7 +208,7 @@ class CPUFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
   @Test
   def testGivenProcess {
     val clock = system.actorOf(Props[Clock])
-    val cpuformulaReceiver = system.actorOf(Props[CPUFormulaReceiver], name = "cpuformulareceiver")
+    val cpuformulaReceiver = system.actorOf(Props[CPUFormulaLoggingReceiver], name = "cpuformulareceiver")
     val cpusensor = system.actorOf(Props(new CPUSensor with Configuration {
       override lazy val conf = XML.load(getClass.getResourceAsStream("/powerapi-dellprecision.xml"))
     }), name = "cpusensor")
@@ -219,11 +224,11 @@ class CPUFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
     Thread.sleep(300000)
     clock ! UnTickIt(TickSubscription(Process(1234), 500 milliseconds))
   }
-  
+
   @Test
   def testIntensive {
     val clock = system.actorOf(Props[Clock])
-    val cpuformulaReceiver = system.actorOf(Props[CPUFormulaReceiver], name = "cpuformulareceiver")
+    val cpuformulaReceiver = system.actorOf(Props[CPUFormulaLoggingReceiver], name = "cpuformulareceiver")
     val cpusensor = system.actorOf(Props(new CPUSensor with ConfigurationMock), name = "cpusensor")
     val cpuFormula = system.actorOf(Props(new CPUFormula with ConfigurationMock), name = "cpuformula")
 
@@ -242,5 +247,5 @@ class CPUFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
     Thread.sleep(5000)
     pids.foreach(pid => clock ! UnTickIt(TickSubscription(Process(pid), 50 milliseconds)))
   }
-  
+
 }
