@@ -66,8 +66,7 @@ class CPUSensor extends Actor with Configuration with ActorLogging {
           })
         } catch {
           case ioe: IOException => {
-            log.warning("i/o exception")
-            ioe.printStackTrace
+            log.warning("i/o exception: " + ioe.getMessage)
           }
         }
       })
@@ -92,8 +91,7 @@ class CPUSensor extends Actor with Configuration with ActorLogging {
         }
       } catch {
         case ioe: IOException => {
-          log.warning("i/o exception")
-          ioe.printStackTrace
+          log.warning("i/o exception: " + ioe.getMessage)
           0
         }
       }
@@ -109,8 +107,7 @@ class CPUSensor extends Actor with Configuration with ActorLogging {
         line(13).toInt + line(14).toInt + line(41).toInt
       } catch {
         case ioe: IOException => {
-          log.warning("i/o exception")
-          ioe.printStackTrace
+          log.warning("i/o exception: " + ioe.getMessage)
           0
         }
       }
