@@ -17,22 +17,27 @@
  * Boston, MA  02110-1301, USA.
  */
 package powerapi.sensor.cpusensor
+import java.net.URL
+
+import scala.util.Properties
+
 import org.junit.Test
 import org.scalatest.junit.JUnitSuite
 import org.scalatest.junit.ShouldMatchersForJUnit
 
+import akka.actor.actorRef2Scala
 import akka.actor.Actor
 import akka.actor.ActorSystem
 import akka.actor.Props
 import akka.testkit.TestActorRef
 import akka.util.duration.intToDurationInt
-import powerapi.core.Clock
-import powerapi.core.Process
 import powerapi.core.Tick
+import powerapi.core.Clock
+import powerapi.core.Configuration
+import powerapi.core.Process
 import powerapi.core.TickIt
+import powerapi.core.TickSubscription
 import powerapi.core.UnTickIt
-import powerapi.core.TickSubscription
-import powerapi.core.TickSubscription
 
 class CPUSensorReceiver extends Actor {
   var receivedData: Option[CPUSensorValues] = None
@@ -43,9 +48,25 @@ class CPUSensorReceiver extends Actor {
 }
 
 class CPUSensorSuite extends JUnitSuite with ShouldMatchersForJUnit {
+
+  trait ConfigurationMock extends Configuration {
+    lazy val basedir = new URL("file", Properties.propOrEmpty("basedir"), "")
+    lazy val globalStat = new URL(basedir, "/src/test/resources/proc/stat")
+    lazy val processStat = new URL(basedir, "/src/test/resources/proc/%?/stat")
+    lazy val timesInState = new URL(basedir, "/src/test/resources/sys/devices/system/cpu/cpu%?/cpufreq/stats/time_in_state")
+
+    override lazy val conf =
+      <powerapi>
+        <cores value="4"/>
+        <globalStat url={ globalStat.toString }/>
+        <processStat url={ processStat.toString }/>
+        <timesInState url={ timesInState.toString }/>
+      </powerapi>
+  }
+
   implicit val system = ActorSystem("cpusensorsuite")
   implicit val tick = Tick(TickSubscription(Process(123), 1 second))
-  val cpuSensor = TestActorRef[CPUSensor]
+  val cpuSensor = TestActorRef(new CPUSensor with ConfigurationMock)
 
   private def testTimeInStates(timeInStates: TimeInStates) {
     timeInStates.times.size should equal(4)

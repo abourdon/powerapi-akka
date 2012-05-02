@@ -17,20 +17,16 @@
  * Boston, MA  02110-1301, USA.
  */
 package powerapi.sensor.cpusensor
-import akka.actor.Actor
-import powerapi.core.Configuration
-import powerapi.core.Tick
-import powerapi.core.Process
-import scala.io.Source
-import scala.util.matching.Regex
-import akka.actor.ActorLogging
-import scala.concurrent.ops
-import akka.actor.Props
-import java.io.File
-import java.io.FileNotFoundException
-import java.io.IOException
 import java.io.FileInputStream
-import java.io.BufferedInputStream
+import java.io.IOException
+import scala.io.Source
+import akka.actor.Actor
+import akka.actor.ActorLogging
+import powerapi.core.Configuration
+import powerapi.core.Process
+import powerapi.core.Tick
+import scalax.io.Resource
+import java.net.URL
 
 /** Messages definition */
 case class TimeInStates(times: Map[Int, Int]) {
@@ -49,7 +45,7 @@ class CPUSensor extends Actor with Configuration with ActorLogging {
 
   class Frequency {
     lazy val timeInStateFiles = {
-      val timesInState = fromConf("timesInState")(elt => (elt \\ "@value").text)(0)
+      val timesInState = fromConf("timesInState")(elt => (elt \\ "@url").text)(0)
       val cores = fromConf("cores")(elt => (elt \\ "@value").text.toInt)(0)
       for (core <- 0 until cores) yield (timesInState replace ("%?", core.toString))
     }
@@ -57,79 +53,67 @@ class CPUSensor extends Actor with Configuration with ActorLogging {
 
     def timeInStates = {
       val result = collection.mutable.HashMap[Int, Int]()
-      for (timeInStateFile <- timeInStateFiles) {
+
+      timeInStateFiles.foreach(timeInStateFile => {
         try {
-          val input = new FileInputStream(timeInStateFile)
-          try {
-            for (line <- Source.fromInputStream(input).getLines) {
-              line match {
-                case TimeInStateFormat(frequency, time) => result += (frequency.toInt -> (time.toInt + (result getOrElse (frequency.toInt, 0))))
-                case _                                  => log.warning("unable to parse line \"" + line + "\" from file \"" + timeInStateFile)
-              }
+          // FIXME: Due to Java JDK bug #7132461, there is no way to apply buffer to procfs files and thus, directly open stream from the given URL.
+          // Then, we simply read these files thanks to a FileInputStream in getting those local path
+          Resource.fromInputStream(new FileInputStream(new URL(timeInStateFile).getPath())).lines().foreach(line => {
+            line match {
+              case TimeInStateFormat(frequency, time) => result += (frequency.toInt -> (time.toInt + (result getOrElse (frequency.toInt, 0))))
+              case _                                  => log.warning("unable to parse line \"" + line + "\" from file \"" + timeInStateFile)
             }
-          } catch {
-            case ioe: IOException => log.warning("i/o " + ioe.getMessage)
-            case e: Exception     => log.warning("e " + e.getMessage)
-          } finally {
-            input.close
-          }
+          })
         } catch {
-          case fnfe: FileNotFoundException => log.warning("unable to read file " + timeInStateFile)
+          case ioe: IOException => {
+            log.warning("i/o exception")
+            ioe.printStackTrace
+          }
         }
-      }
+      })
+
       result.toMap[Int, Int]
     }
   }
 
   class Time {
-    lazy val globalStatFile = fromConf("globalStat")(elt => (elt \\ "@value").text)(0)
+    lazy val globalStatFile = fromConf("globalStat")(elt => (elt \\ "@url").text)(0)
     lazy val GlobalStatFormat = """cpu\s+([\d\s]+)""".r
     def globalElapsedTime = {
-      var result = 0
       try {
-        val input = new FileInputStream(globalStatFile)
-        try {
-          result = {
-            Source.fromInputStream(input).getLines.toIndexedSeq(0) match {
-              case GlobalStatFormat(times) => times.split(' ').foldLeft(0: Int) { (acc, x) => (acc + x.toInt) }
-              case _ => {
-                log.warning("unable to parse line from file \"" + globalStatFile)
-                0
-              }
-            }
+        // FIXME: Due to Java JDK bug #7132461, there is no way to apply buffer to procfs files and thus, directly open stream from the given URL.
+        // Then, we simply read these files thanks to a FileInputStream in getting those local path
+        Resource.fromInputStream(new FileInputStream(new URL(globalStatFile).getPath())).lines().toIndexedSeq(0) match {
+          case GlobalStatFormat(times) => times.split(' ').foldLeft(0: Int) { (acc, x) => (acc + x.toInt) }
+          case _ => {
+            log.warning("unable to parse line from file \"" + globalStatFile)
+            0
           }
-        } catch {
-          case ioe: IOException => log.warning("i/o " + ioe.getMessage)
-          case e: Exception     => log.warning("e " + e.getMessage)
-        } finally {
-          input.close
         }
       } catch {
-        case fnfe: FileNotFoundException => log.warning("unable to read global stat file " + globalStatFile);
+        case ioe: IOException => {
+          log.warning("i/o exception")
+          ioe.printStackTrace
+          0
+        }
       }
-      result
     }
 
-    lazy val processStatFile = fromConf("processStat")(elt => (elt \\ "@value").text)(0)
+    lazy val processStatFile = fromConf("processStat")(elt => (elt \\ "@url").text)(0)
     def processElapsedTime(implicit process: Process) = {
-      var result = 0
       try {
-        val input = new FileInputStream(processStatFile.replace("%?", process.pid.toString))
-        try {
-          val line = Source.fromInputStream(input).getLines.toIndexedSeq(0) split ("\\s")
-          // User time + System time + Block IO waiting time
-          result = (line(13).toInt + line(14).toInt + line(41).toInt)
-        } catch {
-
-          case ioe: IOException => log.warning("i/o " + ioe.getMessage)
-          case e: Exception     => log.warning("e " + e.getMessage)
-        } finally {
-          input.close
-        }
+        // FIXME: Due to Java JDK bug #7132461, there is no way to apply buffer to procfs files and thus, directly open stream from the given URL.
+        // Then, we simply read these files thanks to a FileInputStream in getting those local path
+        val line = Resource.fromInputStream(new FileInputStream(new URL(processStatFile replace ("%?", process.pid.toString)).getPath())).lines().toIndexedSeq(0) split ("\\s")
+        // User time + System time + Block IO waiting time
+        line(13).toInt + line(14).toInt + line(41).toInt
       } catch {
-        case fnfe: FileNotFoundException => log.warning("unable to read process stat file for process " + process);
+        case ioe: IOException => {
+          log.warning("i/o exception")
+          ioe.printStackTrace
+          0
+        }
       }
-      result
     }
 
     def elapsedTime(implicit process: Process = Process(-1)) = {
