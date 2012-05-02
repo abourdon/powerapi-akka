@@ -54,9 +54,7 @@ class CPUFormulaLoggingReceiver extends Actor with ActorLogging {
   def receive = {
     case cpuFormulaValues: CPUFormulaValues =>
       if (cpuFormulaValues.energy.power > 0) {
-        log.info("\n" +
-          "Process: " + cpuFormulaValues.tick.subscription.process + "\n" +
-          "Energy: " + cpuFormulaValues.energy
+        log.info(cpuFormulaValues.tick.subscription.process + ": " + cpuFormulaValues.energy
         )
       }
   }
