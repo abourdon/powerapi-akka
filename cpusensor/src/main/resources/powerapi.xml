@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<powerapi>
-	<cores value="4" />
-	<globalStat url="file:///proc/stat" />
-	<processStat url="file:///proc/%?/stat" />
-	<timesInState
-		url="file:///sys/devices/system/cpu/cpu%?/cpufreq/stats/time_in_state" />
-</powerapi>
