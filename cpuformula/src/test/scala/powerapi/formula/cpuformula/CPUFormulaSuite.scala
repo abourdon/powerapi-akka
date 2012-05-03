@@ -20,6 +20,7 @@ package powerapi.formula.cpuformula
 import java.lang.management.ManagementFactory
 import java.net.URL
 
+import scala.collection.mutable.HashMap
 import scala.io.Source
 import scala.util.Random
 import scala.xml.XML
@@ -39,6 +40,7 @@ import akka.util.duration.intToDurationInt
 import powerapi.core.Tick
 import powerapi.core.Clock
 import powerapi.core.Configuration
+import powerapi.core.Energy
 import powerapi.core.Process
 import powerapi.core.TickIt
 import powerapi.core.TickSubscription
@@ -48,7 +50,16 @@ import powerapi.sensor.cpusensor.CPUSensor
 import powerapi.sensor.cpusensor.GlobalElapsedTime
 import powerapi.sensor.cpusensor.ProcessElapsedTime
 import powerapi.sensor.cpusensor.TimeInStates
+import scalax.file.Path
 import scalax.io.Resource
+
+class SimpleTickReceiver extends Actor with ActorLogging {
+  var receivedTicks = 0
+
+  def receive = {
+    case tick: Tick => receivedTicks += 1
+  }
+}
 
 class CPUFormulaLoggingReceiver extends Actor with ActorLogging {
   def receive = {
@@ -57,6 +68,54 @@ class CPUFormulaLoggingReceiver extends Actor with ActorLogging {
         log.info(cpuFormulaValues.tick.subscription.process + ": " + cpuFormulaValues.energy
         )
       }
+  }
+}
+
+class CPUFormulaWritingReceiver extends Actor with ActorLogging {
+  lazy val out = Path.createTempFile(
+    prefix = "powerapi",
+    deleteOnExit = false
+  )
+
+  def receive = {
+    case cpuFormulaValues: CPUFormulaValues => {
+      out append (cpuFormulaValues.energy.power.toString + "\n")
+    }
+  }
+}
+
+case object ProcessAggregation
+class CPUFormulaAggregatingReceiver extends Actor with ActorLogging {
+  lazy val out = Path.createTempFile(
+    prefix = "powerapi-aggregate",
+    deleteOnExit = false
+  )
+  lazy val map = HashMap[Long, List[Energy]]()
+  lazy val set = scala.collection.mutable.Set[Long]()
+
+  def receive = {
+    case cpuFormulaValues: CPUFormulaValues => {
+      map += (cpuFormulaValues.tick.timestamp -> ((map getOrElse (cpuFormulaValues.tick.timestamp, List[Energy]())) ::: List(cpuFormulaValues.energy)))
+      set += cpuFormulaValues.tick.timestamp
+    }
+    case ProcessAggregation =>
+      map foreach ({ item => out append ((item._2.foldLeft(Energy.fromPower(0)) { (acc, x) => acc + x }).mkString + "\n") })
+  }
+}
+
+case object Timestamps
+case object NumberOfTicks
+class TickReceiver extends Actor with ActorLogging {
+  val timestamps = collection.mutable.Set[Long]()
+  var numberOfTicks = 0
+
+  def receive = {
+    case tick: Tick => {
+      numberOfTicks += 1
+      timestamps += tick.timestamp
+    }
+    case Timestamps    => sender ! timestamps.toSet
+    case NumberOfTicks => sender ! numberOfTicks
   }
 }
 
@@ -185,7 +244,7 @@ class CPUFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
   @Test
   def testCurrentProcess {
     val clock = system.actorOf(Props[Clock])
-    val cpuformulaReceiver = system.actorOf(Props[CPUFormulaLoggingReceiver], name = "cpuformulareceiver")
+    val cpuformulaReceiver = system.actorOf(Props[CPUFormulaWritingReceiver], name = "cpuformulareceiver")
     val cpusensor = system.actorOf(Props(new CPUSensor with ConfigurationMock), name = "cpusensor")
     val cpuFormula = system.actorOf(Props(new CPUFormula with ConfigurationMock), name = "cpuformula")
 
@@ -226,13 +285,15 @@ class CPUFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
   @Test
   def testIntensive {
     val clock = system.actorOf(Props[Clock])
-    val cpuformulaReceiver = system.actorOf(Props[CPUFormulaLoggingReceiver], name = "cpuformulareceiver")
     val cpusensor = system.actorOf(Props(new CPUSensor with ConfigurationMock), name = "cpusensor")
     val cpuFormula = system.actorOf(Props(new CPUFormula with ConfigurationMock), name = "cpuformula")
+    val cpuformulaReceiver = TestActorRef[CPUFormulaAggregatingReceiver]
+    val simpleTickReceiver = TestActorRef[SimpleTickReceiver]
 
     system.eventStream subscribe (cpusensor, classOf[Tick])
     system.eventStream subscribe (cpuFormula, classOf[CPUSensorValues])
     system.eventStream subscribe (cpuformulaReceiver, classOf[CPUFormulaValues])
+    system.eventStream subscribe (simpleTickReceiver, classOf[Tick])
 
     val PSFormat = """^\s*(\d+).*""".r
     val pids = Source.fromInputStream(Runtime.getRuntime.exec(Array("ps", "-A")).getInputStream).getLines.toList.map({ pid =>
@@ -241,9 +302,16 @@ class CPUFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
         case _             => 1
       }
     })
-    pids.foreach(pid => clock ! TickIt(TickSubscription(Process(pid), 50 milliseconds)))
+    val duration = 100 milliseconds
+    val sleep = 5000
+    pids.foreach(pid => clock ! TickIt(TickSubscription(Process(pid), duration)))
     Thread.sleep(5000)
-    pids.foreach(pid => clock ! UnTickIt(TickSubscription(Process(pid), 50 milliseconds)))
+    pids.foreach(pid => clock ! UnTickIt(TickSubscription(Process(pid), duration)))
+
+    println(
+      simpleTickReceiver.underlyingActor.receivedTicks + " ticks received, for " + pids.size + " pid analyzed." +
+        "(Theorical / Real number of timestamp processed) = (" + (simpleTickReceiver.underlyingActor.receivedTicks / pids.size) + ", " + cpuformulaReceiver.underlyingActor.map.size + ")"
+    )
   }
 
 }
