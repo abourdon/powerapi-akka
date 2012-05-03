@@ -19,18 +19,23 @@
 package powerapi.core
 import scala.collection.mutable.SynchronizedMap
 import scala.collection.mutable.HashMap
-
 import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.Cancellable
 import akka.util.duration.intToDurationInt
 import akka.util.Duration
+import scala.actors.threadpool.helpers.NanoTimer
 
 /** Messages definition */
 case class TickSubscription(process: Process, duration: Duration)
 case class TickIt(subscription: TickSubscription)
 case class UnTickIt(subscription: TickSubscription)
 case class Tick(subscription: TickSubscription, timestamp: Long = System.currentTimeMillis)
+
+object Clock {
+  /** Minimum tick duration allowed according to configuration file **/
+  val minimumTickDuration = 10 milliseconds
+}
 
 class Clock extends Actor with ActorLogging {
   val subscriptions = new HashMap[Duration, Set[TickSubscription]] with SynchronizedMap[Duration, Set[TickSubscription]]
@@ -43,9 +48,9 @@ class Clock extends Actor with ActorLogging {
   }
 
   private def scheduleRegistration(implicit tickIt: TickIt) {
-    val duration = tickIt.subscription.duration
+    val duration = if (tickIt.subscription.duration < Clock.minimumTickDuration) Clock.minimumTickDuration else tickIt.subscription.duration
     if (!(schedulers contains duration)) {
-      schedulers += (duration -> system.scheduler.schedule(0 second, duration)(schedule(duration)))
+      schedulers += (duration -> system.scheduler.schedule(Duration.Zero, duration)(schedule(duration)))
     }
   }
 
@@ -94,8 +99,8 @@ class Clock extends Actor with ActorLogging {
   }
 
   def receive = {
-    case subscribe: TickIt => makeItTick(subscribe)
+    case subscribe: TickIt     => makeItTick(subscribe)
     case unsubscribe: UnTickIt => unmakeItTick(unsubscribe)
-    case unknown => throw new UnsupportedOperationException("unable to process message " + unknown)
+    case unknown               => throw new UnsupportedOperationException("unable to process message " + unknown)
   }
 }

@@ -20,7 +20,11 @@ package powerapi.core
 import akka.util.Duration
 import akka.util.duration._
 
-case class Energy private (power: Double)
+case class Energy private (power: Double) {
+  def +(that: Energy) = new Energy(power + that.power)
+  
+  def mkString = power.toString
+}
 
 object Energy {
   def fromPower(power: Double) = new Energy(power)

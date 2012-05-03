@@ -34,10 +34,12 @@ import akka.pattern.ask
 import akka.util.duration.intToDurationInt
 import akka.util.Timeout
 import akka.testkit.TestActorRef
+import scalax.io.Resource
+import org.junit.Ignore
 
 case object Result
 
-class ClockReceiver extends Actor with ActorLogging {
+class ByProcessTickReceiver extends Actor with ActorLogging {
   val receivedTicks = new HashMap[TickSubscription, Int] with SynchronizedMap[TickSubscription, Int]
 
   private def incr(tickSubscription: TickSubscription) {
@@ -47,19 +49,27 @@ class ClockReceiver extends Actor with ActorLogging {
 
   def receive = {
     case tick: Tick => incr(tick.subscription)
-    case Result => sender ! receivedTicks
-    case unknown => throw new UnsupportedOperationException("unable to process message " + unknown)
+    case Result     => sender ! receivedTicks
+    case unknown    => throw new UnsupportedOperationException("unable to process message " + unknown)
+  }
+}
+
+class SimpleTickReceiver extends Actor with ActorLogging {
+  var receivedTicks = 0
+
+  def receive = {
+    case tick: Tick => receivedTicks += 1
   }
 }
 
 class ClockSuite extends JUnitSuite with ShouldMatchersForJUnit {
   implicit val system = ActorSystem("ClockTest")
-  val clock = TestActorRef[Clock]
 
   @Test
-  def testReceivedTicks {
-    val clockReceiver = TestActorRef[ClockReceiver]
-    system.eventStream.subscribe(clockReceiver, classOf[Tick])
+  def testReceivedSimpleTicks {
+    val clock = TestActorRef[Clock]
+    val tickReceiver = TestActorRef[ByProcessTickReceiver]
+    system.eventStream.subscribe(tickReceiver, classOf[Tick])
 
     clock ! TickIt(TickSubscription(Process(123), 500 milliseconds))
     clock ! TickIt(TickSubscription(Process(124), 1000 milliseconds))
@@ -72,9 +82,28 @@ class ClockSuite extends JUnitSuite with ShouldMatchersForJUnit {
     clock ! UnTickIt(TickSubscription(Process(124), 500 milliseconds))
     clock ! UnTickIt(TickSubscription(Process(125), 1500 milliseconds))
 
-    val receivedTicks = clockReceiver.underlyingActor.receivedTicks
-    receivedTicks getOrElse (TickSubscription(Process(123), 500 milliseconds), 0) should equal(6)
-    receivedTicks getOrElse (TickSubscription(Process(124), 1000 milliseconds), 0) should equal(5)
-    receivedTicks getOrElse (TickSubscription(Process(125), 1500 milliseconds), 0) should equal(4)
+    val receivedTicks = tickReceiver.underlyingActor.receivedTicks
+    receivedTicks getOrElse (TickSubscription(Process(123), 500 milliseconds), 0) should { equal(7) or equal(7 + 1) }
+    receivedTicks getOrElse (TickSubscription(Process(124), 1000 milliseconds), 0) should { equal(5) or equal(5 + 1) }
+    receivedTicks getOrElse (TickSubscription(Process(125), 1500 milliseconds), 0) should { equal(4) or equal(4 + 1) }
+  }
+
+  @Ignore
+  @Test
+  def testReceivedIntensiveTicks {
+    val clock = system.actorOf(Props[Clock])
+    val tickReceiver = TestActorRef[SimpleTickReceiver]
+    val duration = 100 milliseconds
+    val sleep = 10 seconds
+    val pids = (0 to 500)
+    system.eventStream.subscribe(tickReceiver, classOf[Tick])
+
+    pids.foreach(pid => clock ! TickIt(TickSubscription(Process(pid), duration)))
+    Thread.sleep(sleep.toMillis)
+    pids.foreach(pid => clock ! UnTickIt(TickSubscription(Process(pid), duration)))
+    Thread.sleep(sleep.toMillis / 2)
+
+    val averageReceivedTicks = tickReceiver.underlyingActor.receivedTicks.toDouble / pids.size
+    println(averageReceivedTicks)
   }
 }
