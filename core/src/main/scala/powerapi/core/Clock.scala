@@ -30,7 +30,7 @@ import scala.actors.threadpool.helpers.NanoTimer
 case class TickSubscription(process: Process, duration: Duration)
 case class TickIt(subscription: TickSubscription)
 case class UnTickIt(subscription: TickSubscription)
-case class Tick(subscription: TickSubscription, timestamp: Long = System.currentTimeMillis)
+case class Tick(subscription: TickSubscription, timestamp: Long = System.currentTimeMillis) extends Message
 
 object Clock {
   /** Minimum tick duration allowed according to configuration file **/
