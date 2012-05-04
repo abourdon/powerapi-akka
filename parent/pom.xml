@@ -147,6 +147,7 @@
 			<plugin>
 				<groupId>com.mycila.maven-license-plugin</groupId>
 				<artifactId>maven-license-plugin</artifactId>
+				<version>1.9.0</version>
 				<configuration>
 					<header>${basedir}/src/main/resources/META-INF/license.txt</header>
 					<failIfMissing>true</failIfMissing>
