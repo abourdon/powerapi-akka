@@ -28,11 +28,13 @@ import powerapi.sensor.cpusensor.GlobalElapsedTime
 import powerapi.sensor.cpusensor.ProcessElapsedTime
 import powerapi.sensor.cpusensor.TimeInStates
 import akka.actor.ActorLogging
+import powerapi.core.Formula
+import powerapi.core.Message
 
 /** Messages definition */
-case class CPUFormulaValues(energy: Energy, tick: Tick)
+case class CPUFormulaValues(energy: Energy, tick: Tick) extends Message
 
-class CPUFormula extends Actor with Configuration with ActorLogging {
+class CPUFormula extends Formula with Configuration {
   // Environment specific values (from the configuration file)
   lazy val tdp = fromConf("tdp") { node => (node \\ "@value").text.toDouble }(0)
   lazy val cores = fromConf("cores") { elt => (elt \\ "@value").text.toInt }(0)
@@ -90,7 +92,9 @@ class CPUFormula extends Actor with Configuration with ActorLogging {
     cache += (now.tick.subscription.duration -> now)
   }
 
-  def receive = {
+  def listen = {
     case cpuSensorValues: CPUSensorValues => process(cpuSensorValues)
   }
+  
+  def messagesToListen = Array(classOf[CPUSensorValues])
 }

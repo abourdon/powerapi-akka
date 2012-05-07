@@ -27,21 +27,23 @@ import powerapi.core.Process
 import powerapi.core.Tick
 import scalax.io.Resource
 import java.net.URL
+import powerapi.core.Sensor
+import powerapi.core.Message
 
 /** Messages definition */
-case class TimeInStates(times: Map[Int, Int]) {
+case class TimeInStates(times: Map[Int, Int]) extends Message {
   def -(that: TimeInStates) =
     TimeInStates((for ((frequency, time) <- times) yield (frequency, time - that.times.getOrElse(frequency, 0))).toMap)
 }
-case class GlobalElapsedTime(time: Int)
-case class ProcessElapsedTime(time: Int)
+case class GlobalElapsedTime(time: Int) extends Message
+case class ProcessElapsedTime(time: Int) extends Message
 case class CPUSensorValues(
   timeInStates: TimeInStates,
   globalElapsedTime: GlobalElapsedTime,
   processElapsedTime: ProcessElapsedTime,
-  tick: Tick)
+  tick: Tick) extends Message
 
-class CPUSensor extends Actor with Configuration with ActorLogging {
+class CPUSensor extends Sensor with Configuration {
 
   class Frequency {
     lazy val timeInStateFiles = {
@@ -127,10 +129,6 @@ class CPUSensor extends Actor with Configuration with ActorLogging {
   lazy val time = new Time
   def elapsedTime(implicit process: Process = Process(-1)) = time.elapsedTime
 
-  def receive = {
-    case tick: Tick => process(tick)
-  }
-
   def publish(sensorValues: CPUSensorValues) {
     context.system.eventStream publish sensorValues
   }
@@ -144,4 +142,9 @@ class CPUSensor extends Actor with Configuration with ActorLogging {
         tick))
   }
 
+  def listen = {
+    case tick: Tick => process(tick)
+  }
+  
+  def messagesToListen = Array(classOf[Tick])
 }

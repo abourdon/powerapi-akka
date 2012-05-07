@@ -19,22 +19,20 @@
 package powerapi.formula.cpuformula
 import java.lang.management.ManagementFactory
 import java.net.URL
-
 import scala.collection.mutable.HashMap
 import scala.io.Source
 import scala.util.Random
 import scala.xml.XML
-
 import org.junit.Ignore
 import org.junit.Test
 import org.scalatest.junit.JUnitSuite
 import org.scalatest.junit.ShouldMatchersForJUnit
-
 import akka.actor.actorRef2Scala
 import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.ActorSystem
 import akka.actor.Props
+import akka.pattern.ask
 import akka.testkit.TestActorRef
 import akka.util.duration.intToDurationInt
 import powerapi.core.Tick
@@ -52,6 +50,10 @@ import powerapi.sensor.cpusensor.ProcessElapsedTime
 import powerapi.sensor.cpusensor.TimeInStates
 import scalax.file.Path
 import scalax.io.Resource
+import akka.dispatch.Await
+import akka.util.Timeout
+import powerapi.core.Message
+import powerapi.core.MessagesToListen
 
 class SimpleTickReceiver extends Actor with ActorLogging {
   var receivedTicks = 0
@@ -121,36 +123,36 @@ class TickReceiver extends Actor with ActorLogging {
 
 class CPUFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
   implicit val system = ActorSystem("cpuformulasuite")
-  val cpuformula = TestActorRef[CPUFormula].underlyingActor
+  val cpuformula = TestActorRef[CPUFormula]
 
   @Test
   def testTdp {
-    cpuformula.tdp should equal(105)
+    cpuformula.underlyingActor.tdp should equal(105)
   }
 
   @Test
   def testCores {
-    cpuformula.cores should equal(4)
+    cpuformula.underlyingActor.cores should equal(4)
   }
 
   @Test
   def testVoltages {
-    cpuformula.voltages should have size (3)
-    cpuformula.voltages(1800002) should equal(1.31)
-    cpuformula.voltages(2100002) should equal(1.41)
-    cpuformula.voltages(2400003) should equal(1.5)
+    cpuformula.underlyingActor.voltages should have size (3)
+    cpuformula.underlyingActor.voltages(1800002) should equal(1.31)
+    cpuformula.underlyingActor.voltages(2100002) should equal(1.41)
+    cpuformula.underlyingActor.voltages(2400003) should equal(1.5)
   }
 
   @Test
   def testConstant {
-    cpuformula.constant should equal((0.7 * cpuformula.tdp) / (cpuformula.voltages.max._1 * math.pow(cpuformula.voltages.max._2, 2)))
+    cpuformula.underlyingActor.constant should equal((0.7 * cpuformula.underlyingActor.tdp) / (cpuformula.underlyingActor.voltages.max._1 * math.pow(cpuformula.underlyingActor.voltages.max._2, 2)))
   }
 
   @Test
   def testPowers {
-    cpuformula.powers should have size (3)
-    cpuformula.powers.foreach(power => power._2 should equal(
-      cpuformula.constant * power._1 * math.pow(cpuformula.voltages(power._1), 2)
+    cpuformula.underlyingActor.powers should have size (3)
+    cpuformula.underlyingActor.powers.foreach(power => power._2 should equal(
+      cpuformula.underlyingActor.constant * power._1 * math.pow(cpuformula.underlyingActor.voltages(power._1), 2)
     ))
   }
 
@@ -162,8 +164,8 @@ class CPUFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
       ProcessElapsedTime(50),
       Tick(TickSubscription(Process(123), 500 milliseconds))
     )
-    cpuformula.refreshCache(old)
-    cpuformula.cache getOrElse (500 milliseconds, null) should equal(old)
+    cpuformula.underlyingActor.refreshCache(old)
+    cpuformula.underlyingActor.cache getOrElse (500 milliseconds, null) should equal(old)
 
     val now = CPUSensorValues(
       TimeInStates(Map[Int, Int]()),
@@ -171,10 +173,10 @@ class CPUFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
       ProcessElapsedTime(80),
       Tick(TickSubscription(Process(123), 500 milliseconds))
     )
-    cpuformula.refreshCache(now)
-    cpuformula.cache getOrElse (500 milliseconds, null) should equal(now)
+    cpuformula.underlyingActor.refreshCache(now)
+    cpuformula.underlyingActor.cache getOrElse (500 milliseconds, null) should equal(now)
 
-    cpuformula.cache getOrElse (123 milliseconds, null) should be(null)
+    cpuformula.underlyingActor.cache getOrElse (123 milliseconds, null) should be(null)
   }
 
   @Test
@@ -193,7 +195,7 @@ class CPUFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
       null
     )
 
-    cpuformula.usage(old, now) should equal((80.0 - 50) / ((300.0 - 100) / cpuformula.cores))
+    cpuformula.underlyingActor.usage(old, now) should equal((80.0 - 50) / ((300.0 - 100) / cpuformula.underlyingActor.cores))
   }
 
   @Test
@@ -215,10 +217,20 @@ class CPUFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
     )
 
     val diffTimeInStates = nowTimInStates - oldTimeInStates
-    val totalPowers = diffTimeInStates.times.foldLeft(0: Double) { (acc, time) => acc + (cpuformula.powers(time._1) * time._2) }
+    val totalPowers = diffTimeInStates.times.foldLeft(0: Double) { (acc, time) => acc + (cpuformula.underlyingActor.powers(time._1) * time._2) }
     val totalTimes = diffTimeInStates.times.foldLeft(0) { (acc, time) => acc + time._2 }
 
-    cpuformula.power(old, now) should equal(totalPowers / totalTimes / cpuformula.cores)
+    cpuformula.underlyingActor.power(old, now) should equal(totalPowers / totalTimes / cpuformula.underlyingActor.cores)
+  }
+
+  @Test
+  def testMessagesToListen {
+    implicit val timeout = Timeout(5 seconds)
+    val request = cpuformula ? MessagesToListen
+    val messages = Await.result(request, timeout.duration).asInstanceOf[Array[Class[_ <: Message]]]
+
+    messages should have size 1
+    messages(0) should be(classOf[CPUSensorValues])
   }
 
   trait ConfigurationMock extends Configuration {

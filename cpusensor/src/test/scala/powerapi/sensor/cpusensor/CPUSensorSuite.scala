@@ -18,19 +18,18 @@
  */
 package powerapi.sensor.cpusensor
 import java.net.URL
-
 import scala.util.Properties
-
 import org.junit.Test
 import org.scalatest.junit.JUnitSuite
 import org.scalatest.junit.ShouldMatchersForJUnit
-
 import akka.actor.actorRef2Scala
 import akka.actor.Actor
 import akka.actor.ActorSystem
 import akka.actor.Props
 import akka.testkit.TestActorRef
 import akka.util.duration.intToDurationInt
+import akka.util.Timeout
+import akka.pattern.ask
 import powerapi.core.Tick
 import powerapi.core.Clock
 import powerapi.core.Configuration
@@ -38,6 +37,9 @@ import powerapi.core.Process
 import powerapi.core.TickIt
 import powerapi.core.TickSubscription
 import powerapi.core.UnTickIt
+import akka.dispatch.Await
+import powerapi.core.MessagesToListen
+import powerapi.core.Message
 
 class CPUSensorReceiver extends Actor {
   var receivedData: Option[CPUSensorValues] = None
@@ -97,6 +99,16 @@ class CPUSensorSuite extends JUnitSuite with ShouldMatchersForJUnit {
   @Test
   def testProcessElapsedTime {
     testProcessElapsedTime(ProcessElapsedTime(cpuSensor.underlyingActor.elapsedTime(Process(123))))
+  }
+
+  @Test
+  def testMessagesToListen {
+    implicit val timeout = Timeout(5 seconds)
+    val request = cpuSensor ? MessagesToListen
+    val messages = Await.result(request, timeout.duration).asInstanceOf[Array[Class[_ <: Message]]]
+
+    messages should have size 1
+    messages(0) should be(classOf[Tick])
   }
 
   @Test

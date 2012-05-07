@@ -25,7 +25,6 @@ import org.junit.Test
 import org.scalatest.junit.JUnitSuite
 import org.scalatest.junit.ShouldMatchersForJUnit
 import akka.actor.actorRef2Scala
-import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.ActorSystem
 import akka.actor.Props
@@ -39,7 +38,7 @@ import org.junit.Ignore
 
 case object Result
 
-class ByProcessTickReceiver extends Actor with ActorLogging {
+class ByProcessTickReceiver extends akka.actor.Actor with ActorLogging {
   val receivedTicks = new HashMap[TickSubscription, Int] with SynchronizedMap[TickSubscription, Int]
 
   private def incr(tickSubscription: TickSubscription) {
@@ -54,7 +53,7 @@ class ByProcessTickReceiver extends Actor with ActorLogging {
   }
 }
 
-class SimpleTickReceiver extends Actor with ActorLogging {
+class SimpleTickReceiver extends akka.actor.Actor with ActorLogging {
   var receivedTicks = 0
 
   def receive = {
@@ -64,10 +63,21 @@ class SimpleTickReceiver extends Actor with ActorLogging {
 
 class ClockSuite extends JUnitSuite with ShouldMatchersForJUnit {
   implicit val system = ActorSystem("ClockTest")
+  val clock = TestActorRef[Clock]
+
+  @Test
+  def testMessagesToListen {
+    implicit val timeout = Timeout(5 seconds)
+    val request = clock ? MessagesToListen
+    val messages = Await.result(request, timeout.duration).asInstanceOf[Array[Class[_ <: Message]]]
+
+    messages should have size 2
+    messages(0) should be(classOf[TickIt])
+    messages(1) should be(classOf[UnTickIt])
+  }
 
   @Test
   def testReceivedSimpleTicks {
-    val clock = TestActorRef[Clock]
     val tickReceiver = TestActorRef[ByProcessTickReceiver]
     system.eventStream.subscribe(tickReceiver, classOf[Tick])
 
@@ -91,7 +101,6 @@ class ClockSuite extends JUnitSuite with ShouldMatchersForJUnit {
   @Ignore
   @Test
   def testReceivedIntensiveTicks {
-    val clock = system.actorOf(Props[Clock])
     val tickReceiver = TestActorRef[SimpleTickReceiver]
     val duration = 100 milliseconds
     val sleep = 10 seconds
