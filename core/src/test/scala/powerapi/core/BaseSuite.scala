@@ -30,7 +30,7 @@ import akka.dispatch.Await
 case class FooMessage() extends Message
 case class BarMessage() extends Message
 
-class SimpleActor extends Actor with DeclareMessagesToListen {
+class SimpleActor extends Actor {
   def messagesToListen = Array(classOf[FooMessage], classOf[BarMessage])
 
   def listen = {

@@ -36,7 +36,7 @@ object Clock {
   val minimumTickDuration = 10 milliseconds
 }
 
-class Clock extends Actor with DeclareMessagesToListen {
+class Clock extends Actor {
   val subscriptions = new HashMap[Duration, Set[TickSubscription]] with SynchronizedMap[Duration, Set[TickSubscription]]
   val schedulers = new HashMap[Duration, Cancellable]
   val system = context.system

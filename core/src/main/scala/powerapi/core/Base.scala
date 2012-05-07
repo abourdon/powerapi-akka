@@ -19,15 +19,6 @@
 package powerapi.core
 
 /**
- * Base trait for each PowerAPI module could be represented as an actor.
- */
-trait Actor extends akka.actor.Actor with akka.actor.ActorLogging {
-  def listen: Receive
-
-  def receive = listen
-}
-
-/**
  * Base trait for each PowerAPI message
  */
 trait Message
@@ -38,9 +29,11 @@ trait Message
 case object MessagesToListen extends Message
 
 /**
- * Listener 
+ * Base trait for each PowerAPI module could be represented as an actor
  */
-trait DeclareMessagesToListen extends Actor {
+trait Actor extends akka.actor.Actor with akka.actor.ActorLogging {
+  def listen: Receive
+
   def messagesToListen: Array[Class[_ <: Message]]
 
   private lazy val messages = messagesToListen
@@ -48,16 +41,16 @@ trait DeclareMessagesToListen extends Actor {
     case MessagesToListen => sender ! messages
   }
 
-  override def receive = listenToMessages orElse listen
+  def receive = listenToMessages orElse listen
 }
 
 /**
  * Base trait for each PowerAPI energy module
  */
-trait EnergyModule extends Actor with DeclareMessagesToListen
+trait EnergyModule extends Actor
 
 /**
- * Base trait for each PowerAPI sensor 
+ * Base trait for each PowerAPI sensor
  */
 trait Sensor extends EnergyModule
 
@@ -65,3 +58,8 @@ trait Sensor extends EnergyModule
  * Base trait for each PowerAPI formula
  */
 trait Formula extends EnergyModule
+
+/**
+ * Base trait for each PowerAPI listener
+ */
+trait Listener extends Actor
