@@ -17,6 +17,7 @@
  * Boston, MA  02110-1301, USA.
  */
 package powerapi.core
+import akka.event.LoggingReceive
 
 /**
  * Base trait for each PowerAPI message
@@ -41,7 +42,9 @@ trait Actor extends akka.actor.Actor with akka.actor.ActorLogging {
     case MessagesToListen => sender ! messages
   }
 
-  def receive = listenToMessages orElse listen
+  def receive = LoggingReceive {
+    listenToMessages orElse listen
+  }
 }
 
 /**
