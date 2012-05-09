@@ -1,0 +1,84 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>powerapi.sensor</groupId>
+	<artifactId>cpusensor-sigar</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>${project.artifactId}</name>
+	<description>CPU sensor module of the PowerAPI process-level energy consumption library.</description>
+	<inceptionYear>2012</inceptionYear>
+
+	<parent>
+		<groupId>powerapi</groupId>
+		<artifactId>parent</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+
+	<properties>
+		<target.lib>${project.build.directory}/lib</target.lib>
+		<sigar.version>1.6.5.132</sigar.version>
+		<sigar.dir>${target.lib}/hyperic-sigar-1.6.5/sigar-bin/lib</sigar.dir>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>powerapi</groupId>
+			<artifactId>core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hyperic</groupId>
+			<artifactId>sigar</artifactId>
+			<version>${sigar.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hyperic</groupId>
+			<artifactId>sigar-dist</artifactId>
+			<version>${sigar.version}</version>
+			<type>zip</type>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.scala-tools</groupId>
+				<artifactId>maven-scala-plugin</artifactId>
+				<configuration>
+					<jvmArgs>
+						<jvmArg>-Djava.library.path=${java.library.path}:${sigar.dir}</jvmArg>
+					</jvmArgs>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>unpack-dependencies</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>unpack-dependencies</goal>
+						</goals>
+						<configuration>
+							<includes>**/sigar-bin/lib/*</includes>
+							<excludes>**/sigar-bin/lib/*jar</excludes>
+							<includeGroupIds>org.hyperic</includeGroupIds>
+							<includeArtifactIds>sigar-dist</includeArtifactIds>
+							<outputDirectory>${target.lib}</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.12</version>
+				<configuration>
+					<forkMode>once</forkMode>
+					<argLine>-Djava.library.path=${java.library.path}:${sigar.dir}</argLine>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
