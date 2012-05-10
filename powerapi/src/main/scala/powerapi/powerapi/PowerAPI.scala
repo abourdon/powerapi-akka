@@ -17,28 +17,22 @@
  * Boston, MA  02110-1301, USA.
  */
 package powerapi.powerapi
-import powerapi.core.Process
-import akka.util.Duration
 import akka.util.duration._
 import akka.pattern.ask
-import akka.actor.Actor
-import akka.actor.ActorLogging
+import akka.dispatch.Await
 import akka.actor.ActorSystem
-import akka.actor.Props
-import powerapi.core.Clock
-import powerapi.core.TickSubscription
-import powerapi.core.TickIt
-import powerapi.core.UnTickIt
+import akka.util.Duration
+import powerapi.core.Listener
+import powerapi.core.Actor
 import powerapi.core.Message
 import akka.util.Timeout
-import powerapi.core.MessagesToListen
-import akka.dispatch.Await
-import akka.actor.ActorRef
-import akka.actor.Kill
-import powerapi.core.Tick
+import powerapi.core.TickIt
 import akka.actor.ActorPath
-import akka.actor.PoisonPill
-import powerapi.core.Listener
+import powerapi.core.UnTickIt
+import akka.actor.Props
+import powerapi.core.TickSubscription
+import powerapi.core.MessagesToListen
+import powerapi.core.Process
 
 class Engine {
   val modules = collection.mutable.HashMap[Class[_ <: Actor], ActorPath]()

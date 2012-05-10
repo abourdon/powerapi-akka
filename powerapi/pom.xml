@@ -19,42 +19,33 @@
 			<artifactId>core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+
+		<!-- Test dependencies -->
+
 		<dependency>
 			<groupId>powerapi.sensor</groupId>
 			<artifactId>cpusensor</artifactId>
 			<version>${project.version}</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>powerapi.sensor</groupId>
 			<artifactId>cpusensor-linux</artifactId>
 			<version>${project.version}</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>powerapi.formula</groupId>
 			<artifactId>cpuformula</artifactId>
 			<version>${project.version}</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>powerapi.formula</groupId>
 			<artifactId>cpuformula-simple</artifactId>
 			<version>${project.version}</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.scala-tools</groupId>
-				<artifactId>maven-scala-plugin</artifactId>
-				<configuration>
-					<launchers>
-						<launcher>
-							<id>run</id>
-							<mainClass>powerapi.powerapi.Run</mainClass>
-						</launcher>
-					</launchers>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 </project>
