@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>powerapi.sensor</groupId>
-	<artifactId>cpusensor</artifactId>
+	<artifactId>cpusensor-linux</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>${project.artifactId}</name>
 	<description>CPU sensor module of the PowerAPI process-level energy consumption library.</description>
@@ -18,6 +18,11 @@
 		<dependency>
 			<groupId>powerapi</groupId>
 			<artifactId>core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>powerapi.sensor</groupId>
+			<artifactId>cpusensor</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>

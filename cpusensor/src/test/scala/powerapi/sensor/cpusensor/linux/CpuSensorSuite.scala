@@ -16,40 +16,45 @@
  * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
  * Boston, MA  02110-1301, USA.
  */
-package powerapi.sensor.cpusensor
+package powerapi.sensor.cpusensor.linux
 import java.net.URL
+
 import scala.util.Properties
+
 import org.junit.Test
 import org.scalatest.junit.JUnitSuite
 import org.scalatest.junit.ShouldMatchersForJUnit
-import akka.actor.actorRef2Scala
+
 import akka.actor.Actor
 import akka.actor.ActorSystem
 import akka.actor.Props
+import akka.actor.actorRef2Scala
+import akka.dispatch.Await
 import akka.testkit.TestActorRef
 import akka.util.duration.intToDurationInt
 import akka.util.Timeout
-import akka.pattern.ask
-import powerapi.core.Tick
 import powerapi.core.Clock
 import powerapi.core.Configuration
+import powerapi.core.Message
 import powerapi.core.Process
+import powerapi.core.Tick
 import powerapi.core.TickIt
 import powerapi.core.TickSubscription
 import powerapi.core.UnTickIt
-import akka.dispatch.Await
-import powerapi.core.MessagesToListen
-import powerapi.core.Message
+import powerapi.sensor.cpusensor.CpuSensorValues
+import powerapi.sensor.cpusensor.GlobalElapsedTime
+import powerapi.sensor.cpusensor.ProcessElapsedTime
+import powerapi.sensor.cpusensor.TimeInStates
 
-class CPUSensorReceiver extends Actor {
-  var receivedData: Option[CPUSensorValues] = None
+class CpuSensorReceiver extends Actor {
+  var receivedData: Option[CpuSensorValues] = None
 
   def receive = {
-    case cpuSensorValues: CPUSensorValues => receivedData = Some(cpuSensorValues)
+    case cpuSensorValues: CpuSensorValues => receivedData = Some(cpuSensorValues)
   }
 }
 
-class CPUSensorSuite extends JUnitSuite with ShouldMatchersForJUnit {
+class CpuSensorSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
   trait ConfigurationMock extends Configuration {
     lazy val basedir = new URL("file", Properties.propOrEmpty("basedir"), "")
@@ -68,7 +73,7 @@ class CPUSensorSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
   implicit val system = ActorSystem("cpusensorsuite")
   implicit val tick = Tick(TickSubscription(Process(123), 1 second))
-  val cpuSensor = TestActorRef(new CPUSensor with ConfigurationMock)
+  val cpuSensor = TestActorRef(new CpuSensor with ConfigurationMock)
 
   private def testTimeInStates(timeInStates: TimeInStates) {
     timeInStates.times.size should equal(4)
@@ -102,21 +107,11 @@ class CPUSensorSuite extends JUnitSuite with ShouldMatchersForJUnit {
   }
 
   @Test
-  def testMessagesToListen {
-    implicit val timeout = Timeout(5 seconds)
-    val request = cpuSensor ? MessagesToListen
-    val messages = Await.result(request, timeout.duration).asInstanceOf[Array[Class[_ <: Message]]]
-
-    messages should have size 1
-    messages(0) should be(classOf[Tick])
-  }
-
-  @Test
   def testTick() {
-    val cpuSensorReceiver = TestActorRef[CPUSensorReceiver]
+    val cpuSensorReceiver = TestActorRef[CpuSensorReceiver]
     val clock = system.actorOf(Props[Clock])
     system.eventStream.subscribe(cpuSensor, classOf[Tick])
-    system.eventStream.subscribe(cpuSensorReceiver, classOf[CPUSensorValues])
+    system.eventStream.subscribe(cpuSensorReceiver, classOf[CpuSensorValues])
 
     clock ! TickIt(TickSubscription(Process(123), 10 seconds))
     Thread.sleep(1000)

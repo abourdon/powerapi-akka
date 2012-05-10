@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>powerapi.formula</groupId>
-	<artifactId>cpuformula</artifactId>
+	<artifactId>cpuformula-simple</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>${project.artifactId}</name>
 	<description>CPU formula module of the PowerAPI process-level energy consumption library.</description>
@@ -23,6 +23,11 @@
 		<dependency>
 			<groupId>powerapi.sensor</groupId>
 			<artifactId>cpusensor</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>powerapi.formula</groupId>
+			<artifactId>cpuformula</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>

@@ -22,7 +22,6 @@ import akka.util.Duration
 import akka.util.duration._
 import akka.pattern.ask
 import akka.actor.Actor
-import powerapi.formula.cpuformula.CPUFormulaValues
 import akka.actor.ActorLogging
 import akka.actor.ActorSystem
 import akka.actor.Props
@@ -31,13 +30,11 @@ import powerapi.core.TickSubscription
 import powerapi.core.TickIt
 import powerapi.core.UnTickIt
 import powerapi.core.Message
-import powerapi.sensor.cpusensor.CPUSensor
 import akka.util.Timeout
 import powerapi.core.MessagesToListen
 import akka.dispatch.Await
 import akka.actor.ActorRef
 import akka.actor.Kill
-import powerapi.formula.cpuformula.CPUFormula
 import powerapi.core.Tick
 import akka.actor.ActorPath
 import akka.actor.PoisonPill

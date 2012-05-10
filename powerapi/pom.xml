@@ -4,7 +4,7 @@
 	<artifactId>powerapi</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>${project.artifactId}</name>
-	<description>Main module of the PowerAPI process-level energy consumption library.</description>
+	<description>Running module of the PowerAPI process-level energy consumption library.</description>
 	<inceptionYear>2012</inceptionYear>
 
 	<parent>
@@ -25,8 +25,18 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>powerapi.sensor</groupId>
+			<artifactId>cpusensor-linux</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>powerapi.formula</groupId>
 			<artifactId>cpuformula</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>powerapi.formula</groupId>
+			<artifactId>cpuformula-simple</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>

@@ -45,6 +45,10 @@ trait Actor extends akka.actor.Actor with akka.actor.ActorLogging {
   def receive = LoggingReceive {
     listenToMessages orElse listen
   }
+
+  def publish(message: Message) {
+    context.system.eventStream publish message
+  }
 }
 
 /**

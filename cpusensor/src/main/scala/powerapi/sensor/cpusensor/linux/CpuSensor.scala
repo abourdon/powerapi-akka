@@ -16,34 +16,21 @@
  * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
  * Boston, MA  02110-1301, USA.
  */
-package powerapi.sensor.cpusensor
+package powerapi.sensor.cpusensor.linux
 import java.io.FileInputStream
 import java.io.IOException
-import scala.io.Source
-import akka.actor.Actor
-import akka.actor.ActorLogging
+import java.net.URL
+
 import powerapi.core.Configuration
 import powerapi.core.Process
 import powerapi.core.Tick
+import powerapi.sensor.cpusensor.CpuSensorValues
+import powerapi.sensor.cpusensor.GlobalElapsedTime
+import powerapi.sensor.cpusensor.ProcessElapsedTime
+import powerapi.sensor.cpusensor.TimeInStates
 import scalax.io.Resource
-import java.net.URL
-import powerapi.core.Sensor
-import powerapi.core.Message
 
-/** Messages definition */
-case class TimeInStates(times: Map[Int, Int]) extends Message {
-  def -(that: TimeInStates) =
-    TimeInStates((for ((frequency, time) <- times) yield (frequency, time - that.times.getOrElse(frequency, 0))).toMap)
-}
-case class GlobalElapsedTime(time: Int) extends Message
-case class ProcessElapsedTime(time: Int) extends Message
-case class CPUSensorValues(
-  timeInStates: TimeInStates,
-  globalElapsedTime: GlobalElapsedTime,
-  processElapsedTime: ProcessElapsedTime,
-  tick: Tick) extends Message
-
-class CPUSensor extends Sensor with Configuration {
+class CpuSensor extends powerapi.sensor.cpusensor.CpuSensor with Configuration {
 
   class Frequency {
     lazy val timeInStateFiles = {
@@ -63,7 +50,7 @@ class CPUSensor extends Sensor with Configuration {
           Resource.fromInputStream(new FileInputStream(new URL(timeInStateFile).getPath())).lines().foreach(line => {
             line match {
               case TimeInStateFormat(frequency, time) => result += (frequency.toInt -> (time.toInt + (result getOrElse (frequency.toInt, 0))))
-              case _                                  => log.warning("unable to parse line \"" + line + "\" from file \"" + timeInStateFile)
+              case _ => log.warning("unable to parse line \"" + line + "\" from file \"" + timeInStateFile)
             }
           })
         } catch {
@@ -129,22 +116,16 @@ class CPUSensor extends Sensor with Configuration {
   lazy val time = new Time
   def elapsedTime(implicit process: Process = Process(-1)) = time.elapsedTime
 
-  def publish(sensorValues: CPUSensorValues) {
+  def publish(sensorValues: CpuSensorValues) {
     context.system.eventStream publish sensorValues
   }
 
   def process(tick: Tick) {
     publish(
-      CPUSensorValues(
+      CpuSensorValues(
         TimeInStates(timeInStates),
         GlobalElapsedTime(elapsedTime),
         ProcessElapsedTime(elapsedTime(tick.subscription.process)),
         tick))
   }
-
-  def listen = {
-    case tick: Tick => process(tick)
-  }
-  
-  def messagesToListen = Array(classOf[Tick])
 }
