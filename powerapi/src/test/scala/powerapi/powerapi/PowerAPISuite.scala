@@ -30,7 +30,7 @@ import powerapi.formula.cpuformula.CpuFormulaValues
 import powerapi.sensor.cpusensor.linux.CpuSensor
 import powerapi.formula.cpuformula.simple.CpuFormula
 
-class SimpleCPUListener extends Listener with ActorLogging {
+class SimpleCpuListener extends Listener with ActorLogging {
   def listen = {
     case values: CpuFormulaValues => println(values)
   }
@@ -45,9 +45,9 @@ class PowerAPISuite extends JUnitSuite with ShouldMatchersForJUnit {
     PowerAPI.startModules(Array(classOf[Clock], classOf[CpuSensor], classOf[CpuFormula]))
 
     val currentPid = ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
-    PowerAPI.startMonitoring(Process(currentPid), 500 milliseconds, classOf[SimpleCPUListener])
+    PowerAPI.startMonitoring(Process(currentPid), 500 milliseconds, classOf[SimpleCpuListener])
     Thread.sleep((10 seconds).toMillis)
-    PowerAPI.stopMonitoring(Process(currentPid), 500 milliseconds, classOf[SimpleCPUListener])
+    PowerAPI.stopMonitoring(Process(currentPid), 500 milliseconds, classOf[SimpleCpuListener])
 
     PowerAPI.stopModules(Array(classOf[Clock], classOf[CpuSensor], classOf[CpuFormula]))
   }
