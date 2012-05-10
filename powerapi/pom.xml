@@ -30,4 +30,21 @@
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.scala-tools</groupId>
+				<artifactId>maven-scala-plugin</artifactId>
+				<configuration>
+					<launchers>
+						<launcher>
+							<id>run</id>
+							<mainClass>powerapi.powerapi.Run</mainClass>
+						</launcher>
+					</launchers>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
