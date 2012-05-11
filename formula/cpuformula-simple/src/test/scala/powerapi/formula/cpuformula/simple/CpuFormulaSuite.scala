@@ -145,7 +145,7 @@ class CpuFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
       ProcessElapsedTime(50),
       Tick(TickSubscription(Process(123), 500 milliseconds)))
     cpuformula.underlyingActor.refreshCache(old)
-    cpuformula.underlyingActor.cache getOrElse (500 milliseconds, null) should equal(old)
+    cpuformula.underlyingActor.cache getOrElse (TickSubscription(Process(123), 500 milliseconds), null) should equal(old)
 
     val now = CpuSensorValues(
       TimeInStates(Map[Int, Int]()),
@@ -153,9 +153,9 @@ class CpuFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
       ProcessElapsedTime(80),
       Tick(TickSubscription(Process(123), 500 milliseconds)))
     cpuformula.underlyingActor.refreshCache(now)
-    cpuformula.underlyingActor.cache getOrElse (500 milliseconds, null) should equal(now)
+    cpuformula.underlyingActor.cache getOrElse (TickSubscription(Process(123), 500 milliseconds), null) should equal(now)
 
-    cpuformula.underlyingActor.cache getOrElse (123 milliseconds, null) should be(null)
+    cpuformula.underlyingActor.cache getOrElse (TickSubscription(Process(123), 123 milliseconds), null) should be(null)
   }
 
   @Test

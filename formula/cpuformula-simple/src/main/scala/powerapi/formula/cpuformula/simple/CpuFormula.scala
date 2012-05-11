@@ -18,15 +18,15 @@
  */
 package powerapi.formula.cpuformula.simple
 import scala.collection.mutable.HashMap
-
 import akka.util.Duration
 import powerapi.core.Configuration
 import powerapi.core.Energy
-import powerapi.formula.cpuformula.CpuFormulaValues;
+import powerapi.formula.cpuformula.CpuFormulaValues
 import powerapi.sensor.cpusensor.CpuSensorValues
 import powerapi.sensor.cpusensor.GlobalElapsedTime
 import powerapi.sensor.cpusensor.ProcessElapsedTime
 import powerapi.sensor.cpusensor.TimeInStates
+import powerapi.core.TickSubscription
 
 class CpuFormula extends powerapi.formula.cpuformula.CpuFormula with Configuration {
   // Environment specific values (from the configuration file)
@@ -36,7 +36,7 @@ class CpuFormula extends powerapi.formula.cpuformula.CpuFormula with Configurati
   lazy val constant = (0.7 * tdp) / (voltages.max._1 * math.pow(voltages.max._2, 2))
   lazy val powers = voltages.map(voltage => (voltage._1, (constant * voltage._1 * math.pow(voltage._2, 2))))
 
-  lazy val cache = HashMap[Duration, CpuSensorValues]()
+  lazy val cache = HashMap[TickSubscription, CpuSensorValues]()
   lazy val defaultSensorValue =
     CpuSensorValues(
       TimeInStates(voltages.map(fv => (fv._1, 0))),
@@ -72,12 +72,12 @@ class CpuFormula extends powerapi.formula.cpuformula.CpuFormula with Configurati
   }
 
   def compute(now: CpuSensorValues): CpuFormulaValues = {
-    val old = cache getOrElse (now.tick.subscription.duration, defaultSensorValue)
+    val old = cache getOrElse (now.tick.subscription, defaultSensorValue)
     val computed = power(old, now) * usage(old, now)
     CpuFormulaValues(Energy.fromPower(computed), now.tick)
   }
 
   def refreshCache(now: CpuSensorValues) {
-    cache += (now.tick.subscription.duration -> now)
+    cache += (now.tick.subscription -> now)
   }
 }
