@@ -17,7 +17,27 @@
  * Boston, MA  02110-1301, USA.
  */
 package powerapi.listener.cpulistener.jfreechart
+import powerapi.core.Listener
+import powerapi.formula.cpuformula.CpuFormulaValues
+import javax.swing.SwingUtilities
 
-class CpuListener {
+class CpuListener extends Listener {
 
+  override def preStart() {
+    SwingUtilities.invokeLater(new Runnable {
+      def run() {
+        Chart.run
+      }
+    })
+  }
+
+  def messagesToListen = Array(classOf[CpuFormulaValues])
+
+  def process(cpuFormulaValues: CpuFormulaValues) {
+    Chart.process(cpuFormulaValues)
+  }
+
+  def listen = {
+    case cpuFormulaValues: CpuFormulaValues => process(cpuFormulaValues)
+  }
 }

@@ -20,12 +20,29 @@ package powerapi.listener.cpulistener.jfreechart
 import org.scalatest.junit.JUnitSuite
 import org.scalatest.junit.ShouldMatchersForJUnit
 import org.junit.Test
+import powerapi.powerapi.PowerAPI
+import java.lang.management.ManagementFactory
+import powerapi.core.Clock
+import powerapi.sensor.cpusensor.linux.CpuSensor
+import powerapi.formula.cpuformula.simple.CpuFormula
+import powerapi.core.Process
+import akka.util.duration._
 
 class CpuListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
   @Test
-  def testMock {
-    1 should equal(1)
+  def testRun {
+    PowerAPI.startModules(Array(classOf[Clock], classOf[CpuSensor], classOf[CpuFormula]))
+
+    val currentPid = ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
+    PowerAPI.startMonitoring(Process(currentPid), 500 milliseconds, classOf[CpuListener])
+    // TODO use process name instead of volatile process id (add new functionality to powerapi.powerapi.PowerAPI)
+    PowerAPI.startMonitoring(Process(14491), 500 milliseconds, classOf[CpuListener])
+    Thread.sleep((10 seconds).toMillis)
+    PowerAPI.stopMonitoring(Process(14491), 500 milliseconds, classOf[CpuListener])
+    PowerAPI.stopMonitoring(Process(currentPid), 500 milliseconds, classOf[CpuListener])
+
+    PowerAPI.stopModules(Array(classOf[Clock], classOf[CpuSensor], classOf[CpuFormula]))
   }
 
 }
