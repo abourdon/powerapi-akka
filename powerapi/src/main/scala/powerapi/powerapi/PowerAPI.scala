@@ -48,10 +48,12 @@ class Engine {
   }
 
   def startListener(listenerType: Class[_ <: Listener])(implicit system: ActorSystem) {
-    val listener = system.actorOf(Props(listenerType.newInstance), name = listenerType.getCanonicalName)
-    val messages = Await.result(listener ? MessagesToListen, timeout.duration).asInstanceOf[Array[Class[_ <: Message]]]
-    messages.foreach(message => system.eventStream.subscribe(listener, message))
-    listeners += (listenerType -> listener.path)
+    if (!listeners.contains(listenerType)) {
+      val listener = system.actorOf(Props(listenerType.newInstance), name = listenerType.getCanonicalName)
+      val messages = Await.result(listener ? MessagesToListen, timeout.duration).asInstanceOf[Array[Class[_ <: Message]]]
+      messages.foreach(message => system.eventStream.subscribe(listener, message))
+      listeners += (listenerType -> listener.path)
+    }
   }
 
   def stopListener(listenerType: Class[_ <: Listener])(implicit system: ActorSystem) {
