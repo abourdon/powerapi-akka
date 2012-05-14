@@ -32,6 +32,7 @@ import powerapi.core.Process
 import powerapi.formula.cpuformula.CpuFormulaValues
 import java.util.Date
 import org.jfree.data.time.FixedMillisecond
+import java.awt.Toolkit
 
 class Chart(title: String) {
   val dataset = new TimeSeriesCollection
@@ -58,7 +59,6 @@ object Chart {
 
   val chartPanel = {
     val panel = new ChartPanel(chart.chart)
-    panel.setPreferredSize(new Dimension(1280, 800));
     panel.setMouseWheelEnabled(true);
     panel.setDomainZoomable(true);
     panel.setFillZoomRectangle(true);
@@ -73,8 +73,9 @@ object Chart {
 
   def run() {
     applicationFrame.setContentPane(chartPanel)
+    val dimension = Toolkit.getDefaultToolkit().getScreenSize()
+    applicationFrame.setSize(new Dimension(2 * dimension.width / 3, 2 * dimension.height / 3))
     applicationFrame.setVisible(true)
-    applicationFrame.pack()
     RefineryUtilities.centerFrameOnScreen(applicationFrame)
   }
 
