@@ -1,0 +1,56 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>powerapi.example</groupId>
+	<artifactId>cpumonitor</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>${project.artifactId}</name>
+	<description>CPU monitoring example of the PowerAPI process-level energy consumption library.</description>
+	<inceptionYear>2012</inceptionYear>
+
+	<parent>
+		<groupId>powerapi</groupId>
+		<artifactId>parent</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+
+	<dependencies>
+		<dependency>
+			<groupId>powerapi</groupId>
+			<artifactId>core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>powerapi</groupId>
+			<artifactId>powerapi</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>powerapi.sensor</groupId>
+			<artifactId>cpusensor-linux</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>powerapi.formula</groupId>
+			<artifactId>cpuformula-simple</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>powerapi.listener</groupId>
+			<artifactId>cpulistener-jfreechart</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.scala-tools</groupId>
+				<artifactId>maven-scala-plugin</artifactId>
+				<configuration>
+				<mainClass>powerapi.example.cpumonitor.CpuMonitor</mainClass>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
