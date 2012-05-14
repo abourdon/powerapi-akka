@@ -29,19 +29,44 @@ import akka.util.duration._
 import powerapi.core.Clock
 import powerapi.sensor.cpusensor.linux.CpuSensor
 import powerapi.formula.cpuformula.simple.CpuFormula
+import scala.io.Source
+import org.junit.After
+import org.junit.Before
+import org.junit.Ignore
 
 class SimpleCpuListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
-  @Test
-  def testPowerAPI {
+  @Before
+  def setUp {
     PowerAPI.startModules(Array(classOf[Clock], classOf[CpuSensor], classOf[CpuFormula]))
+  }
 
-    val currentPid = ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
-    PowerAPI.startMonitoring(Process(currentPid), 500 milliseconds, classOf[SimpleCpuListener])
+  @Test
+  def testAllPids {
+    val PSFormat = """^\s*(\d+).*""".r
+    val pids = Source.fromInputStream(Runtime.getRuntime.exec(Array("ps", "-A")).getInputStream).getLines.toList.map({ pid =>
+      pid match {
+        case PSFormat(pid) => pid.toInt
+        case _ => 1
+      }
+    })
+    pids.foreach(pid => PowerAPI.startMonitoring(Process(pid), 500 milliseconds, classOf[CpuListener]))
     Thread.sleep((10 seconds).toMillis)
-    PowerAPI.stopMonitoring(Process(currentPid), 500 milliseconds, classOf[SimpleCpuListener])
+    pids.foreach(pid => PowerAPI.stopMonitoring(Process(pid), 500 milliseconds, classOf[CpuListener]))
+  }
 
+  @Ignore
+  @Test
+  def testCurrentPid {
+    val currentPid = ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
+    PowerAPI.startMonitoring(Process(currentPid), 500 milliseconds, classOf[CpuListener])
+    Thread.sleep((5 minutes).toMillis)
+    PowerAPI.stopMonitoring(Process(currentPid), 500 milliseconds, classOf[CpuListener])
+  }
+
+  @After
+  def tearDown {
     PowerAPI.stopModules(Array(classOf[Clock], classOf[CpuSensor], classOf[CpuFormula]))
   }
-  
+
 }

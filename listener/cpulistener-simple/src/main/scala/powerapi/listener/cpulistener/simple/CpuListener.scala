@@ -21,7 +21,7 @@ package powerapi.listener.cpulistener.simple
 import powerapi.formula.cpuformula.CpuFormulaValues
 import powerapi.core.Listener
 
-class SimpleCpuListener extends Listener {
+class CpuListener extends Listener {
   def messagesToListen = Array(classOf[CpuFormulaValues])
 
   def process(cpuFormulaValues: CpuFormulaValues) {
