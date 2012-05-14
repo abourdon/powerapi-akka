@@ -74,7 +74,7 @@ object Chart {
   def run() {
     applicationFrame.setContentPane(chartPanel)
     val dimension = Toolkit.getDefaultToolkit().getScreenSize()
-    applicationFrame.setSize(new Dimension(2 * dimension.width / 3, 2 * dimension.height / 3))
+    applicationFrame.setSize(new Dimension(5 * dimension.width / 6, 5 * dimension.height / 6))
     applicationFrame.setVisible(true)
     RefineryUtilities.centerFrameOnScreen(applicationFrame)
   }
