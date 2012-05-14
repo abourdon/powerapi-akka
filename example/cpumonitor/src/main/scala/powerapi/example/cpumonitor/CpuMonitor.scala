@@ -26,6 +26,26 @@ import powerapi.core.Process
 import akka.util.duration._
 import powerapi.listener.cpulistener.jfreechart.CpuListener
 import scala.io.Source
+import powerapi.listener.cpulistener.jfreechart.CpuListener
+import powerapi.formula.cpuformula.CpuFormulaValues
+import powerapi.listener.cpulistener.jfreechart.Chart
+
+class CpuMonitor extends CpuListener {
+  val powers = collection.mutable.HashMap[Process, Double]()
+
+  override def listen = {
+    case cpuFormulaValues: CpuFormulaValues => {
+      val process = cpuFormulaValues.tick.subscription.process
+      val old = powers getOrElse (process, Double.PositiveInfinity)
+      val now = cpuFormulaValues.energy.power
+      // We only process the chart if the difference between old and new value are over 10%
+      if (math.min(now, old) / math.max(now, old) < 0.1) {
+        powers += (process -> now)
+        Chart.process(cpuFormulaValues)
+      }
+    }
+  }
+}
 
 object CpuMonitor {
   def perso {
@@ -62,9 +82,9 @@ object CpuMonitor {
         case _ => 1
       }
     })
-    pids.foreach(pid => PowerAPI.startMonitoring(Process(pid), 500 milliseconds, classOf[CpuListener]))
+    pids.foreach(pid => PowerAPI.startMonitoring(Process(pid), 500 milliseconds, classOf[CpuMonitor]))
     Thread.sleep((5 minutes).toMillis)
-    pids.foreach(pid => PowerAPI.stopMonitoring(Process(pid), 500 milliseconds, classOf[CpuListener]))
+    pids.foreach(pid => PowerAPI.stopMonitoring(Process(pid), 500 milliseconds, classOf[CpuMonitor]))
 
     PowerAPI.stopModules(Array(classOf[Clock], classOf[CpuSensor], classOf[CpuFormula]))
   }
