@@ -55,7 +55,7 @@ class CpuFormula extends powerapi.formula.cpuformula.CpuFormula with Configurati
     if (globalUsage == 0) {
       0.0
     } else {
-      math.max(0.0, math.min(processUsage / globalUsage, 1.0))
+      math.max(0.0, processUsage / globalUsage)
     }
   }
 
