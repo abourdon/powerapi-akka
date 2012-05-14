@@ -17,20 +17,21 @@
  * Boston, MA  02110-1301, USA.
  */
 package powerapi.listener.cpulistener.jfreechart
+import java.awt.Dimension
 import org.jfree.chart.ChartFactory
+import org.jfree.chart.ChartPanel
+import org.jfree.data.time.Millisecond
+import org.jfree.data.time.TimeSeries
 import org.jfree.data.time.TimeSeriesCollection
+import org.jfree.data.time.TimeSeriesDataItem
 import org.jfree.ui.ApplicationFrame
+import org.jfree.ui.RefineryUtilities
 import akka.util.duration.intToDurationInt
 import javax.swing.JFrame
-import javax.swing.SwingUtilities
-import org.jfree.data.time.TimeSeries
-import org.jfree.chart.ChartPanel
-import java.awt.Dimension
-import org.jfree.ui.RefineryUtilities
-import powerapi.formula.cpuformula.CpuFormulaValues
 import powerapi.core.Process
-import org.jfree.data.time.TimeSeriesDataItem
-import org.jfree.data.time.Millisecond
+import powerapi.formula.cpuformula.CpuFormulaValues
+import java.util.Date
+import org.jfree.data.time.FixedMillisecond
 
 class Chart(title: String) {
   val dataset = new TimeSeriesCollection
@@ -45,8 +46,7 @@ class Chart(title: String) {
       dataset.addSeries(serie)
       timeSeries += (pid -> serie)
     }
-    val serie = timeSeries(pid)
-    serie.add(new TimeSeriesDataItem(new Millisecond(), cpuFormulaValues.energy.power))
+    timeSeries(pid).add(new TimeSeriesDataItem(new FixedMillisecond(cpuFormulaValues.tick.timestamp), cpuFormulaValues.energy.power))
   }
 }
 
@@ -58,7 +58,7 @@ object Chart {
 
   val chartPanel = {
     val panel = new ChartPanel(chart.chart)
-    panel.setPreferredSize(new Dimension(1000, 270));
+    panel.setPreferredSize(new Dimension(1280, 800));
     panel.setMouseWheelEnabled(true);
     panel.setDomainZoomable(true);
     panel.setFillZoomRectangle(true);
