@@ -73,10 +73,7 @@ class CpuFormula extends powerapi.formula.cpuformula.CpuFormula with Configurati
 
   def compute(now: CpuSensorValues): CpuFormulaValues = {
     val old = cache getOrElse (now.tick.subscription, defaultSensorValue)
-    // We have to divide the product of power by usage by the number of cores
-    // in order to fit with the maximum power value allowed by the CPU.
-    // (as process CPU usage can be more than 100% with a maximum of (100% * number of cores))
-    val computed = power(old, now) * usage(old, now) / cores
+    val computed = power(old, now) * usage(old, now)
     CpuFormulaValues(Energy.fromPower(computed), now.tick)
   }
 
