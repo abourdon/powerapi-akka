@@ -51,7 +51,7 @@ class CpuFormula extends powerapi.formula.cpuformula.CpuFormula with Configurati
 
   def usage(old: CpuSensorValues, now: CpuSensorValues): Double = {
     val processUsage = (now.processElapsedTime.time - old.processElapsedTime.time).toDouble
-    val globalUsage = (now.globalElapsedTime.time - old.globalElapsedTime.time).toDouble / cores
+    val globalUsage = (now.globalElapsedTime.time - old.globalElapsedTime.time).toDouble
     if (globalUsage == 0) {
       0.0
     } else {
@@ -66,14 +66,17 @@ class CpuFormula extends powerapi.formula.cpuformula.CpuFormula with Configurati
     if (time == 0) {
       0.0
     } else {
-      totalPower / time / cores
+      totalPower / time
     }
 
   }
 
   def compute(now: CpuSensorValues): CpuFormulaValues = {
     val old = cache getOrElse (now.tick.subscription, defaultSensorValue)
-    val computed = power(old, now) * usage(old, now)
+    // We have to divide the product of power by usage by the number of cores
+    // in order to fit with the maximum power value allowed by the CPU.
+    // (as process CPU usage can be more than 100% with a maximum of (100% * number of cores))
+    val computed = power(old, now) * usage(old, now) / cores
     CpuFormulaValues(Energy.fromPower(computed), now.tick)
   }
 
