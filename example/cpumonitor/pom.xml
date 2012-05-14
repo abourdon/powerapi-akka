@@ -32,6 +32,11 @@
 		</dependency>
 		<dependency>
 			<groupId>powerapi.formula</groupId>
+			<artifactId>cpuformula</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>powerapi.formula</groupId>
 			<artifactId>cpuformula-simple</artifactId>
 			<version>${project.version}</version>
 		</dependency>
