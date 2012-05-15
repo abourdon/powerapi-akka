@@ -17,8 +17,8 @@
  * Boston, MA  02110-1301, USA.
  */
 package powerapi.core
+import akka.util.duration.intToDurationInt
 import akka.util.Duration
-import akka.util.duration._
 
 case class Energy private (power: Double) {
   def +(that: Energy) = new Energy(power + that.power)

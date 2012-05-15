@@ -48,7 +48,7 @@ class CpuFormula extends powerapi.formula.cpuformula.CpuFormula with Configurati
     refreshCache(CpuSensorValues)
   }
 
-  def usage(old: CpuSensorValues, now: CpuSensorValues): Double = {
+  def usage(old: CpuSensorValues, now: CpuSensorValues) = {
     val processUsage = (now.processElapsedTime.time - old.processElapsedTime.time).toDouble
     val globalUsage = (now.globalElapsedTime.time - old.globalElapsedTime.time).toDouble
     if (globalUsage == 0) {
@@ -58,7 +58,7 @@ class CpuFormula extends powerapi.formula.cpuformula.CpuFormula with Configurati
     }
   }
 
-  def power(old: CpuSensorValues, now: CpuSensorValues): Double = {
+  def power(old: CpuSensorValues, now: CpuSensorValues) = {
     val timeInStates = now.timeInStates - old.timeInStates
     val totalPower = powers.foldLeft(0: Double) { (acc, power) => acc + (power._2 * timeInStates.times.getOrElse(power._1, 0: Long)) }
     val time = timeInStates.times.foldLeft(0: Long) { (acc, time) => acc + time._2 }

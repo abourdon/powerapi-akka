@@ -17,10 +17,12 @@
  * Boston, MA  02110-1301, USA.
  */
 package powerapi.core
+import scala.collection.JavaConversions
+
 import org.junit.Test
 import org.scalatest.junit.JUnitSuite
 import org.scalatest.junit.ShouldMatchersForJUnit
-import scala.collection.JavaConversions
+
 import com.typesafe.config.Config
 
 class ConfigurationSuite extends JUnitSuite with ShouldMatchersForJUnit with Configuration {

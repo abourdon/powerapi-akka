@@ -18,21 +18,19 @@
  */
 package powerapi.listener.cpulistener.jfreechart
 import java.awt.Dimension
+import java.awt.Toolkit
+
 import org.jfree.chart.ChartFactory
 import org.jfree.chart.ChartPanel
-import org.jfree.data.time.Millisecond
+import org.jfree.data.time.FixedMillisecond
 import org.jfree.data.time.TimeSeries
 import org.jfree.data.time.TimeSeriesCollection
 import org.jfree.data.time.TimeSeriesDataItem
 import org.jfree.ui.ApplicationFrame
 import org.jfree.ui.RefineryUtilities
-import akka.util.duration.intToDurationInt
-import javax.swing.JFrame
+
 import powerapi.core.Process
 import powerapi.formula.cpuformula.CpuFormulaValues
-import java.util.Date
-import org.jfree.data.time.FixedMillisecond
-import java.awt.Toolkit
 
 class Chart(title: String) {
   val dataset = new TimeSeriesCollection

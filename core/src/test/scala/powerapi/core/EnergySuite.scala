@@ -17,10 +17,11 @@
  * Boston, MA  02110-1301, USA.
  */
 package powerapi.core
+import org.junit.Test
 import org.scalatest.junit.JUnitSuite
 import org.scalatest.junit.ShouldMatchersForJUnit
-import org.junit.Test
-import akka.util.duration._
+
+import akka.util.duration.intToDurationInt
 
 class EnergySuite extends JUnitSuite with ShouldMatchersForJUnit {
 

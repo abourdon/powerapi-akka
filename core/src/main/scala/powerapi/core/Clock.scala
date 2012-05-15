@@ -31,23 +31,19 @@ case class TickIt(subscription: TickSubscription) extends Message
 case class UnTickIt(subscription: TickSubscription) extends Message
 case class Tick(subscription: TickSubscription, timestamp: Long = System.currentTimeMillis) extends Message
 
-object Clock {
-  /** Minimum tick duration allowed according to configuration file **/
-  val minimumTickDuration = 10 milliseconds
-}
-
-class Clock extends Actor {
+class Clock extends Actor with Configuration {
   val subscriptions = new HashMap[Duration, Set[TickSubscription]] with SynchronizedMap[Duration, Set[TickSubscription]]
   val schedulers = new HashMap[Duration, Cancellable]
   val system = context.system
-
+  
   def subscribe(implicit tickIt: TickIt) {
     val currentSubscriptions = subscriptions getOrElse (tickIt.subscription.duration, Set[TickSubscription]())
     subscriptions += (tickIt.subscription.duration -> (currentSubscriptions + tickIt.subscription))
   }
 
+  lazy val minimumTickDuration = Duration.parse(conf.getString("akka.scheduler.tick-duration"))
   private def scheduleRegistration(implicit tickIt: TickIt) {
-    val duration = if (tickIt.subscription.duration < Clock.minimumTickDuration) Clock.minimumTickDuration else tickIt.subscription.duration
+    val duration = if (tickIt.subscription.duration < minimumTickDuration) minimumTickDuration else tickIt.subscription.duration
     if (!(schedulers contains duration)) {
       schedulers += (duration -> system.scheduler.schedule(Duration.Zero, duration)(schedule(duration)))
     }
@@ -98,10 +94,10 @@ class Clock extends Actor {
   }
 
   def messagesToListen = Array(classOf[TickIt], classOf[UnTickIt])
-  
+
   def listen = {
-    case subscribe: TickIt     => makeItTick(subscribe)
+    case subscribe: TickIt => makeItTick(subscribe)
     case unsubscribe: UnTickIt => unmakeItTick(unsubscribe)
-    case unknown               => throw new UnsupportedOperationException("unable to process message " + unknown)
+    case unknown => throw new UnsupportedOperationException("unable to process message " + unknown)
   }
 }
