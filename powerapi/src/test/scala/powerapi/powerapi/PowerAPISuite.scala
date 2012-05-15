@@ -17,6 +17,7 @@
  * Boston, MA  02110-1301, USA.
  */
 package powerapi.powerapi
+
 import org.scalatest.junit.JUnitSuite
 import org.scalatest.junit.ShouldMatchersForJUnit
 import org.junit.Test

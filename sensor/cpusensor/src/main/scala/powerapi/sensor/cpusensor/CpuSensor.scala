@@ -17,6 +17,7 @@
  * Boston, MA  02110-1301, USA.
  */
 package powerapi.sensor.cpusensor
+
 import powerapi.core.Tick
 import powerapi.core.Message
 import powerapi.core.Sensor

@@ -17,6 +17,7 @@
  * Boston, MA  02110-1301, USA.
  */
 package powerapi.example.cpumonitor
+
 import powerapi.powerapi.PowerAPI
 import powerapi.core.Clock
 import java.lang.management.ManagementFactory

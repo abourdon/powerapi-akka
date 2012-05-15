@@ -17,15 +17,17 @@
  * Boston, MA  02110-1301, USA.
  */
 package powerapi.core
-import org.scalatest.junit.JUnitSuite
-import org.scalatest.junit.ShouldMatchersForJUnit
+
 import akka.actor.ActorSystem
-import org.junit.Test
 import akka.actor.Props
 import akka.pattern.ask
 import akka.util.Timeout
 import akka.util.duration._
 import akka.dispatch.Await
+
+import org.junit.Test
+import org.scalatest.junit.JUnitSuite
+import org.scalatest.junit.ShouldMatchersForJUnit
 
 case class FooMessage() extends Message
 case class BarMessage() extends Message

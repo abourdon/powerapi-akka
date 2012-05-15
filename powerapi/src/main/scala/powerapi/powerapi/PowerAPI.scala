@@ -17,6 +17,7 @@
  * Boston, MA  02110-1301, USA.
  */
 package powerapi.powerapi
+
 import akka.util.duration._
 import akka.pattern.ask
 import akka.dispatch.Await

@@ -17,9 +17,9 @@
  * Boston, MA  02110-1301, USA.
  */
 package powerapi.sensor.cpusensor
+
 import org.junit.Test
-import org.scalatest.junit.JUnitSuite
-import org.scalatest.junit.ShouldMatchersForJUnit
+import org.scalatest.junit.{ShouldMatchersForJUnit, JUnitSuite}
 
 class TimeInStatesSuite extends JUnitSuite with ShouldMatchersForJUnit {
 

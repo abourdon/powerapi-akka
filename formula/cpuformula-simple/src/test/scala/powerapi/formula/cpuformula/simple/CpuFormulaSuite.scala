@@ -17,27 +17,20 @@
  * Boston, MA  02110-1301, USA.
  */
 package powerapi.formula.cpuformula.simple
+
 import scala.collection.mutable.HashMap
 
-import org.junit.Test
-import org.scalatest.junit.JUnitSuite
-import org.scalatest.junit.ShouldMatchersForJUnit
-
 import akka.actor.actorRef2Scala
-import akka.actor.Actor
-import akka.actor.ActorLogging
-import akka.actor.ActorSystem
+import akka.actor.{ActorSystem, ActorLogging, Actor}
 import akka.testkit.TestActorRef
 import akka.util.duration.intToDurationInt
-import powerapi.core.Energy
-import powerapi.core.Process
-import powerapi.core.Tick
-import powerapi.core.TickSubscription
+
+import org.junit.Test
+import org.scalatest.junit.{ShouldMatchersForJUnit, JUnitSuite}
+
+import powerapi.core.{TickSubscription, Tick, Process, Energy}
 import powerapi.formula.cpuformula.CpuFormulaValues
-import powerapi.sensor.cpusensor.CpuSensorValues
-import powerapi.sensor.cpusensor.GlobalElapsedTime
-import powerapi.sensor.cpusensor.ProcessElapsedTime
-import powerapi.sensor.cpusensor.TimeInStates
+import powerapi.sensor.cpusensor.{TimeInStates, ProcessElapsedTime, GlobalElapsedTime, CpuSensorValues}
 import scalax.file.Path
 
 class SimpleTickReceiver extends Actor with ActorLogging {

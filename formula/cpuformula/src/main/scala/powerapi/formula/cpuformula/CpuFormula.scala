@@ -17,6 +17,7 @@
  * Boston, MA  02110-1301, USA.
  */
 package powerapi.formula.cpuformula
+
 import powerapi.core.Formula
 import powerapi.core.Energy
 import powerapi.core.Tick

@@ -17,32 +17,25 @@
  * Boston, MA  02110-1301, USA.
  */
 package powerapi.sensor.cpusensor.linux
+
 import java.net.URL
 
 import scala.util.Properties
 
+import akka.actor.actorRef2Scala
+import akka.actor.{Props, ActorSystem, Actor}
+import akka.testkit.TestActorRef
+import akka.util.duration.intToDurationInt
+
 import org.junit.Test
-import org.scalatest.junit.JUnitSuite
-import org.scalatest.junit.ShouldMatchersForJUnit
+import org.scalatest.junit.{ShouldMatchersForJUnit, JUnitSuite}
 
 import com.typesafe.config.Config
 
-import akka.actor.actorRef2Scala
-import akka.actor.Actor
-import akka.actor.ActorSystem
-import akka.actor.Props
-import akka.testkit.TestActorRef
-import akka.util.duration.intToDurationInt
 import powerapi.core.Tick
-import powerapi.core.Clock
-import powerapi.core.Process
-import powerapi.core.TickIt
-import powerapi.core.TickSubscription
-import powerapi.core.UnTickIt
+import powerapi.core.{UnTickIt, TickSubscription, TickIt, Process, Clock}
 import powerapi.sensor.cpusensor.CpuSensorValues
-import powerapi.sensor.cpusensor.GlobalElapsedTime
-import powerapi.sensor.cpusensor.ProcessElapsedTime
-import powerapi.sensor.cpusensor.TimeInStates
+import powerapi.sensor.cpusensor.{TimeInStates, ProcessElapsedTime, GlobalElapsedTime}
 
 class CpuSensorReceiver extends Actor {
   var receivedData: Option[CpuSensorValues] = None

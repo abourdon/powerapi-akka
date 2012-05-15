@@ -21,9 +21,7 @@ package powerapi.core
 import scala.collection.mutable.SynchronizedMap
 import scala.collection.mutable.HashMap
 import scala.collection.mutable.Map
-import org.junit.Test
-import org.scalatest.junit.JUnitSuite
-import org.scalatest.junit.ShouldMatchersForJUnit
+
 import akka.actor.actorRef2Scala
 import akka.actor.ActorLogging
 import akka.actor.ActorSystem
@@ -33,8 +31,13 @@ import akka.pattern.ask
 import akka.util.duration.intToDurationInt
 import akka.util.Timeout
 import akka.testkit.TestActorRef
-import scalax.io.Resource
+
+import org.junit.Test
+import org.scalatest.junit.JUnitSuite
+import org.scalatest.junit.ShouldMatchersForJUnit
 import org.junit.Ignore
+
+import scalax.io.Resource
 
 case object Result
 
@@ -48,8 +51,8 @@ class ByProcessTickReceiver extends akka.actor.Actor with ActorLogging {
 
   def receive = {
     case tick: Tick => incr(tick.subscription)
-    case Result     => sender ! receivedTicks
-    case unknown    => throw new UnsupportedOperationException("unable to process message " + unknown)
+    case Result => sender ! receivedTicks
+    case unknown => throw new UnsupportedOperationException("unable to process message " + unknown)
   }
 }
 

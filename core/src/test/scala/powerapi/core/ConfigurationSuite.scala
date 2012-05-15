@@ -20,8 +20,7 @@ package powerapi.core
 import scala.collection.JavaConversions
 
 import org.junit.Test
-import org.scalatest.junit.JUnitSuite
-import org.scalatest.junit.ShouldMatchersForJUnit
+import org.scalatest.junit.{ShouldMatchersForJUnit, JUnitSuite}
 
 import com.typesafe.config.Config
 

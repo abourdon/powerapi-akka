@@ -17,6 +17,7 @@
  * Boston, MA  02110-1301, USA.
  */
 package powerapi.sensor.cpusensor.linux
+
 import com.typesafe.config.Config
 
 trait Configuration extends powerapi.core.Configuration {

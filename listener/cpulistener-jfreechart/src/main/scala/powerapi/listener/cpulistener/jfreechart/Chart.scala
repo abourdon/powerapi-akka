@@ -17,17 +17,12 @@
  * Boston, MA  02110-1301, USA.
  */
 package powerapi.listener.cpulistener.jfreechart
-import java.awt.Dimension
-import java.awt.Toolkit
 
-import org.jfree.chart.ChartFactory
-import org.jfree.chart.ChartPanel
-import org.jfree.data.time.FixedMillisecond
-import org.jfree.data.time.TimeSeries
-import org.jfree.data.time.TimeSeriesCollection
-import org.jfree.data.time.TimeSeriesDataItem
-import org.jfree.ui.ApplicationFrame
-import org.jfree.ui.RefineryUtilities
+import java.awt.{Toolkit, Dimension}
+
+import org.jfree.chart.{ChartPanel, ChartFactory}
+import org.jfree.data.time.{TimeSeriesDataItem, TimeSeriesCollection, TimeSeries, FixedMillisecond}
+import org.jfree.ui.{RefineryUtilities, ApplicationFrame}
 
 import powerapi.core.Process
 import powerapi.formula.cpuformula.CpuFormulaValues

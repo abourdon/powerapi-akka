@@ -17,13 +17,14 @@
  * Boston, MA  02110-1301, USA.
  */
 package powerapi.core
+
+import scala.actors.threadpool.helpers.NanoTimer
 import scala.collection.mutable.SynchronizedMap
 import scala.collection.mutable.HashMap
 import akka.actor.ActorLogging
 import akka.actor.Cancellable
 import akka.util.duration.intToDurationInt
 import akka.util.Duration
-import scala.actors.threadpool.helpers.NanoTimer
 
 /** Messages definition */
 case class TickSubscription(process: Process, duration: Duration)

@@ -17,16 +17,12 @@
  * Boston, MA  02110-1301, USA.
  */
 package powerapi.sensor.cpusensor.linux
-import java.io.FileInputStream
-import java.io.IOException
+
+import java.io.{IOException, FileInputStream}
 import java.net.URL
 
-import powerapi.core.Process
-import powerapi.core.Tick
-import powerapi.sensor.cpusensor.CpuSensorValues
-import powerapi.sensor.cpusensor.GlobalElapsedTime
-import powerapi.sensor.cpusensor.ProcessElapsedTime
-import powerapi.sensor.cpusensor.TimeInStates
+import powerapi.core.{Tick, Process}
+import powerapi.sensor.cpusensor.{TimeInStates, ProcessElapsedTime, GlobalElapsedTime, CpuSensorValues}
 import scalax.io.Resource
 
 class CpuSensor extends powerapi.sensor.cpusensor.CpuSensor with Configuration {

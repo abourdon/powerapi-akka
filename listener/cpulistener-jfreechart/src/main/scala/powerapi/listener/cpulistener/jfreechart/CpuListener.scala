@@ -17,6 +17,7 @@
  * Boston, MA  02110-1301, USA.
  */
 package powerapi.listener.cpulistener.jfreechart
+
 import powerapi.core.Listener
 import powerapi.formula.cpuformula.CpuFormulaValues
 import javax.swing.SwingUtilities

@@ -17,6 +17,7 @@
  * Boston, MA  02110-1301, USA.
  */
 package powerapi.core
+
 import akka.event.LoggingReceive
 
 /**

@@ -17,6 +17,7 @@
  * Boston, MA  02110-1301, USA.
  */
 package powerapi.sensor.cpusensor
+
 import org.junit.Test
 import akka.actor.ActorSystem
 import akka.actor.Props

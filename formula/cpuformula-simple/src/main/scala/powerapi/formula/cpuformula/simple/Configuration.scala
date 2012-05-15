@@ -17,6 +17,7 @@
  * Boston, MA  02110-1301, USA.
  */
 package powerapi.formula.cpuformula.simple
+
 import scala.collection.JavaConversions
 
 import com.typesafe.config.Config

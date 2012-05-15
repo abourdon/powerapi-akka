@@ -17,15 +17,12 @@
  * Boston, MA  02110-1301, USA.
  */
 package powerapi.formula.cpuformula.simple
+
 import scala.collection.mutable.HashMap
 
-import powerapi.core.Energy
-import powerapi.core.TickSubscription
+import powerapi.core.{TickSubscription, Energy}
 import powerapi.formula.cpuformula.CpuFormulaValues
-import powerapi.sensor.cpusensor.CpuSensorValues
-import powerapi.sensor.cpusensor.GlobalElapsedTime
-import powerapi.sensor.cpusensor.ProcessElapsedTime
-import powerapi.sensor.cpusensor.TimeInStates
+import powerapi.sensor.cpusensor.{TimeInStates, ProcessElapsedTime, GlobalElapsedTime, CpuSensorValues}
 
 class CpuFormula extends powerapi.formula.cpuformula.CpuFormula with Configuration {
   // Environment specific values (from the configuration file)

@@ -17,16 +17,19 @@
  * Boston, MA  02110-1301, USA.
  */
 package powerapi.formula.cpuformula
-import org.scalatest.junit.JUnitSuite
-import org.scalatest.junit.ShouldMatchersForJUnit
+
+import akka.actor.ActorSystem
+import akka.actor.Props
 import akka.dispatch.Await
-import org.junit.Test
 import akka.util.Timeout
 import akka.util.duration._
 import akka.pattern.ask
+
+import org.scalatest.junit.JUnitSuite
+import org.scalatest.junit.ShouldMatchersForJUnit
+import org.junit.Test
+
 import powerapi.core.Message
-import akka.actor.ActorSystem
-import akka.actor.Props
 import powerapi.core.MessagesToListen
 import powerapi.sensor.cpusensor.CpuSensorValues
 
