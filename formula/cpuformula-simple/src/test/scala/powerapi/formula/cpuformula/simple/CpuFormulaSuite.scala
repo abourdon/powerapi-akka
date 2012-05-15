@@ -23,10 +23,10 @@ import org.junit.Test
 import org.scalatest.junit.JUnitSuite
 import org.scalatest.junit.ShouldMatchersForJUnit
 
+import akka.actor.actorRef2Scala
 import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.ActorSystem
-import akka.actor.actorRef2Scala
 import akka.testkit.TestActorRef
 import akka.util.duration.intToDurationInt
 import powerapi.core.Energy
@@ -119,28 +119,28 @@ class CpuFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
   @Test
   def testVoltages {
-    cpuformula.underlyingActor.voltages should have size (3)
-    cpuformula.underlyingActor.voltages(1800002) should equal(1.31)
-    cpuformula.underlyingActor.voltages(2100002) should equal(1.41)
-    cpuformula.underlyingActor.voltages(2400003) should equal(1.5)
+    cpuformula.underlyingActor.frequencies should have size (3)
+    cpuformula.underlyingActor.frequencies(1800002) should equal(1.31)
+    cpuformula.underlyingActor.frequencies(2100002) should equal(1.41)
+    cpuformula.underlyingActor.frequencies(2400003) should equal(1.5)
   }
 
   @Test
   def testConstant {
-    cpuformula.underlyingActor.constant should equal((0.7 * cpuformula.underlyingActor.tdp) / (cpuformula.underlyingActor.voltages.max._1 * math.pow(cpuformula.underlyingActor.voltages.max._2, 2)))
+    cpuformula.underlyingActor.constant should equal((0.7 * cpuformula.underlyingActor.tdp) / (cpuformula.underlyingActor.frequencies.max._1 * math.pow(cpuformula.underlyingActor.frequencies.max._2, 2)))
   }
 
   @Test
   def testPowers {
     cpuformula.underlyingActor.powers should have size (3)
     cpuformula.underlyingActor.powers.foreach(power => power._2 should equal(
-      cpuformula.underlyingActor.constant * power._1 * math.pow(cpuformula.underlyingActor.voltages(power._1), 2)))
+      cpuformula.underlyingActor.constant * power._1 * math.pow(cpuformula.underlyingActor.frequencies(power._1), 2)))
   }
 
   @Test
   def testRefreshCache {
     val old = CpuSensorValues(
-      TimeInStates(Map[Int, Int]()),
+      TimeInStates(Map[Int, Long]()),
       GlobalElapsedTime(100),
       ProcessElapsedTime(50),
       Tick(TickSubscription(Process(123), 500 milliseconds)))
@@ -148,7 +148,7 @@ class CpuFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
     cpuformula.underlyingActor.cache getOrElse (TickSubscription(Process(123), 500 milliseconds), null) should equal(old)
 
     val now = CpuSensorValues(
-      TimeInStates(Map[Int, Int]()),
+      TimeInStates(Map[Int, Long]()),
       GlobalElapsedTime(300),
       ProcessElapsedTime(80),
       Tick(TickSubscription(Process(123), 500 milliseconds)))
@@ -161,13 +161,13 @@ class CpuFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
   @Test
   def testUsage {
     val old = CpuSensorValues(
-      TimeInStates(Map[Int, Int]()),
+      TimeInStates(Map[Int, Long]()),
       GlobalElapsedTime(100),
       ProcessElapsedTime(50),
       null)
 
     val now = CpuSensorValues(
-      TimeInStates(Map[Int, Int]()),
+      TimeInStates(Map[Int, Long]()),
       GlobalElapsedTime(300),
       ProcessElapsedTime(80),
       null)
@@ -177,14 +177,14 @@ class CpuFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
   @Test
   def testPower {
-    val oldTimeInStates = TimeInStates(Map[Int, Int](1800002 -> 10, 2100002 -> 20, 2400003 -> 30))
+    val oldTimeInStates = TimeInStates(Map[Int, Long](1800002 -> 10, 2100002 -> 20, 2400003 -> 30))
     val old = CpuSensorValues(
       oldTimeInStates,
       GlobalElapsedTime(100),
       ProcessElapsedTime(50),
       null)
 
-    val nowTimInStates = TimeInStates(Map[Int, Int](1800002 -> 100, 2100002 -> 200, 2400003 -> 300))
+    val nowTimInStates = TimeInStates(Map[Int, Long](1800002 -> 100, 2100002 -> 200, 2400003 -> 300))
     val now = CpuSensorValues(
       nowTimInStates,
       GlobalElapsedTime(300),
@@ -193,7 +193,7 @@ class CpuFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
     val diffTimeInStates = nowTimInStates - oldTimeInStates
     val totalPowers = diffTimeInStates.times.foldLeft(0: Double) { (acc, time) => acc + (cpuformula.underlyingActor.powers(time._1) * time._2) }
-    val totalTimes = diffTimeInStates.times.foldLeft(0) { (acc, time) => acc + time._2 }
+    val totalTimes = diffTimeInStates.times.foldLeft(0: Long) { (acc, time) => acc + time._2 }
 
     cpuformula.underlyingActor.power(old, now) should equal(totalPowers / totalTimes)
   }
@@ -201,7 +201,7 @@ class CpuFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
   @Test
   def testCompute {
     val tick = Tick(TickSubscription(Process(123), 10 seconds))
-    val oldTimeInStates = TimeInStates(Map[Int, Int](1800002 -> 10, 2100002 -> 20, 2400003 -> 30))
+    val oldTimeInStates = TimeInStates(Map[Int, Long](1800002 -> 10, 2100002 -> 20, 2400003 -> 30))
     val old = CpuSensorValues(
       oldTimeInStates,
       GlobalElapsedTime(100),
@@ -209,7 +209,7 @@ class CpuFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
       tick)
     cpuformula.underlyingActor.refreshCache(old)
 
-    val nowTimInStates = TimeInStates(Map[Int, Int](1800002 -> 100, 2100002 -> 200, 2400003 -> 300))
+    val nowTimInStates = TimeInStates(Map[Int, Long](1800002 -> 100, 2100002 -> 200, 2400003 -> 300))
     val now = CpuSensorValues(
       nowTimInStates,
       GlobalElapsedTime(300),
@@ -218,67 +218,12 @@ class CpuFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
     val diffTimeInStates = nowTimInStates - oldTimeInStates
     val totalPowers = diffTimeInStates.times.foldLeft(0: Double) { (acc, time) => acc + (cpuformula.underlyingActor.powers(time._1) * time._2) }
-    val totalTimes = diffTimeInStates.times.foldLeft(0) { (acc, time) => acc + time._2 }
+    val totalTimes = diffTimeInStates.times.foldLeft(0: Long) { (acc, time) => acc + time._2 }
 
     val power = totalPowers / totalTimes
     val usage = (80.toDouble - 50) / (300 - 100)
 
     cpuformula.underlyingActor.compute(now).energy.power should equal(power * usage)
   }
-
-  /*
-  
-  trait ConfigurationMock extends Configuration {
-    lazy val timeInState = new URL("file", "/sys/devices/system/cpu/cpu%?/cpufreq/stats/time_in_state", "").toString
-    lazy val frequencies = {
-      val lines = Resource.fromURL(timeInState.replace("%?", "1")).lines().toList
-      (for (line <- lines) yield (line.split("\\s")(0), Random.nextDouble.toString)).map(item => <frequency value={ item._1 } voltage={ item._2 }/>)
-    }
-
-    override lazy val conf =
-      <powerapi>
-        <tdp value="105"/>
-        <cores value="4"/>
-        <globalStat url="file:///proc/stat"/>
-        <processStat url="file:///proc/%?/stat"/>
-        <timesInState url={ timeInState }/>
-        <frequencies>
-          { frequencies }
-        </frequencies>
-      </powerapi>
-  }
-
-  @Test
-  def testIntensive {
-    val clock = system.actorOf(Props[Clock])
-    val cpusensor = system.actorOf(Props(new CpuSensor with ConfigurationMock), name = "cpusensor")
-    val cpuFormula = system.actorOf(Props(new CpuFormula with ConfigurationMock), name = "cpuformula")
-    val cpuformulaReceiver = TestActorRef[CPUFormulaAggregatingReceiver]
-    val simpleTickReceiver = TestActorRef[SimpleTickReceiver]
-
-    system.eventStream subscribe (cpusensor, classOf[Tick])
-    system.eventStream subscribe (cpuFormula, classOf[CpuSensorValues])
-    system.eventStream subscribe (cpuformulaReceiver, classOf[CpuFormulaValues])
-    system.eventStream subscribe (simpleTickReceiver, classOf[Tick])
-
-    val PSFormat = """^\s*(\d+).*""".r
-    val pids = Source.fromInputStream(Runtime.getRuntime.exec(Array("ps", "-A")).getInputStream).getLines.toList.map({ pid =>
-      pid match {
-        case PSFormat(pid) => pid.toInt
-        case _ => 1
-      }
-    })
-    val duration = 100 milliseconds
-    val sleep = 5000
-    pids.foreach(pid => clock ! TickIt(TickSubscription(Process(pid), duration)))
-    Thread.sleep(5000)
-    pids.foreach(pid => clock ! UnTickIt(TickSubscription(Process(pid), duration)))
-
-    println(
-      simpleTickReceiver.underlyingActor.receivedTicks + " ticks received, for " + pids.size + " pid analyzed." +
-        "(Theorical / Real number of timestamp processed) = (" + (simpleTickReceiver.underlyingActor.receivedTicks / pids.size) + ", " + cpuformulaReceiver.underlyingActor.map.size + ")")
-  }
-  
-  */
 
 }

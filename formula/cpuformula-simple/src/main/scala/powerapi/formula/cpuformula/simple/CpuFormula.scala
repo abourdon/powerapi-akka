@@ -18,28 +18,27 @@
  */
 package powerapi.formula.cpuformula.simple
 import scala.collection.mutable.HashMap
-import akka.util.Duration
-import powerapi.core.Configuration
+
 import powerapi.core.Energy
+import powerapi.core.TickSubscription
 import powerapi.formula.cpuformula.CpuFormulaValues
 import powerapi.sensor.cpusensor.CpuSensorValues
 import powerapi.sensor.cpusensor.GlobalElapsedTime
 import powerapi.sensor.cpusensor.ProcessElapsedTime
 import powerapi.sensor.cpusensor.TimeInStates
-import powerapi.core.TickSubscription
 
 class CpuFormula extends powerapi.formula.cpuformula.CpuFormula with Configuration {
   // Environment specific values (from the configuration file)
-  lazy val tdp = fromConf("tdp") { node => (node \\ "@value").text.toDouble }(0)
-  lazy val cores = fromConf("cores") { elt => (elt \\ "@value").text.toInt }(0)
-  lazy val voltages = fromConf("frequency") { node => ((node \\ "@value").text.toInt, (node \\ "@voltage").text.toDouble) }.toMap
-  lazy val constant = (0.7 * tdp) / (voltages.max._1 * math.pow(voltages.max._2, 2))
-  lazy val powers = voltages.map(voltage => (voltage._1, (constant * voltage._1 * math.pow(voltage._2, 2))))
+  lazy val tdp = conf.getTdp
+  lazy val cores = conf.getCores
+  lazy val frequencies = conf.getFrequencies
+  lazy val constant = (0.7 * tdp) / (frequencies.max._1 * math.pow(frequencies.max._2, 2))
+  lazy val powers = frequencies.map(frequency => (frequency._1, (constant * frequency._1 * math.pow(frequency._2, 2))))
 
   lazy val cache = HashMap[TickSubscription, CpuSensorValues]()
   lazy val defaultSensorValue =
     CpuSensorValues(
-      TimeInStates(voltages.map(fv => (fv._1, 0))),
+      TimeInStates(frequencies.map(fv => (fv._1, 0: Long))),
       GlobalElapsedTime(0),
       ProcessElapsedTime(0),
       null)
@@ -61,8 +60,8 @@ class CpuFormula extends powerapi.formula.cpuformula.CpuFormula with Configurati
 
   def power(old: CpuSensorValues, now: CpuSensorValues): Double = {
     val timeInStates = now.timeInStates - old.timeInStates
-    val totalPower = powers.foldLeft(0: Double) { (acc, power) => acc + (power._2 * timeInStates.times.getOrElse(power._1, 0)) }
-    val time = timeInStates.times.foldLeft(0) { (acc, time) => acc + time._2 }
+    val totalPower = powers.foldLeft(0: Double) { (acc, power) => acc + (power._2 * timeInStates.times.getOrElse(power._1, 0: Long)) }
+    val time = timeInStates.times.foldLeft(0: Long) { (acc, time) => acc + time._2 }
     if (time == 0) {
       0.0
     } else {

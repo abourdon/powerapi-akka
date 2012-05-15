@@ -21,7 +21,6 @@ import java.io.FileInputStream
 import java.io.IOException
 import java.net.URL
 
-import powerapi.core.Configuration
 import powerapi.core.Process
 import powerapi.core.Tick
 import powerapi.sensor.cpusensor.CpuSensorValues
@@ -34,14 +33,14 @@ class CpuSensor extends powerapi.sensor.cpusensor.CpuSensor with Configuration {
 
   class Frequency {
     lazy val timeInStateFiles = {
-      val timesInState = fromConf("timesInState")(elt => (elt \\ "@url").text)(0)
-      val cores = fromConf("cores")(elt => (elt \\ "@value").text.toInt)(0)
+      val timesInState = conf.getTimeInState
+      val cores = conf.getCores
       for (core <- 0 until cores) yield (timesInState replace ("%?", core.toString))
     }
     lazy val TimeInStateFormat = """(\d+)\s+(\d+)""".r
 
     def timeInStates = {
-      val result = collection.mutable.HashMap[Int, Int]()
+      val result = collection.mutable.HashMap[Int, Long]()
 
       timeInStateFiles.foreach(timeInStateFile => {
         try {
@@ -49,7 +48,7 @@ class CpuSensor extends powerapi.sensor.cpusensor.CpuSensor with Configuration {
           // Then, we simply read these files thanks to a FileInputStream in getting those local path
           Resource.fromInputStream(new FileInputStream(new URL(timeInStateFile).getPath())).lines().foreach(line => {
             line match {
-              case TimeInStateFormat(frequency, time) => result += (frequency.toInt -> (time.toInt + (result getOrElse (frequency.toInt, 0))))
+              case TimeInStateFormat(frequency, time) => result += (frequency.toInt -> (time.toLong + (result getOrElse (frequency.toInt, 0: Long))))
               case _ => log.warning("unable to parse line \"" + line + "\" from file \"" + timeInStateFile)
             }
           })
@@ -60,12 +59,12 @@ class CpuSensor extends powerapi.sensor.cpusensor.CpuSensor with Configuration {
         }
       })
 
-      result.toMap[Int, Int]
+      result.toMap[Int, Long]
     }
   }
 
   class Time {
-    lazy val globalStatFile = fromConf("globalStat")(elt => (elt \\ "@url").text)(0)
+    lazy val globalStatFile = conf.getGlobalStat
     lazy val GlobalStatFormat = """cpu\s+([\d\s]+)""".r
     def globalElapsedTime = {
       try {
@@ -86,7 +85,7 @@ class CpuSensor extends powerapi.sensor.cpusensor.CpuSensor with Configuration {
       }
     }
 
-    lazy val processStatFile = fromConf("processStat")(elt => (elt \\ "@url").text)(0)
+    lazy val processStatFile = conf.getProcessStat
     def processElapsedTime(implicit process: Process) = {
       try {
         // FIXME: Due to Java JDK bug #7132461, there is no way to apply buffer to procfs files and thus, directly open stream from the given URL.

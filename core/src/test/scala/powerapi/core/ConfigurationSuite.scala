@@ -20,38 +20,38 @@ package powerapi.core
 import org.junit.Test
 import org.scalatest.junit.JUnitSuite
 import org.scalatest.junit.ShouldMatchersForJUnit
+import scala.collection.JavaConversions
+import com.typesafe.config.Config
 
 class ConfigurationSuite extends JUnitSuite with ShouldMatchersForJUnit with Configuration {
 
   @Test
   def testKeyFromConf {
-    val result = fromConf[String]("key") { elt => (elt \\ "@value").text }
-    result should have size (1)
-    result(0) should equal("value")
+    conf.getString("powerapi.key") should equal("value")
   }
 
   @Test
   def testStringsFromConf {
-    val result = fromConf[String]("string") { elt => (elt \\ "@value").text }
-    result should have size (3)
-    result(0) should equal("string1")
-    result(1) should equal("string2")
-    result(2) should equal("string3")
+    val strings = for (config <- JavaConversions.asScalaBuffer(conf.getConfigList("powerapi.strings"))) yield (config.asInstanceOf[Config].getString("string"))
+    strings should have size (3)
+    strings(0) should equal("string1")
+    strings(1) should equal("string2")
+    strings(2) should equal("string3")
   }
 
   @Test
   def testIntsFromConf {
-    val result = fromConf[Int]("int") { elt => (elt \\ "@value").text.toInt }
-    result.reduceLeft((acc, x) => acc + x) should equal(6)
+    val ints = for (config <- JavaConversions.asScalaBuffer(conf.getConfigList("powerapi.ints"))) yield (config.asInstanceOf[Config].getInt("int"))
+    ints.reduceLeft((acc, x) => acc + x) should equal(6)
   }
 
   @Test
   def testItemsFromConf {
     case class Item(id: Int, value: Double)
-    val result = fromConf[Item]("item") { elt => Item((elt \\ "@id").text.toInt, (elt \\ "@value").text.toDouble) }
-    result should have size (2)
-    result(0) should equal(Item(1, 1.5))
-    result(1) should equal(Item(2, 2.0))
+    val items = for (config <- JavaConversions.asScalaBuffer(conf.getConfigList("powerapi.items"))) yield (Item(config.asInstanceOf[Config].getInt("id"), config.asInstanceOf[Config].getDouble("value")))
+    items should have size (2)
+    items(0) should equal(Item(1, 1.5))
+    items(1) should equal(Item(2, 2.0))
   }
 
 }

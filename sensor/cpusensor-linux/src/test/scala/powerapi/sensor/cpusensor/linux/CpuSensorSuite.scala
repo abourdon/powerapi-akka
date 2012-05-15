@@ -25,19 +25,17 @@ import org.junit.Test
 import org.scalatest.junit.JUnitSuite
 import org.scalatest.junit.ShouldMatchersForJUnit
 
+import com.typesafe.config.Config
+
+import akka.actor.actorRef2Scala
 import akka.actor.Actor
 import akka.actor.ActorSystem
 import akka.actor.Props
-import akka.actor.actorRef2Scala
-import akka.dispatch.Await
 import akka.testkit.TestActorRef
 import akka.util.duration.intToDurationInt
-import akka.util.Timeout
-import powerapi.core.Clock
-import powerapi.core.Configuration
-import powerapi.core.Message
-import powerapi.core.Process
 import powerapi.core.Tick
+import powerapi.core.Clock
+import powerapi.core.Process
 import powerapi.core.TickIt
 import powerapi.core.TickSubscription
 import powerapi.core.UnTickIt
@@ -57,18 +55,16 @@ class CpuSensorReceiver extends Actor {
 class CpuSensorSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
   trait ConfigurationMock extends Configuration {
-    lazy val basedir = new URL("file", Properties.propOrEmpty("basedir"), "")
-    lazy val globalStat = new URL(basedir, "/src/test/resources/proc/stat")
-    lazy val processStat = new URL(basedir, "/src/test/resources/proc/%?/stat")
-    lazy val timesInState = new URL(basedir, "/src/test/resources/sys/devices/system/cpu/cpu%?/cpufreq/stats/time_in_state")
+    class ExtraConfigurationMock(conf: Config) extends ExtraConfiguration(conf) {
+      override def getCores() = 4
 
-    override lazy val conf =
-      <powerapi>
-        <cores value="4"/>
-        <globalStat url={ globalStat.toString }/>
-        <processStat url={ processStat.toString }/>
-        <timesInState url={ timesInState.toString }/>
-      </powerapi>
+      lazy val basedir = new URL("file", Properties.propOrEmpty("basedir"), "")
+      override def getGlobalStat() = new URL(basedir, "/src/test/resources/proc/stat").toString
+      override def getProcessStat() = new URL(basedir, "/src/test/resources/proc/%?/stat").toString
+      override def getTimeInState() = new URL(basedir, "/src/test/resources/sys/devices/system/cpu/cpu%?/cpufreq/stats/time_in_state").toString
+    }
+
+    override implicit def toExtraConfiguration(conf: Config) = new ExtraConfigurationMock(conf)
   }
 
   implicit val system = ActorSystem("cpusensorsuite")

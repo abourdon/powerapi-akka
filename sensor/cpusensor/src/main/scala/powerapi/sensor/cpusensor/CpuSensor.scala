@@ -22,9 +22,9 @@ import powerapi.core.Message
 import powerapi.core.Sensor
 
 /** Messages definition */
-case class TimeInStates(times: Map[Int, Int]) extends Message {
+case class TimeInStates(times: Map[Int, Long]) extends Message {
   def -(that: TimeInStates) =
-    TimeInStates((for ((frequency, time) <- times) yield (frequency, time - that.times.getOrElse(frequency, 0))).toMap)
+    TimeInStates((for ((frequency, time) <- times) yield (frequency, time - that.times.getOrElse(frequency, 0: Long))).toMap)
 }
 case class GlobalElapsedTime(time: Int) extends Message
 case class ProcessElapsedTime(time: Int) extends Message

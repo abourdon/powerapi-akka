@@ -16,9 +16,20 @@
  * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
  * Boston, MA  02110-1301, USA.
  */
-package powerapi.core
-import com.typesafe.config.ConfigFactory
+package powerapi.formula.cpuformula.simple
+import com.typesafe.config.Config
+import scala.collection.JavaConversions
 
-trait Configuration {
-  lazy val conf = ConfigFactory.load
+trait Configuration extends powerapi.core.Configuration {
+  class ExtraConfiguration(conf: Config) {
+    def getCores() = conf.getDouble("powerapi.cpu.cores")
+    def getTdp() = conf.getDouble("powerapi.cpu.tdp")
+    def getFrequencies() = {
+      val frequencies = for (item <- JavaConversions.asScalaBuffer(conf.getConfigList("powerapi.cpu.frequencies")))
+        yield (item.asInstanceOf[Config].getInt("value"), item.asInstanceOf[Config].getDouble("voltage"))
+      frequencies.toMap
+    }
+  }
+
+  implicit def toExtraConfiguration(conf: Config) = new ExtraConfiguration(conf)
 }
