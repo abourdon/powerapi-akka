@@ -27,7 +27,6 @@ import powerapi.sensor.cpusensor.{TimeInStates, ProcessElapsedTime, GlobalElapse
 class CpuFormula extends powerapi.formula.cpuformula.CpuFormula with Configuration {
   // Environment specific values (from the configuration file)
   lazy val tdp = conf.getTdp
-  lazy val cores = conf.getCores
   lazy val frequencies = conf.getFrequencies
   lazy val constant = (0.7 * tdp) / (frequencies.max._1 * math.pow(frequencies.max._2, 2))
   lazy val powers = frequencies.map(frequency => (frequency._1, (constant * frequency._1 * math.pow(frequency._2, 2))))

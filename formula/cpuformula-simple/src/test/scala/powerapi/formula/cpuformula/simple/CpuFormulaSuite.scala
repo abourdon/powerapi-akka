@@ -106,11 +106,6 @@ class CpuFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
   }
 
   @Test
-  def testCores {
-    cpuformula.underlyingActor.cores should equal(4)
-  }
-
-  @Test
   def testVoltages {
     cpuformula.underlyingActor.frequencies should have size (3)
     cpuformula.underlyingActor.frequencies(1800002) should equal(1.31)

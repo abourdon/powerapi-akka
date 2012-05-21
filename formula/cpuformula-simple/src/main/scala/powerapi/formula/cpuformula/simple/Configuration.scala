@@ -24,7 +24,6 @@ import com.typesafe.config.Config
 
 trait Configuration extends powerapi.core.Configuration {
   class ExtraConfiguration(conf: Config) {
-    def getCores() = conf.getDouble("powerapi.cpu.cores")
     def getTdp() = conf.getDouble("powerapi.cpu.tdp")
     def getFrequencies() =
       (for (item <- JavaConversions.asScalaBuffer(conf.getConfigList("powerapi.cpu.frequencies")))
