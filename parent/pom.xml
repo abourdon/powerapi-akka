@@ -160,7 +160,6 @@
 					<excludes>
 						<exclude>**.gitignore</exclude>
 						<exclude>**.cache</exclude>
-						<exclude>target/**</exclude>
 						<exclude>**/src/main/resources/**</exclude>
 						<exclude>**/src/test/resources/**</exclude>
 					</excludes>
