@@ -23,19 +23,19 @@ import java.net.URL
 import scala.util.Properties
 
 import akka.actor.actorRef2Scala
-import akka.actor.{Props, ActorSystem, Actor}
+import akka.actor.{ Props, ActorSystem, Actor }
 import akka.testkit.TestActorRef
 import akka.util.duration.intToDurationInt
 
 import org.junit.Test
-import org.scalatest.junit.{ShouldMatchersForJUnit, JUnitSuite}
+import org.scalatest.junit.{ ShouldMatchersForJUnit, JUnitSuite }
 
 import com.typesafe.config.Config
 
 import powerapi.core.Tick
-import powerapi.core.{UnTickIt, TickSubscription, TickIt, Process, Clock}
+import powerapi.core.{ UnTickIt, TickSubscription, TickIt, Process, Clock }
 import powerapi.sensor.cpusensor.CpuSensorValues
-import powerapi.sensor.cpusensor.{TimeInStates, ProcessElapsedTime, GlobalElapsedTime}
+import powerapi.sensor.cpusensor.{ TimeInStates, ProcessElapsedTime, GlobalElapsedTime }
 
 class CpuSensorReceiver extends Actor {
   var receivedData: Option[CpuSensorValues] = None
@@ -48,16 +48,12 @@ class CpuSensorReceiver extends Actor {
 class CpuSensorSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
   trait ConfigurationMock extends Configuration {
-    class ExtraConfigurationMock(conf: Config) extends ExtraConfiguration(conf) {
-      override def getCores() = 4
+    override lazy val cores = 4
 
-      lazy val basedir = new URL("file", Properties.propOrEmpty("basedir"), "")
-      override def getGlobalStat() = new URL(basedir, "/src/test/resources/proc/stat").toString
-      override def getProcessStat() = new URL(basedir, "/src/test/resources/proc/%?/stat").toString
-      override def getTimeInState() = new URL(basedir, "/src/test/resources/sys/devices/system/cpu/cpu%?/cpufreq/stats/time_in_state").toString
-    }
-
-    override implicit def toExtraConfiguration(conf: Config) = new ExtraConfigurationMock(conf)
+    lazy val basedir = new URL("file", Properties.propOrEmpty("basedir"), "")
+    override lazy val globalStatPath = new URL(basedir, "/src/test/resources/proc/stat").toString
+    override lazy val processStatPath = new URL(basedir, "/src/test/resources/proc/%?/stat").toString
+    override lazy val timeInStatePath = new URL(basedir, "/src/test/resources/sys/devices/system/cpu/cpu%?/cpufreq/stats/time_in_state").toString
   }
 
   implicit val system = ActorSystem("cpusensorsuite")

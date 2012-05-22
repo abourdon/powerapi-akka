@@ -18,27 +18,21 @@
  */
 package powerapi.sensor.cpusensor.linux
 
-import java.io.{IOException, FileInputStream}
+import java.io.{ IOException, FileInputStream }
 import java.net.URL
 
-import powerapi.core.{Tick, Process}
-import powerapi.sensor.cpusensor.{TimeInStates, ProcessElapsedTime, GlobalElapsedTime, CpuSensorValues}
+import powerapi.core.{ Tick, Process }
+import powerapi.sensor.cpusensor.{ TimeInStates, ProcessElapsedTime, GlobalElapsedTime, CpuSensorValues }
 import scalax.io.Resource
 
 class CpuSensor extends powerapi.sensor.cpusensor.CpuSensor with Configuration {
 
   class Frequency {
-    lazy val timeInStateFiles = {
-      val timesInState = conf.getTimeInState
-      val cores = conf.getCores
-      for (core <- 0 until cores) yield (timesInState replace ("%?", core.toString))
-    }
     lazy val TimeInStateFormat = """(\d+)\s+(\d+)""".r
-
     def timeInStates = {
       val result = collection.mutable.HashMap[Int, Long]()
 
-      timeInStateFiles.foreach(timeInStateFile => {
+      (for (core <- 0 until cores) yield (timeInStatePath replace ("%?", core.toString))).foreach(timeInStateFile => {
         try {
           // FIXME: Due to Java JDK bug #7132461, there is no way to apply buffer to procfs files and thus, directly open stream from the given URL.
           // Then, we simply read these files thanks to a FileInputStream in getting those local path
@@ -60,16 +54,15 @@ class CpuSensor extends powerapi.sensor.cpusensor.CpuSensor with Configuration {
   }
 
   class Time {
-    lazy val globalStatFile = conf.getGlobalStat
     lazy val GlobalStatFormat = """cpu\s+([\d\s]+)""".r
     def globalElapsedTime = {
       try {
         // FIXME: Due to Java JDK bug #7132461, there is no way to apply buffer to procfs files and thus, directly open stream from the given URL.
         // Then, we simply read these files thanks to a FileInputStream in getting those local path
-        Resource.fromInputStream(new FileInputStream(new URL(globalStatFile).getPath())).lines().toIndexedSeq(0) match {
-          case GlobalStatFormat(times) => times.split(' ').foldLeft(0: Int) { (acc, x) => (acc + x.toInt) }
+        Resource.fromInputStream(new FileInputStream(new URL(globalStatPath).getPath())).lines().toIndexedSeq(0) match {
+          case GlobalStatFormat(times) => times.split(' ').foldLeft(0: Long) { (acc, x) => (acc + x.toLong) }
           case _ => {
-            log.warning("unable to parse line from file \"" + globalStatFile)
+            log.warning("unable to parse line from file \"" + globalStatPath)
             0
           }
         }
@@ -81,14 +74,13 @@ class CpuSensor extends powerapi.sensor.cpusensor.CpuSensor with Configuration {
       }
     }
 
-    lazy val processStatFile = conf.getProcessStat
     def processElapsedTime(implicit process: Process) = {
       try {
         // FIXME: Due to Java JDK bug #7132461, there is no way to apply buffer to procfs files and thus, directly open stream from the given URL.
         // Then, we simply read these files thanks to a FileInputStream in getting those local path
-        val line = Resource.fromInputStream(new FileInputStream(new URL(processStatFile replace ("%?", process.pid.toString)).getPath())).lines().toIndexedSeq(0) split ("\\s")
+        val line = Resource.fromInputStream(new FileInputStream(new URL(processStatPath replace ("%?", process.pid.toString)).getPath())).lines().toIndexedSeq(0) split ("\\s")
         // User time + System time + Block IO waiting time
-        line(13).toInt + line(14).toInt + line(41).toInt
+        line(13).toLong + line(14).toLong + line(41).toLong
       } catch {
         case ioe: IOException => {
           log.warning("i/o exception: " + ioe.getMessage)
@@ -110,10 +102,6 @@ class CpuSensor extends powerapi.sensor.cpusensor.CpuSensor with Configuration {
 
   lazy val time = new Time
   def elapsedTime(implicit process: Process = Process(-1)) = time.elapsedTime
-
-  def publish(sensorValues: CpuSensorValues) {
-    context.system.eventStream publish sensorValues
-  }
 
   def process(tick: Tick) {
     publish(

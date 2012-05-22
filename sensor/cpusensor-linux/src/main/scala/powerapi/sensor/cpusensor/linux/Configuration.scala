@@ -21,14 +21,8 @@ package powerapi.sensor.cpusensor.linux
 import com.typesafe.config.Config
 
 trait Configuration extends powerapi.core.Configuration {
-
-  class ExtraConfiguration(conf: Config) {
-    def getCores() = conf.getInt("powerapi.cpu.cores")
-    def getGlobalStat() = conf.getString("powerapi.cpu.global-stat")
-    def getProcessStat() = conf.getString("powerapi.cpu.process-stat")
-    def getTimeInState() = conf.getString("powerapi.cpu.time-in-state")
-  }
-
-  implicit def toExtraConfiguration(conf: Config) = new ExtraConfiguration(conf)
-
+  lazy val cores = conf.getInt("powerapi.cpu.cores")
+  lazy val globalStatPath = conf.getString("powerapi.cpu.global-stat")
+  lazy val processStatPath = conf.getString("powerapi.cpu.process-stat")
+  lazy val timeInStatePath = conf.getString("powerapi.cpu.time-in-state")
 }
