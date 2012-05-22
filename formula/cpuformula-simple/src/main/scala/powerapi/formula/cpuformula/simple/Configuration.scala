@@ -23,12 +23,7 @@ import scala.collection.JavaConversions
 import com.typesafe.config.Config
 
 trait Configuration extends powerapi.core.Configuration {
-  class ExtraConfiguration(conf: Config) {
-    def getTdp() = conf.getDouble("powerapi.cpu.tdp")
-    def getFrequencies() =
-      (for (item <- JavaConversions.asScalaBuffer(conf.getConfigList("powerapi.cpu.frequencies")))
-        yield (item.asInstanceOf[Config].getInt("value"), item.asInstanceOf[Config].getDouble("voltage"))).toMap
-  }
-
-  implicit def toExtraConfiguration(conf: Config) = new ExtraConfiguration(conf)
+  lazy val tdp = conf.getDouble("powerapi.cpu.tdp")
+  lazy val frequencies = (for (item <- JavaConversions.asScalaBuffer(conf.getConfigList("powerapi.cpu.frequencies")))
+    yield (item.asInstanceOf[Config].getInt("value"), item.asInstanceOf[Config].getDouble("voltage"))).toMap
 }

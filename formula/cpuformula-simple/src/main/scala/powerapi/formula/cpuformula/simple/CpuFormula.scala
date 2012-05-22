@@ -20,14 +20,11 @@ package powerapi.formula.cpuformula.simple
 
 import scala.collection.mutable.HashMap
 
-import powerapi.core.{TickSubscription, Energy}
+import powerapi.core.{ TickSubscription, Energy }
 import powerapi.formula.cpuformula.CpuFormulaValues
-import powerapi.sensor.cpusensor.{TimeInStates, ProcessElapsedTime, GlobalElapsedTime, CpuSensorValues}
+import powerapi.sensor.cpusensor.{ TimeInStates, ProcessElapsedTime, GlobalElapsedTime, CpuSensorValues }
 
 class CpuFormula extends powerapi.formula.cpuformula.CpuFormula with Configuration {
-  // Environment specific values (from the configuration file)
-  lazy val tdp = conf.getTdp
-  lazy val frequencies = conf.getFrequencies
   lazy val constant = (0.7 * tdp) / (frequencies.max._1 * math.pow(frequencies.max._2, 2))
   lazy val powers = frequencies.map(frequency => (frequency._1, (constant * frequency._1 * math.pow(frequency._2, 2))))
 
@@ -39,9 +36,9 @@ class CpuFormula extends powerapi.formula.cpuformula.CpuFormula with Configurati
       ProcessElapsedTime(0),
       null)
 
-  def process(CpuSensorValues: CpuSensorValues) {
-    publish(compute(CpuSensorValues))
-    refreshCache(CpuSensorValues)
+  def process(cpuSensorValues: CpuSensorValues) {
+    publish(compute(cpuSensorValues))
+    refreshCache(cpuSensorValues)
   }
 
   def usage(old: CpuSensorValues, now: CpuSensorValues) = {
@@ -68,8 +65,7 @@ class CpuFormula extends powerapi.formula.cpuformula.CpuFormula with Configurati
 
   def compute(now: CpuSensorValues): CpuFormulaValues = {
     val old = cache getOrElse (now.tick.subscription, defaultSensorValue)
-    val computed = power(old, now) * usage(old, now)
-    CpuFormulaValues(Energy.fromPower(computed), now.tick)
+    CpuFormulaValues(Energy.fromPower(power(old, now) * usage(old, now)), now.tick)
   }
 
   def refreshCache(now: CpuSensorValues) {
