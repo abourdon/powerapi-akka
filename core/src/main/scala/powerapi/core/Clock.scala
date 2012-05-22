@@ -33,63 +33,66 @@ case class UnTickIt(subscription: TickSubscription) extends Message
 case class Tick(subscription: TickSubscription, timestamp: Long = System.currentTimeMillis) extends Message
 
 class Clock extends Actor with Configuration {
+  lazy val minimumTickDuration = Duration.parse(conf.getString("akka.scheduler.tick-duration"))
   val subscriptions = new HashMap[Duration, Set[TickSubscription]] with SynchronizedMap[Duration, Set[TickSubscription]]
   val schedulers = new HashMap[Duration, Cancellable]
   val system = context.system
-  
-  def subscribe(implicit tickIt: TickIt) {
-    val currentSubscriptions = subscriptions getOrElse (tickIt.subscription.duration, Set[TickSubscription]())
-    subscriptions += (tickIt.subscription.duration -> (currentSubscriptions + tickIt.subscription))
-  }
-
-  lazy val minimumTickDuration = Duration.parse(conf.getString("akka.scheduler.tick-duration"))
-  private def scheduleRegistration(implicit tickIt: TickIt) {
-    val duration = if (tickIt.subscription.duration < minimumTickDuration) minimumTickDuration else tickIt.subscription.duration
-    if (!(schedulers contains duration)) {
-      schedulers += (duration -> system.scheduler.schedule(Duration.Zero, duration)(schedule(duration)))
-    }
-  }
-
-  private def schedule(duration: Duration) {
-    if (subscriptions contains duration) {
-      val timestamp = System.currentTimeMillis
-      subscriptions(duration).foreach(subscription => (system.eventStream publish Tick(subscription, timestamp)))
-    }
-  }
 
   def makeItTick(implicit tickIt: TickIt) {
+    def subscribe(implicit tickIt: TickIt) {
+      val currentSubscriptions = subscriptions getOrElse (tickIt.subscription.duration, Set[TickSubscription]())
+      subscriptions += (tickIt.subscription.duration -> (currentSubscriptions + tickIt.subscription))
+    }
+
+    def scheduleRegistration(implicit tickIt: TickIt) {
+      val duration = if (tickIt.subscription.duration < minimumTickDuration) {
+        log.warning("unable to schedule a duration less than that specified in the configuration file (" + tickIt.subscription.duration + " vs " + minimumTickDuration)
+        minimumTickDuration
+      } else {
+        tickIt.subscription.duration
+      }
+      if (!(schedulers contains duration)) {
+        schedulers += (duration -> system.scheduler.schedule(Duration.Zero, duration)({
+          if (subscriptions contains duration) {
+            val timestamp = System.currentTimeMillis
+            subscriptions(duration).foreach(subscription => publish(Tick(subscription, timestamp)))
+          }
+        }))
+      }
+    }
+
     subscribe
     scheduleRegistration
   }
 
-  private def unsubscribe(implicit untickIt: UnTickIt) {
-    val currentSubscriptions = subscriptions getOrElse (untickIt.subscription.duration, Set[TickSubscription]())
-    if (!currentSubscriptions.isEmpty) {
-      subscriptions += (untickIt.subscription.duration -> (currentSubscriptions - untickIt.subscription))
-    }
-  }
-
-  private def unschedule(implicit untickIt: UnTickIt) {
-    val duration = untickIt.subscription.duration
-    val currentSubscriptions = subscriptions getOrElse (untickIt.subscription.duration, Set[TickSubscription]())
-
-    // Iff subscriptions associated to the specified duration is empty,
-    // then we have to stop schedule and delete duration reference from maps
-    if (currentSubscriptions.isEmpty) {
-      // Stop schedule associated to the associated duration
-      val schedule = schedulers getOrElse (duration, new Cancellable {
-        def cancel() {}
-        def isCancelled = true
-      })
-      schedule.cancel()
-
-      // Delete duration key from subscriptions and schedulers maps
-      subscriptions -= duration
-      schedulers -= duration
-    }
-  }
-
   def unmakeItTick(implicit untickIt: UnTickIt) {
+    def unsubscribe(implicit untickIt: UnTickIt) {
+      val currentSubscriptions = subscriptions getOrElse (untickIt.subscription.duration, Set[TickSubscription]())
+      if (!currentSubscriptions.isEmpty) {
+        subscriptions += (untickIt.subscription.duration -> (currentSubscriptions - untickIt.subscription))
+      }
+    }
+
+    def unschedule(implicit untickIt: UnTickIt) {
+      val duration = untickIt.subscription.duration
+      val currentSubscriptions = subscriptions getOrElse (untickIt.subscription.duration, Set[TickSubscription]())
+
+      // Iff subscriptions associated to the specified duration is empty,
+      // then we have to stop schedule and delete duration reference from maps
+      if (currentSubscriptions.isEmpty) {
+        // Stop schedule associated to the associated duration
+        val schedule = schedulers getOrElse (duration, new Cancellable {
+          def cancel() {}
+          def isCancelled = true
+        })
+        schedule.cancel()
+
+        // Delete duration key from subscriptions and schedulers maps
+        subscriptions -= duration
+        schedulers -= duration
+      }
+    }
+
     unsubscribe
     unschedule
   }
