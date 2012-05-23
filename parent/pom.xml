@@ -156,6 +156,7 @@
 					<properties>
 						<license.name>Inria, University Lille 1</license.name>
 						<license.year>${project.inceptionYear}</license.year>
+						<contact.name>powerapi-user-list@googlegroups.com</contact.name>
 					</properties>
 					<excludes>
 						<exclude>**.gitignore</exclude>
