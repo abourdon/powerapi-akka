@@ -29,6 +29,16 @@
 				<role>Developer</role>
 			</roles>
 		</developer>
+		<developer>
+			<id>abourdon</id>
+			<name>Romain Rouvoy</name>
+			<email>romain.rouvoy@inria.fr</email>
+			<organization>Inria</organization>
+			<organizationUrl>http://www.inria.fr</organizationUrl>
+			<roles>
+				<role>Architect</role>
+			</roles>
+		</developer>
 	</developers>
 
 	<properties>
@@ -49,6 +59,21 @@
 		</repository>
 	</repositories>
 
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.github.scala-incubator.io</groupId>
+				<artifactId>scala-io-core_${scala.version}</artifactId>
+				<version>0.4.0</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.scala-incubator.io</groupId>
+				<artifactId>scala-io-file_${scala.version}</artifactId>
+				<version>0.4.0</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.scala-lang</groupId>
@@ -59,16 +84,6 @@
 			<groupId>com.typesafe.akka</groupId>
 			<artifactId>akka-actor</artifactId>
 			<version>${akka.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.github.scala-incubator.io</groupId>
-			<artifactId>scala-io-core_${scala.version}</artifactId>
-			<version>0.4.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.github.scala-incubator.io</groupId>
-			<artifactId>scala-io-file_${scala.version}</artifactId>
-			<version>0.4.0</version>
 		</dependency>
 
 		<!-- Test scope -->

@@ -1,35 +1,42 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>powerapi.formula</groupId>
-	<artifactId>cpuformula-simple</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+
+	<groupId>fr.inria.powerapi.formula</groupId>
+	<artifactId>formula-cpu-general</artifactId>
 	<name>${project.artifactId}</name>
 	<description>CPU formula module of the PowerAPI process-level energy consumption library.</description>
 	<inceptionYear>2012</inceptionYear>
 
 	<parent>
-		<groupId>powerapi</groupId>
+		<groupId>fr.inria.powerapi</groupId>
 		<artifactId>parent</artifactId>
-		<version>1.0-SNAPSHOT</version>
+		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 
 	<dependencies>
 		<dependency>
-			<groupId>powerapi</groupId>
+			<groupId>fr.inria.powerapi</groupId>
 			<artifactId>core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>powerapi.sensor</groupId>
-			<artifactId>cpusensor</artifactId>
+			<groupId>fr.inria.powerapi.sensor</groupId>
+			<artifactId>sensor-cpu-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>powerapi.formula</groupId>
-			<artifactId>cpuformula</artifactId>
+			<groupId>fr.inria.powerapi.formula</groupId>
+			<artifactId>formula-cpu-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-	</dependencies>
 
+		<!-- Test scope -->
+
+		<dependency>
+			<groupId>com.github.scala-incubator.io</groupId>
+			<artifactId>scala-io-file_${scala.version}</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 </project>
