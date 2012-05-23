@@ -22,7 +22,7 @@
 			<id>abourdon</id>
 			<name>Aurelien Bourdon</name>
 			<email>aurelien.bourdon@inria.fr</email>
-			<organization>Inria</organization>
+			<organization>Inria / University Lille 1</organization>
 			<organizationUrl>http://www.inria.fr</organizationUrl>
 			<roles>
 				<role>Architect</role>
@@ -30,11 +30,11 @@
 			</roles>
 		</developer>
 		<developer>
-			<id>abourdon</id>
+			<id>rouvoy</id>
 			<name>Romain Rouvoy</name>
-			<email>romain.rouvoy@inria.fr</email>
-			<organization>Inria</organization>
-			<organizationUrl>http://www.inria.fr</organizationUrl>
+			<email>romain.rouvoy@univ-lille1.fr</email>
+			<organization>University Lille 1 / Inria</organization>
+			<organizationUrl>http://www.univ-lille1.fr</organizationUrl>
 			<roles>
 				<role>Architect</role>
 			</roles>
