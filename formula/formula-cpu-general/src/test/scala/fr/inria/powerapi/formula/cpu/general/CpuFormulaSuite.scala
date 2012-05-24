@@ -20,8 +20,6 @@
  */
 package fr.inria.powerapi.formula.cpu.general
 
-import scala.collection.mutable.HashMap
-
 import akka.actor.actorRef2Scala
 import akka.actor.{ActorSystem, ActorLogging, Actor}
 import akka.testkit.TestActorRef
@@ -30,57 +28,8 @@ import akka.util.duration.intToDurationInt
 import org.junit.Test
 import org.scalatest.junit.{ShouldMatchersForJUnit, JUnitSuite}
 
-import fr.inria.powerapi.core.{TickSubscription, Tick, Process, Energy}
-import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
+import fr.inria.powerapi.core.{TickSubscription, Tick, Process}
 import fr.inria.powerapi.sensor.cpu.api.{TimeInStates, ProcessElapsedTime, GlobalElapsedTime, CpuSensorValues}
-import scalax.file.Path
-
-class SimpleTickReceiver extends Actor with ActorLogging {
-  var receivedTicks = 0
-
-  def receive = {
-    case tick: Tick => receivedTicks += 1
-  }
-}
-
-class CpuFormulaLoggingReceiver extends Actor with ActorLogging {
-  def receive = {
-    case cpuFormulaValues: CpuFormulaValues =>
-      if (cpuFormulaValues.energy.power > 0) {
-        log.info(cpuFormulaValues.tick.subscription.process + ": " + cpuFormulaValues.energy)
-      }
-  }
-}
-
-class CpuFormulaWritingReceiver extends Actor with ActorLogging {
-  lazy val out = Path.createTempFile(
-    prefix = "powerapi",
-    deleteOnExit = false)
-
-  def receive = {
-    case cpuFormulaValues: CpuFormulaValues => {
-      out append (cpuFormulaValues.energy.power.toString + "\n")
-    }
-  }
-}
-
-case object ProcessAggregation
-class CpuFormulaAggregatingReceiver extends Actor with ActorLogging {
-  lazy val out = Path.createTempFile(
-    prefix = "powerapi-aggregate",
-    deleteOnExit = false)
-  lazy val map = HashMap[Long, List[Energy]]()
-  lazy val set = scala.collection.mutable.Set[Long]()
-
-  def receive = {
-    case cpuFormulaValues: CpuFormulaValues => {
-      map += (cpuFormulaValues.tick.timestamp -> ((map getOrElse (cpuFormulaValues.tick.timestamp, List[Energy]())) ::: List(cpuFormulaValues.energy)))
-      set += cpuFormulaValues.tick.timestamp
-    }
-    case ProcessAggregation =>
-      map foreach ({ item => out append ((item._2.foldLeft(Energy.fromPower(0)) { (acc, x) => acc + x }).mkString + "\n") })
-  }
-}
 
 case object Timestamps
 case object NumberOfTicks
