@@ -3,9 +3,9 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>fr.inria.powerapi.listener</groupId>
-	<artifactId>listener-cpu-simple</artifactId>
+	<artifactId>listener-cpu-console</artifactId>
 	<name>${project.artifactId}</name>
-	<description>Simple CPU listener using the PowerAPI process-level energy consumption library.</description>
+	<description>CPU listener displaying information providing by the PowerAPI process-level energy consumption library.</description>
 	<inceptionYear>2012</inceptionYear>
 
 	<parent>

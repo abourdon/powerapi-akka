@@ -18,7 +18,7 @@
  *
  * Contact: powerapi-user-list@googlegroups.com
  */
-package fr.inria.powerapi.listener.cpu.simple
+package fr.inria.powerapi.listener.cpu.console
 import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
 import fr.inria.powerapi.core.Listener
 
