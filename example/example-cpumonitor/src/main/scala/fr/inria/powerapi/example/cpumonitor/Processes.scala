@@ -20,22 +20,27 @@
  */
 package fr.inria.powerapi.example.cpumonitor
 import java.lang.management.ManagementFactory
-
+import com.typesafe.config.ConfigFactory
 import akka.util.duration.intToDurationInt
-
 import fr.inria.powerapi.core.Process
 import fr.inria.powerapi.library.PowerAPI
 import fr.inria.powerapi.listener.cpu.jfreechart.CpuListener
 import scalax.io.Resource
+import scala.collection.JavaConversions
 
 object Processes {
+  lazy val conf = ConfigFactory.load
+
+  def fromConf {
+    val pids = JavaConversions.asScalaBuffer(conf.getIntList("powerapi.pids")).toList
+    pids.foreach(pid => PowerAPI.startMonitoring(Process(pid), 500 milliseconds, classOf[CpuListener]))
+    Thread.sleep((5 minutes).toMillis)
+    pids.foreach(pid => PowerAPI.stopMonitoring(Process(pid), 500 milliseconds, classOf[CpuListener]))
+  }
 
   def perso {
-    val currentPid = ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
-    PowerAPI.startMonitoring(Process(currentPid), 500 milliseconds, classOf[CpuListener])
     PowerAPI.startMonitoring(Process(16617), 500 milliseconds, classOf[CpuListener])
     Thread.sleep((5 minutes).toMillis)
-    PowerAPI.stopMonitoring(Process(currentPid), 500 milliseconds, classOf[CpuListener])
     PowerAPI.stopMonitoring(Process(16617), 500 milliseconds, classOf[CpuListener])
   }
 
@@ -72,7 +77,7 @@ object Processes {
     }
 
     val startingTime = System.currentTimeMillis
-    while (System.currentTimeMillis - startingTime < (5 minutes).toMillis) {
+    while (System.currentTimeMillis - startingTime < (1 hour).toMillis) {
       udpateMonitoredPids
       Thread.sleep((250 milliseconds).toMillis)
     }

@@ -25,9 +25,17 @@ import fr.inria.powerapi.sensor.cpu.proc.CpuSensor
 import fr.inria.powerapi.formula.cpu.general.CpuFormula
 
 object CpuMonitor {
-  def main(args: Array[String]) {
+  private def beforeStart {
     PowerAPI.startModules(Array(classOf[Clock], classOf[CpuSensor], classOf[CpuFormula]))
-    Processes.intensive
+  }
+
+  private def beforeEnd {
     PowerAPI.stopModules(Array(classOf[Clock], classOf[CpuSensor], classOf[CpuFormula]))
+  }
+
+  def main(args: Array[String]) {
+    beforeStart
+    Processes.fromConf
+    beforeEnd
   }
 }
