@@ -27,8 +27,31 @@ import fr.inria.powerapi.core.{ Tick, Process }
 import fr.inria.powerapi.sensor.cpu.api.{ TimeInStates, ProcessElapsedTime, GlobalElapsedTime, CpuSensorValues }
 import scalax.io.Resource
 
+/**
+ * CPU sensor configuration.
+ *
+ * @author abourdon
+ */
+trait Configuration extends fr.inria.powerapi.core.Configuration {
+  lazy val cores = load { _.getInt("powerapi.cpu.cores") }(0)
+  lazy val globalStatPath = load { _.getString("powerapi.cpu.global-stat") }("file:///proc/stat")
+  lazy val processStatPath = load { _.getString("powerapi.cpu.process-stat") }("file:///proc/%?/stat")
+  lazy val timeInStatePath = load { _.getString("powerapi.cpu.time-in-state") }("file:///sys/devices/system/cpu/cpu%?/cpufreq/stats/time_in_state")
+}
+
+/**
+ * CPU sensor component collecting data from a /proc and /sys directories
+ * which are typically presents under a Linux platform.
+ *
+ * @see http://www.kernel.org/doc/man-pages/online/pages/man5/proc.5.html
+ *
+ * @author abourdon
+ */
 class CpuSensor extends fr.inria.powerapi.sensor.cpu.api.CpuSensor with Configuration {
 
+  /**
+   * Delegation class collecting frequency information contained into the timeInStatePath file
+   */
   class Frequency {
     lazy val TimeInStateFormat = """(\d+)\s+(\d+)""".r
     def timeInStates = {
@@ -55,6 +78,9 @@ class CpuSensor extends fr.inria.powerapi.sensor.cpu.api.CpuSensor with Configur
     }
   }
 
+  /**
+   * Delegation class collecting time information contained into both globalStatPath and processStatPath files
+   */
   class Time {
     lazy val GlobalStatFormat = """cpu\s+([\d\s]+)""".r
     def globalElapsedTime = {

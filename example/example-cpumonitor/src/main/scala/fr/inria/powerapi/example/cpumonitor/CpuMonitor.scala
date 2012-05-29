@@ -24,18 +24,23 @@ import fr.inria.powerapi.core.Clock
 import fr.inria.powerapi.sensor.cpu.proc.CpuSensor
 import fr.inria.powerapi.formula.cpu.general.CpuFormula
 
+/**
+ * CPU monitoring example.
+ *
+ * @author abourdon
+ */
 object CpuMonitor {
   private def beforeStart {
-    PowerAPI.startModules(Array(classOf[Clock], classOf[CpuSensor], classOf[CpuFormula]))
+    Array(classOf[CpuSensor], classOf[CpuFormula]).foreach(PowerAPI.startEnergyModule(_))
   }
 
   private def beforeEnd {
-    PowerAPI.stopModules(Array(classOf[Clock], classOf[CpuSensor], classOf[CpuFormula]))
+    Array(classOf[CpuSensor], classOf[CpuFormula]).foreach(PowerAPI.stopEnergyModule(_))
   }
 
   def main(args: Array[String]) {
     beforeStart
-    Processes.fromConf
+    Processes.intensive
     beforeEnd
   }
 }

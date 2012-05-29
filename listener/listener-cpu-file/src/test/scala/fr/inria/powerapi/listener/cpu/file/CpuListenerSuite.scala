@@ -20,12 +20,9 @@
  */
 package fr.inria.powerapi.listener.cpu.file
 import java.lang.management.ManagementFactory
-
 import akka.util.duration.intToDurationInt
-
 import org.junit.{ Test, Before, After }
 import org.scalatest.junit.{ ShouldMatchersForJUnit, JUnitSuite }
-
 import fr.inria.powerapi.core.{ Clock, Process }
 import fr.inria.powerapi.formula.cpu.general.CpuFormula
 import fr.inria.powerapi.library.PowerAPI
@@ -44,7 +41,7 @@ class CpuListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
   @Before
   def setUp {
-    PowerAPI.startModules(Array(classOf[Clock], classOf[CpuSensor], classOf[CpuFormula]))
+    Array(classOf[CpuSensor], classOf[CpuFormula]).foreach(PowerAPI.startEnergyModule(_))
   }
 
   @Test
@@ -57,6 +54,6 @@ class CpuListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
   @After
   def tearDown {
-    PowerAPI.stopModules(Array(classOf[Clock], classOf[CpuSensor], classOf[CpuFormula]))
+    Array(classOf[CpuSensor], classOf[CpuFormula]).foreach(PowerAPI.stopEnergyModule(_))
   }
 }

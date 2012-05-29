@@ -36,7 +36,7 @@ class SimpleCpuListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
   @Before
   def setUp {
-    PowerAPI.startModules(Array(classOf[Clock], classOf[CpuSensor], classOf[CpuFormula]))
+    Array(classOf[CpuSensor], classOf[CpuFormula]).foreach(PowerAPI.startEnergyModule(_))
   }
 
   @Test
@@ -48,8 +48,13 @@ class SimpleCpuListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
         case _ => 1
       }
     })
-    pids.foreach(pid => PowerAPI.startMonitoring(Process(pid), 500 milliseconds, classOf[CpuListener]))
+    
+    PowerAPI.startMonitoring(listenerType = classOf[CpuListener])
+    pids.foreach(pid => PowerAPI.startMonitoring(process = Process(pid), duration = 500 milliseconds))
+    
     Thread.sleep((10 seconds).toMillis)
+    
+    PowerAPI.stopMonitoring(listenerType = classOf[CpuListener])
     pids.foreach(pid => PowerAPI.stopMonitoring(Process(pid), 500 milliseconds, classOf[CpuListener]))
   }
 
@@ -64,7 +69,7 @@ class SimpleCpuListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
   @After
   def tearDown {
-    PowerAPI.stopModules(Array(classOf[Clock], classOf[CpuSensor], classOf[CpuFormula]))
+    Array(classOf[CpuSensor], classOf[CpuFormula]).foreach(PowerAPI.stopEnergyModule(_))
   }
 
 }

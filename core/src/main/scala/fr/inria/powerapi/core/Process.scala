@@ -20,6 +20,13 @@
  */
 package fr.inria.powerapi.core
 
+/**
+ * Wrapper symbolizing a system process
+ *
+ * @param pid: the associated Process IDentifier of the Process
+ * 
+ * @author abourdon
+ */
 case class Process(pid: Int) extends Ordered[Process] {
   def compare(that: Process): Int =
     if (pid < that.pid)

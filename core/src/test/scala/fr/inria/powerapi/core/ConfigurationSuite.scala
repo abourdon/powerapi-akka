@@ -19,42 +19,71 @@
  * Contact: powerapi-user-list@googlegroups.com
  */
 package fr.inria.powerapi.core
+import org.scalatest.junit.JUnitSuite
+import akka.actor.ActorSystem
+import akka.testkit.TestActorRef
+import org.scalatest.junit.ShouldMatchersForJUnit
 import scala.collection.JavaConversions
-
 import org.junit.Test
-import org.scalatest.junit.{ ShouldMatchersForJUnit, JUnitSuite }
-
 import com.typesafe.config.Config
 
-class ConfigurationSuite extends JUnitSuite with ShouldMatchersForJUnit with Configuration {
+case class Item(id: Int, value: Double)
+class ConfigurationMock extends Configuration {
+  lazy val key = load { _.getString("powerapi.key") }("error")
+
+  lazy val strings = for (
+    config <- JavaConversions.asScalaBuffer(load { _.getConfigList("powerapi.strings") }(new java.util.ArrayList()))
+  ) yield (config.asInstanceOf[Config].getString("string"))
+
+  lazy val ints = for (
+    config <- JavaConversions.asScalaBuffer(load { _.getConfigList("powerapi.ints") }(new java.util.ArrayList()))
+  ) yield (config.asInstanceOf[Config].getInt("int"))
+
+  lazy val items = for (
+    config <- JavaConversions.asScalaBuffer(load { _.getConfigList("powerapi.items") }(new java.util.ArrayList()))
+  ) yield (Item(config.asInstanceOf[Config].getInt("id"), config.asInstanceOf[Config].getDouble("value")))
+
+  lazy val notFound = load { _.getBoolean("not-found") || true }(false)
+
+  def messagesToListen = Array()
+
+  def process = {
+    case _ => ()
+  }
+}
+
+class ConfigurationSuite extends JUnitSuite with ShouldMatchersForJUnit {
+  implicit val system = ActorSystem("configuration-suite")
+  val configuration = TestActorRef[ConfigurationMock].underlyingActor
 
   @Test
   def testKeyFromConf {
-    conf.getString("powerapi.key") should equal("value")
+    configuration.key should equal("value")
   }
 
   @Test
   def testStringsFromConf {
-    val strings = for (config <- JavaConversions.asScalaBuffer(conf.getConfigList("powerapi.strings"))) yield (config.asInstanceOf[Config].getString("string"))
-    strings should have size (3)
-    strings(0) should equal("string1")
-    strings(1) should equal("string2")
-    strings(2) should equal("string3")
+    configuration.strings should have size (3)
+    configuration.strings(0) should equal("string1")
+    configuration.strings(1) should equal("string2")
+    configuration.strings(2) should equal("string3")
   }
 
   @Test
   def testIntsFromConf {
-    val ints = for (config <- JavaConversions.asScalaBuffer(conf.getConfigList("powerapi.ints"))) yield (config.asInstanceOf[Config].getInt("int"))
-    ints.reduceLeft((acc, x) => acc + x) should equal(6)
+    configuration.ints.reduceLeft((acc, x) => acc + x) should equal(6)
   }
 
   @Test
   def testItemsFromConf {
-    case class Item(id: Int, value: Double)
-    val items = for (config <- JavaConversions.asScalaBuffer(conf.getConfigList("powerapi.items"))) yield (Item(config.asInstanceOf[Config].getInt("id"), config.asInstanceOf[Config].getDouble("value")))
-    items should have size (2)
-    items(0) should equal(Item(1, 1.5))
-    items(1) should equal(Item(2, 2.0))
+    configuration.items should have size (2)
+    configuration.items(0) should equal(Item(1, 1.5))
+    configuration.items(1) should equal(Item(2, 2.0))
+  }
+
+  @Test
+  def testNotFound {
+    configuration.notFound should be(false)
   }
 
 }

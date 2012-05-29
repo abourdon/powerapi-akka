@@ -22,6 +22,11 @@ package fr.inria.powerapi.listener.cpu.console
 import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
 import fr.inria.powerapi.core.Listener
 
+/**
+ * CPU listener which simply display received CpuFormulaValues to the console
+ *
+ * @author abourdon
+ */
 class CpuListener extends Listener {
   def messagesToListen = Array(classOf[CpuFormulaValues])
 

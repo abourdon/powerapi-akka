@@ -23,16 +23,42 @@ import scala.collection.mutable.HashMap
 import akka.util.Duration
 import scala.collection.mutable.SynchronizedMap
 import akka.actor.Cancellable
+import akka.util.duration.intToDurationInt
+import com.typesafe.config.ConfigException
 
-
-/** Messages definition */
+/**
+ * Clock's messages definition
+ */
 case class TickSubscription(process: Process, duration: Duration)
 case class TickIt(subscription: TickSubscription) extends Message
 case class UnTickIt(subscription: TickSubscription) extends Message
 case class Tick(subscription: TickSubscription, timestamp: Long = System.currentTimeMillis) extends Message
 
-class Clock extends Component with Configuration {
-  lazy val minimumTickDuration = Duration.parse(conf.getString("akka.scheduler.tick-duration"))
+/**
+ * Clock configuration.
+ *
+ * @author abourdon
+ */
+trait ClockConfiguration extends Configuration {
+  lazy val minimumTickDuration = load { conf => Duration.parse(conf.getString("akka.scheduler.tick-duration")) }(10 milliseconds)
+}
+
+/**
+ * Clock component, that "tick" the event bus following a configured period.
+ *
+ * The PowerAPI architecture is based on a asynchronous architecture composed by several components.
+ * Each component listen to a event bus and reacts following the message emit by the event bus.
+ * Thus, each component is in a passive state and only process its business part following the emit message.
+ *
+ * At the bottom of this architecture, the Clock component provide a "tick" message to wake up
+ * components which are listen to it.
+ *
+ * Clock component reacts to both TickIt and UnTickIt messages which respectively ask to
+ * start/stop a periodically sending of a Tick message.
+ *
+ * @author abourdon
+ */
+class Clock extends Component with ClockConfiguration {
   val subscriptions = new HashMap[Duration, Set[TickSubscription]] with SynchronizedMap[Duration, Set[TickSubscription]]
   val schedulers = new HashMap[Duration, Cancellable]
   val system = context.system

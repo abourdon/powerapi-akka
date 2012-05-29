@@ -23,12 +23,27 @@ package fr.inria.powerapi.core
 import akka.util.duration.intToDurationInt
 import akka.util.Duration
 
+/**
+ * Wrapper containing energy information.
+ *
+ * Note that constructor is private, so it needs to deals with
+ * its associated companion object.
+ *
+ * @param power: the power value of the Energy class
+ * 
+ * @author abourdon
+ */
 case class Energy private (power: Double) {
   def +(that: Energy) = new Energy(power + that.power)
-  
+
   def mkString = power.toString
 }
 
+/**
+ * Energy class companion object providing factories to instantiate Energy objects.
+ * 
+ * @author abourdon
+ */
 object Energy {
   def fromPower(power: Double) = new Energy(power)
 

@@ -25,89 +25,184 @@ import akka.util.duration._
 import akka.util.{ Timeout, Duration }
 import akka.pattern.ask
 import fr.inria.powerapi.core.{ Message, MessagesToListen, Listener, Component, TickIt, UnTickIt, TickSubscription, Process }
+import fr.inria.powerapi.core.Clock
+import fr.inria.powerapi.core.EnergyModule
+import scala.collection.mutable.SynchronizedMap
 
-class Engine {
-  val modules = collection.mutable.HashMap[Class[_ <: Component], ActorPath]()
-  val listeners = collection.mutable.HashMap[Class[_ <: Listener], ActorPath]()
+/**
+ * PowerAPI's messages definition
+ *
+ * @author abourdon
+ */
+case class StartComponent(componentType: Class[_ <: Component]) extends Message
+case class StopComponent(componentType: Class[_ <: Component]) extends Message
+case class StartMonitoring(
+  process: Process = Process(-1),
+  duration: Duration = Duration.Zero,
+  listenerType: Class[_ <: Listener] = null) extends Message
+case class StopMonitoring(
+  process: Process = Process(-1),
+  duration: Duration = Duration.Zero,
+  listenerType: Class[_ <: Listener] = null) extends Message
+
+/**
+ * PowerAPI engine which start/stop every PowerAPI component such as Listener or Energy Module.
+ *
+ * Current implementation start/stop component in giving the component type.
+ * This restriction helps to instantiate only one implementation of a given component.
+ *
+ * @author abourdon
+ */
+class PowerAPI extends Component {
+  val components = collection.mutable.HashMap[Class[_ <: Component], ActorPath]()
   implicit val timeout = Timeout(5 seconds)
 
-  def startTick(process: Process, duration: Duration)(implicit system: ActorSystem) {
-    system.eventStream.publish(TickIt(TickSubscription(process, duration)))
+  def messagesToListen = Array(classOf[StartComponent], classOf[StopComponent], classOf[StartMonitoring], classOf[StopMonitoring])
+
+  def process = {
+    case startComponent: StartComponent => process(startComponent)
+    case stopComponent: StopComponent => process(stopComponent)
+    case startMonitoring: StartMonitoring => process(startMonitoring)
+    case stopMonitoring: StopMonitoring => process(stopMonitoring)
   }
 
-  def stopTick(process: Process, duration: Duration)(implicit system: ActorSystem) {
-    system.eventStream.publish(UnTickIt(TickSubscription(process, duration)))
-  }
+  def process(startComponent: StartComponent) {
+    /**
+     * Starts a component to work into the PowerAPI system.
+     *
+     * @param componentType: Component type that have to be started.
+     */
+    def start(componentType: Class[_ <: Component]) {
+      if (components.contains(componentType)) {
+        log.warning("Component " + componentType.getCanonicalName + " already started")
+      } else {
+        val component = context.actorOf(Props(componentType.newInstance), name = componentType.getCanonicalName)
+        val messages = Await.result(component ? MessagesToListen, timeout.duration).asInstanceOf[Array[Class[_ <: Message]]]
+        messages.foreach(message => context.system.eventStream.subscribe(component, message))
+        components += (componentType -> component.path)
+      }
+    }
 
-  def startListener(listenerType: Class[_ <: Listener])(implicit system: ActorSystem) {
-    if (!listeners.contains(listenerType)) {
-      val listener = system.actorOf(Props(listenerType.newInstance), name = listenerType.getCanonicalName)
-      val messages = Await.result(listener ? MessagesToListen, timeout.duration).asInstanceOf[Array[Class[_ <: Message]]]
-      messages.foreach(message => system.eventStream.subscribe(listener, message))
-      listeners += (listenerType -> listener.path)
+    start(startComponent.componentType)
+
+    // Be aware to start the Clock if a component has been started
+    if (components.size > 0 && !components.contains(classOf[Clock])) {
+      start(classOf[Clock])
+      log.debug("Clock started")
     }
   }
 
-  def stopListener(listenerType: Class[_ <: Listener])(implicit system: ActorSystem) {
-    try {
-      val listener = system.actorFor(listeners(listenerType))
-      val messages = Await.result(listener ? MessagesToListen, timeout.duration).asInstanceOf[Array[Class[_ <: Message]]]
-      messages.foreach(message => system.eventStream.unsubscribe(listener, message))
-      system stop listener
-      listeners -= listenerType
-    } catch {
-      case nsee: NoSuchElementException => println(nsee.getMessage)
+  def process(stopComponent: StopComponent) {
+    /**
+     * Stops a component to work into the PowerAPI system.
+     *
+     * @param componentType: Component type that have to be stopped.
+     */
+    def stop(componentType: Class[_ <: Component]) {
+      if (components.contains(componentType)) {
+        val component = context.actorFor(components(componentType))
+        val messages = Await.result(component ? MessagesToListen, timeout.duration).asInstanceOf[Array[Class[_ <: Message]]]
+        messages.foreach(message => context.system.eventStream.unsubscribe(component, message))
+        context.stop(component)
+        components -= componentType
+      } else {
+        log.warning("Component " + componentType.getCanonicalName + " is not started")
+      }
+    }
+
+    stop(stopComponent.componentType)
+
+    // Be aware to stop the Clock if all other components has been stopped
+    if (components.size == 1 && components.contains(classOf[Clock])) {
+      stop(classOf[Clock])
+      log.debug("Clock stopped")
     }
   }
 
-  def startModule(moduleType: Class[_ <: Component])(implicit system: ActorSystem) {
-    val module = system.actorOf(Props(moduleType.newInstance), name = moduleType.getCanonicalName)
-    val messages = Await.result(module ? MessagesToListen, timeout.duration).asInstanceOf[Array[Class[_ <: Message]]]
-    messages.foreach(message => system.eventStream.subscribe(module, message))
-    modules += (moduleType -> module.path)
+  def process(startMonitoring: StartMonitoring) {
+    /**
+     * Stops the monitoring of a process during a certain duration a listened by a given listener.
+     *
+     * @param proc: the Process to monitor
+     * @param duration: monitoring duration period
+     * @param listenerType: type of Listener that want to be aware by monitoring
+     */
+    def start(proc: Process, duration: Duration, listenerType: Class[_ <: Listener]) {
+      if (listenerType != null) {
+        process(StartComponent(listenerType))
+      }
+      if (proc != Process(-1) && duration != Duration.Zero) {
+        context.system.eventStream.publish(TickIt(TickSubscription(proc, duration)))
+      }
+    }
+
+    start(startMonitoring.process, startMonitoring.duration, startMonitoring.listenerType)
   }
 
-  def stopModule(moduleType: Class[_ <: Component])(implicit system: ActorSystem) {
-    try {
-      val module = system.actorFor(modules(moduleType))
-      val messages = Await.result(module ? MessagesToListen, timeout.duration).asInstanceOf[Array[Class[_ <: Message]]]
-      messages.foreach(message => system.eventStream.unsubscribe(module, message))
-      system stop module
-      modules -= moduleType
-    } catch {
-      case nsee: NoSuchElementException => println(nsee.getMessage)
+  def process(stopMonitoring: StopMonitoring) {
+    /**
+     * Stops the monitoring of a process during a certain duration a listened by a given listener.
+     *
+     * @param proc: the Process to monitor
+     * @param duration: monitoring duration period
+     * @param listenerType: type of Listener that want to be unaware by monitoring
+     */
+    def stop(proc: Process, duration: Duration, listenerType: Class[_ <: Listener]) {
+      if (listenerType != null) {
+        process(StopComponent(listenerType))
+      }
+      if (proc != Process(-1) && duration != Duration.Zero) {
+        context.system.eventStream.publish(UnTickIt(TickSubscription(proc, duration)))
+      }
     }
   }
+
 }
 
 object PowerAPI {
-  lazy val engine = new Engine
   implicit val system = ActorSystem("PowerAPI")
+  lazy val engine = system.actorOf(Props[PowerAPI])
 
-  def startModules(moduleTypes: Array[Class[_ <: Component]]) {
-    moduleTypes.foreach(moduleType => engine.startModule(moduleType))
+  /**
+   * Starts the Energy Module associated to the given type.
+   *
+   * @param energyModuleType: Energy Module type to start.
+   */
+  def startEnergyModule(energyModuleType: Class[_ <: EnergyModule]) {
+    engine ! StartComponent(energyModuleType)
   }
 
-  def stopModules(moduleTypes: Array[Class[_ <: Component]]) {
-    moduleTypes.foreach(moduleType => engine.stopModule(moduleType))
+  /**
+   * Stops the Energy Module associated to the given type.
+   *
+   * @param energyModuleType: Energy Module type to stop.
+   */
+  def stopEnergyModule(energyModuleType: Class[_ <: EnergyModule]) {
+    engine ! StopComponent(energyModuleType)
   }
 
-  def startMonitoring(process: Process, duration: Duration, listenerType: Class[_ <: Listener]) {
-    engine.startTick(process, duration)
-    engine.startListener(listenerType)
+  /**
+   * Starts the monitoring of the given process during the given duration period.
+   * Results are listened by the given listener.
+   *
+   * @param process: process to monitor.
+   * @param duration: duration period monitoring.
+   * @param listener: listener which want to listen monitoring results.
+   */
+  def startMonitoring(process: Process = Process(-1), duration: Duration = Duration.Zero, listenerType: Class[_ <: Listener] = null) {
+    engine ! StartMonitoring(process, duration, listenerType)
   }
 
-  def stopMonitoring(process: Process, duration: Duration) {
-    engine.stopTick(process, duration)
-  }
-
-  def stopMonitoring(listenerType: Class[_ <: Listener]) {
-    engine.stopListener(listenerType)
-  }
-
-  def stopMonitoring(process: Process, duration: Duration, listenerType: Class[_ <: Listener]) {
-    stopMonitoring(listenerType)
-    stopMonitoring(process, duration)
+  /**
+   * Stops the monitoring of the given process during the given duration period.
+   * An associated listener is also stopped.
+   *
+   * @param process: process to stop to monitor.
+   * @param duration: duration period monitoring.
+   * @param listener: listener which want to be unaware by monitoring results.
+   */
+  def stopMonitoring(process: Process = Process(-1), duration: Duration = Duration.Zero, listenerType: Class[_ <: Listener] = null) {
+    engine ! StopMonitoring(process, duration, listenerType)
   }
 
 }

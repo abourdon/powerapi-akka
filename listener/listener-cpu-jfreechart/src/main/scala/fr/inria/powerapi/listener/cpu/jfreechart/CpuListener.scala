@@ -25,6 +25,13 @@ import javax.swing.SwingUtilities
 import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
 import fr.inria.powerapi.core.Listener
 
+/**
+ * CPU listener which display received CpuFormulaValues over a JFreeChart chart.
+ *
+ * @see http://www.jfree.org/jfreechart
+ *
+ * @author abourdon
+ */
 class CpuListener extends Listener {
 
   override def preStart() {

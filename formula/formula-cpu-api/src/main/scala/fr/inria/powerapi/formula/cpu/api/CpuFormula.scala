@@ -22,9 +22,20 @@ package fr.inria.powerapi.formula.cpu.api
 import fr.inria.powerapi.core.{ Energy, Formula, Tick, Message }
 import fr.inria.powerapi.sensor.cpu.api.CpuSensorValues
 
-/** Messages definition */
+/**
+ * Cpu formula Messages definition
+ *
+ * @author abourdon
+ */
 case class CpuFormulaValues(energy: Energy, tick: Tick) extends Message
 
+/**
+ * Base trait for CPU sensor modules.
+ *
+ * Each of these must listen to the CpuSensorValues message and implements the associated process method.
+ *
+ * @author abourdon
+ */
 trait CpuFormula extends Formula {
   def messagesToListen = Array(classOf[CpuSensorValues])
 

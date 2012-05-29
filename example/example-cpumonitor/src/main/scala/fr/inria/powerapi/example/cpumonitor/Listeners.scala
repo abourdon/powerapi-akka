@@ -23,6 +23,11 @@ import fr.inria.powerapi.core.{ Tick, Energy, Process, TickSubscription }
 import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
 import fr.inria.powerapi.listener.cpu.jfreechart.{ CpuListener, Chart }
 
+/**
+ * CPU Listener which filter received information before display it into a graph.
+ *
+ * @author abourdon
+ */
 class FilteredChart extends CpuListener {
   val powers = collection.mutable.HashMap[Process, Double]()
 
@@ -40,6 +45,12 @@ class FilteredChart extends CpuListener {
   }
 }
 
+/**
+ * CPU listener which gather all CpuFormulaValues in order to compute only one result
+ * as the sum of all received CpuFormulaValues for a specific time stamp.
+ *
+ * @author abourdon
+ */
 class GatheredChart extends CpuListener {
   val cache = collection.mutable.HashMap[Long, Double]()
 

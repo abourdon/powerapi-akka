@@ -21,11 +21,42 @@
 package fr.inria.powerapi.formula.cpu.general
 
 import scala.collection.mutable.HashMap
+import scala.collection.JavaConversions
+
+import com.typesafe.config.Config
 
 import fr.inria.powerapi.core.{ TickSubscription, Energy }
 import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
 import fr.inria.powerapi.sensor.cpu.api.{ TimeInStates, ProcessElapsedTime, GlobalElapsedTime, CpuSensorValues }
 
+/**
+ * CPU formula configuration.
+ *
+ * @author abourdon
+ */
+trait Configuration extends fr.inria.powerapi.core.Configuration {
+  lazy val tdp = load { _.getDouble("powerapi.cpu.tdp") }(0)
+  lazy val frequencies = load { conf =>
+    (for (item <- JavaConversions.asScalaBuffer(conf.getConfigList("powerapi.cpu.frequencies")))
+      yield (item.asInstanceOf[Config].getInt("value"), item.asInstanceOf[Config].getDouble("voltage"))).toMap
+  }(Map[Int, Double]())
+}
+
+/**
+ * CPU formula component giving CPU energy of a given process in computing the ratio between
+ * global CPU energy and process CPU usage during a given period.
+ *
+ * Global CPU energy is given thanks to the well-known global formula: P = c * f * V² [1]
+ * This formula operates for an unique frequency/variable but many frequencies can be used by CPU during a time period.
+ * Thus, this implementation weights each frequency by the time spent by CPU under it.
+ *
+ * Process CPU usage is computed in making the ratio between global and process CPU time usage.
+ * Thus processUsage = processTimeUsage / globalTimeUsage
+ *
+ * @see [1] "Frequency–Voltage Cooperative CPU Power Control: A Design Rule and Its Application by Feedback Prediction" by Toyama & al.
+ *
+ * @author abourdon
+ */
 class CpuFormula extends fr.inria.powerapi.formula.cpu.api.CpuFormula with Configuration {
   lazy val constant = (0.7 * tdp) / (frequencies.max._1 * math.pow(frequencies.max._2, 2))
   lazy val powers = frequencies.map(frequency => (frequency._1, (constant * frequency._1 * math.pow(frequency._2, 2))))

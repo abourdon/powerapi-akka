@@ -20,7 +20,38 @@
  */
 package fr.inria.powerapi.core
 import com.typesafe.config.ConfigFactory
+import com.typesafe.config.ConfigException
+import com.typesafe.config.Config
 
-trait Configuration {
-  lazy val conf = ConfigFactory.load
+/**
+ * Base trait that deals with configuration files
+ * in using the Typesafe Config library
+ *
+ * @see https://github.com/typesafehub/config
+ *
+ * @author abourdon
+ */
+trait Configuration extends Component {
+  /**
+   * Link to get information from configuration files.
+   */
+  private lazy val conf = ConfigFactory.load
+
+  /**
+   * Default pattern to get information from configuration file.
+   *
+   * @param request: closure symbolizing request to get information from configuration file.
+   * @param default: default value returned in case of ConfigException.
+   *
+   * @see ConfigException
+   */
+  def load[T](request: Config => T)(default: T): T =
+    try {
+      request(conf)
+    } catch {
+      case ce: ConfigException => {
+        log.warning(ce.getMessage + " (Using " + default + " as default value)")
+        default
+      }
+    }
 }

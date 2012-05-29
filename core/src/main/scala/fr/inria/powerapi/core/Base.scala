@@ -23,21 +23,41 @@ package fr.inria.powerapi.core
 import akka.event.LoggingReceive
 
 /**
+ * Base types used to describe PowerAPI architecture.
+ *
+ * PowerAPI is based on a modular and asynchronous architecture
+ * where modules are centralized into a common event bus.
+ * Each module communicate with others through immutable messages in using
+ * the Akka library (http://akka.io).
+ *
+ * @author abourdon
+ */
+
+/**
  * Base trait for each PowerAPI message
  */
 trait Message
 
 /**
- * Request to have the array of Messages that an actor have to listen
+ * Request to have the array of Messages that a Component have to listen
  */
 case object MessagesToListen extends Message
 
 /**
- * Base trait for each PowerAPI module could be represented as an actor
+ * Base trait for each PowerAPI module, also called Component
  */
 trait Component extends akka.actor.Actor with akka.actor.ActorLogging {
+  /**
+   * Akka's receive() wrapper
+   *
+   * @see http://doc.akka.io/docs/akka/snapshot/scala/actors.html
+   */
   def process: Receive
 
+  /**
+   * Defines what kind a Message this component wants to be aware
+   * from the common event bus
+   */
   def messagesToListen: Array[Class[_ <: Message]]
 
   private lazy val messages = messagesToListen
@@ -49,13 +69,19 @@ trait Component extends akka.actor.Actor with akka.actor.ActorLogging {
     listenToMessages orElse process
   }
 
+  /**
+   * Publishes the given message to the common event bus
+   *
+   * @param message: the message to publish to the common event bus
+   */
   def publish(message: Message) {
     context.system.eventStream publish message
   }
 }
 
 /**
- * Base trait for each PowerAPI energy module
+ * Base trait for each PowerAPI Energy Module,
+ * typically composed by a Sensor and a Formula.
  */
 trait EnergyModule extends Component
 

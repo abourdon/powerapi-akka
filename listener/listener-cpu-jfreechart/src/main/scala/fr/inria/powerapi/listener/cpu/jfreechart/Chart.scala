@@ -29,6 +29,11 @@ import org.jfree.ui.{ RefineryUtilities, ApplicationFrame }
 import fr.inria.powerapi.core.Process
 import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
 
+/**
+ * Display received CpuFormulaValues to the wrapped JFreeChart chart.
+ *
+ * @author abourdon
+ */
 class Chart(title: String) {
   val dataset = new TimeSeriesCollection
   val chart = ChartFactory.createTimeSeriesChart(title,
@@ -46,6 +51,11 @@ class Chart(title: String) {
   }
 }
 
+/**
+ * Chart companion object containing the JFreeChart ApplicationFrame and some configurations.
+ *
+ * @author abourdon
+ */
 object Chart {
   val xValues = "Time (s)"
   val yValues = "Power (W)"
