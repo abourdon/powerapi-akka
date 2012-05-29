@@ -85,5 +85,4 @@ class ConfigurationSuite extends JUnitSuite with ShouldMatchersForJUnit {
   def testNotFound {
     configuration.notFound should be(false)
   }
-
 }

@@ -46,14 +46,15 @@ trait Configuration extends fr.inria.powerapi.core.Configuration {
  * CPU formula component giving CPU energy of a given process in computing the ratio between
  * global CPU energy and process CPU usage during a given period.
  *
- * Global CPU energy is given thanks to the well-known global formula: P = c * f * V² [1]
- * This formula operates for an unique frequency/variable but many frequencies can be used by CPU during a time period.
- * Thus, this implementation weights each frequency by the time spent by CPU under it.
+ * Global CPU energy is given thanks to the well-known global formula: P = c * f * V² [1].
+ * This formula operates for an unique frequency/variable but many frequencies can be used by CPU during a time period (e.g using DVFS [2]).
+ * Thus, this implementation weights each frequency by the time spent by CPU in working under it.
  *
  * Process CPU usage is computed in making the ratio between global and process CPU time usage.
- * Thus processUsage = processTimeUsage / globalTimeUsage
+ * Thus processUsage = processTimeUsage / globalTimeUsage.
  *
  * @see [1] "Frequency–Voltage Cooperative CPU Power Control: A Design Rule and Its Application by Feedback Prediction" by Toyama & al.
+ * @see [2] http://en.wikipedia.org/wiki/Voltage_and_frequency_scaling.
  *
  * @author abourdon
  */

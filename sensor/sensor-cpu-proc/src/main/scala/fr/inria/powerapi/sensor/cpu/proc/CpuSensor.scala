@@ -40,7 +40,7 @@ trait Configuration extends fr.inria.powerapi.core.Configuration {
 }
 
 /**
- * CPU sensor component collecting data from a /proc and /sys directories
+ * CPU sensor component that collects data from a /proc and /sys directories
  * which are typically presents under a Linux platform.
  *
  * @see http://www.kernel.org/doc/man-pages/online/pages/man5/proc.5.html
@@ -48,7 +48,6 @@ trait Configuration extends fr.inria.powerapi.core.Configuration {
  * @author abourdon
  */
 class CpuSensor extends fr.inria.powerapi.sensor.cpu.api.CpuSensor with Configuration {
-
   /**
    * Delegation class collecting frequency information contained into the timeInStatePath file
    */

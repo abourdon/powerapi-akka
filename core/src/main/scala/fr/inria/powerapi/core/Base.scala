@@ -27,28 +27,28 @@ import akka.event.LoggingReceive
  *
  * PowerAPI is based on a modular and asynchronous architecture
  * where modules are centralized into a common event bus.
- * Each module communicate with others through immutable messages in using
+ * Each module communicates with others through immutable messages in using
  * the Akka library (http://akka.io).
  *
  * @author abourdon
  */
 
 /**
- * Base trait for each PowerAPI message
+ * Base trait for each PowerAPI message.
  */
 trait Message
 
 /**
- * Request to have the array of Messages that a Component have to listen
+ * Request to have the array of Messages that a Component have to listen.
  */
 case object MessagesToListen extends Message
 
 /**
- * Base trait for each PowerAPI module, also called Component
+ * Base trait for each PowerAPI module, also called Component.
  */
 trait Component extends akka.actor.Actor with akka.actor.ActorLogging {
   /**
-   * Akka's receive() wrapper
+   * Akka's receive() wrapper.
    *
    * @see http://doc.akka.io/docs/akka/snapshot/scala/actors.html
    */
@@ -56,7 +56,7 @@ trait Component extends akka.actor.Actor with akka.actor.ActorLogging {
 
   /**
    * Defines what kind a Message this component wants to be aware
-   * from the common event bus
+   * from the common event bus.
    */
   def messagesToListen: Array[Class[_ <: Message]]
 
@@ -70,9 +70,9 @@ trait Component extends akka.actor.Actor with akka.actor.ActorLogging {
   }
 
   /**
-   * Publishes the given message to the common event bus
+   * Publishes the given message to the common event bus.
    *
-   * @param message: the message to publish to the common event bus
+   * @param message: the message to publish to the common event bus.
    */
   def publish(message: Message) {
     context.system.eventStream publish message
@@ -80,22 +80,22 @@ trait Component extends akka.actor.Actor with akka.actor.ActorLogging {
 }
 
 /**
- * Base trait for each PowerAPI Energy Module,
- * typically composed by a Sensor and a Formula.
+ * Base trait for each PowerAPI energy module,
+ * typically composed by a sensor and a formula.
  */
 trait EnergyModule extends Component
 
 /**
- * Base trait for each PowerAPI sensor
+ * Base trait for each PowerAPI sensor.
  */
 trait Sensor extends EnergyModule
 
 /**
- * Base trait for each PowerAPI formula
+ * Base trait for each PowerAPI formula.
  */
 trait Formula extends EnergyModule
 
 /**
- * Base trait for each PowerAPI listener
+ * Base trait for each PowerAPI listener.
  */
 trait Listener extends Component

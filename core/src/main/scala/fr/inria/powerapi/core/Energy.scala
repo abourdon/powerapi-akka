@@ -24,13 +24,13 @@ import akka.util.duration.intToDurationInt
 import akka.util.Duration
 
 /**
- * Wrapper containing energy information.
+ * Energy information wrapper.
  *
  * Note that constructor is private, so it needs to deals with
  * its associated companion object.
  *
  * @param power: the power value of the Energy class
- * 
+ *
  * @author abourdon
  */
 case class Energy private (power: Double) {
@@ -40,8 +40,9 @@ case class Energy private (power: Double) {
 }
 
 /**
- * Energy class companion object providing factories to instantiate Energy objects.
- * 
+ * Energy class companion object providing factories to instantiate
+ * energy wrapper objects.
+ *
  * @author abourdon
  */
 object Energy {

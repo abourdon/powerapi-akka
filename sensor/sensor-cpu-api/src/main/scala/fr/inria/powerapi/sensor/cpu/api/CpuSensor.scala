@@ -22,7 +22,7 @@ package fr.inria.powerapi.sensor.cpu.api
 import fr.inria.powerapi.core.{ Message, Sensor, Tick }
 
 /**
- * Cpu sensor Messages definition
+ * CPU sensor's messages definition.
  *
  * @author abourdon
  */
@@ -41,7 +41,7 @@ case class CpuSensorValues(
 /**
  * Base trait for CPU sensor modules.
  *
- * Each of these must listen to the Tick message and implements the associated process method.
+ * Each of these have to listen to the Tick message and implements the associated process method.
  * 
  * @author abourdon
  */

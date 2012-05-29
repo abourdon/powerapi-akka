@@ -48,5 +48,4 @@ class CpuSensorSuite extends JUnitSuite with ShouldMatchersForJUnit {
     messages should have size 1
     messages(0) should be(classOf[Tick])
   }
-
 }

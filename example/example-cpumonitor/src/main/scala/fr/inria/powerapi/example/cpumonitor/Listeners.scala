@@ -47,36 +47,36 @@ class FilteredChart extends CpuListener {
 
 /**
  * CPU listener which gather all CpuFormulaValues in order to compute only one result
- * as the sum of all received CpuFormulaValues for a specific time stamp.
+ * as the sum of all received CpuFormulaValues for a specific timestamp.
  *
  * @author abourdon
  */
 class GatheredChart extends CpuListener {
   val cache = collection.mutable.HashMap[Long, Double]()
 
-  private def gatherPowers(cpuFormulaValues: CpuFormulaValues) {
-    cache(cpuFormulaValues.tick.timestamp) += cpuFormulaValues.energy.power
-  }
-
-  private def displayCache(cpuFormulaValues: CpuFormulaValues) {
-    if (!cache.isEmpty) {
-      val timestamp = cache.keySet.toIndexedSeq(0)
-      Chart.process(
-        CpuFormulaValues(
-          Energy.fromPower(cache(timestamp)),
-          Tick(TickSubscription(Process(-1), cpuFormulaValues.tick.subscription.duration))))
-    }
-  }
-
-  private def updateTimestamp(cpuFormulaValues: CpuFormulaValues) {
-    if (!cache.isEmpty) {
-      val oldTimestamp = cache.keySet.toIndexedSeq(0)
-      cache -= oldTimestamp
-    }
-    cache += (cpuFormulaValues.tick.timestamp -> 0)
-  }
-
   override def process(cpuFormulaValues: CpuFormulaValues) {
+    def gatherPowers(cpuFormulaValues: CpuFormulaValues) {
+      cache(cpuFormulaValues.tick.timestamp) += cpuFormulaValues.energy.power
+    }
+
+    def displayCache(cpuFormulaValues: CpuFormulaValues) {
+      if (!cache.isEmpty) {
+        val timestamp = cache.keySet.toIndexedSeq(0)
+        Chart.process(
+          CpuFormulaValues(
+            Energy.fromPower(cache(timestamp)),
+            Tick(TickSubscription(Process(-1), cpuFormulaValues.tick.subscription.duration))))
+      }
+    }
+
+    def updateTimestamp(cpuFormulaValues: CpuFormulaValues) {
+      if (!cache.isEmpty) {
+        val oldTimestamp = cache.keySet.toIndexedSeq(0)
+        cache -= oldTimestamp
+      }
+      cache += (cpuFormulaValues.tick.timestamp -> 0)
+    }
+
     if (cache.contains(cpuFormulaValues.tick.timestamp)) {
       gatherPowers(cpuFormulaValues)
     } else {

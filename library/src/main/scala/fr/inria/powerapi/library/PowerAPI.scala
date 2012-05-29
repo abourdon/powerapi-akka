@@ -46,7 +46,7 @@ case class StopMonitoring(
   listenerType: Class[_ <: Listener] = null) extends Message
 
 /**
- * PowerAPI engine which start/stop every PowerAPI component such as Listener or Energy Module.
+ * PowerAPI engine which start/stop every PowerAPI component such as listener or energy module.
  *
  * Current implementation start/stop component in giving the component type.
  * This restriction helps to instantiate only one implementation of a given component.
@@ -70,11 +70,11 @@ class PowerAPI extends Component {
     /**
      * Starts a component to work into the PowerAPI system.
      *
-     * @param componentType: Component type that have to be started.
+     * @param componentType: component type that have to be started.
      */
     def start(componentType: Class[_ <: Component]) {
       if (components.contains(componentType)) {
-        log.warning("Component " + componentType.getCanonicalName + " already started")
+        log.warning("component " + componentType.getCanonicalName + " already started")
       } else {
         val component = context.actorOf(Props(componentType.newInstance), name = componentType.getCanonicalName)
         val messages = Await.result(component ? MessagesToListen, timeout.duration).asInstanceOf[Array[Class[_ <: Message]]]
@@ -94,9 +94,9 @@ class PowerAPI extends Component {
 
   def process(stopComponent: StopComponent) {
     /**
-     * Stops a component to work into the PowerAPI system.
+     * Stops a component from the PowerAPI system.
      *
-     * @param componentType: Component type that have to be stopped.
+     * @param componentType: component type that have to be stopped.
      */
     def stop(componentType: Class[_ <: Component]) {
       if (components.contains(componentType)) {
@@ -112,7 +112,7 @@ class PowerAPI extends Component {
 
     stop(stopComponent.componentType)
 
-    // Be aware to stop the Clock if all other components has been stopped
+    // Be aware to stop the Clock if all other components has been stopped.
     if (components.size == 1 && components.contains(classOf[Clock])) {
       stop(classOf[Clock])
       log.debug("Clock stopped")
@@ -123,9 +123,9 @@ class PowerAPI extends Component {
     /**
      * Stops the monitoring of a process during a certain duration a listened by a given listener.
      *
-     * @param proc: the Process to monitor
-     * @param duration: monitoring duration period
-     * @param listenerType: type of Listener that want to be aware by monitoring
+     * @param proc: process to monitor.
+     * @param duration: monitoring duration period.
+     * @param listenerType: type of listener that wants to be aware by monitoring.
      */
     def start(proc: Process, duration: Duration, listenerType: Class[_ <: Listener]) {
       if (listenerType != null) {
@@ -141,11 +141,11 @@ class PowerAPI extends Component {
 
   def process(stopMonitoring: StopMonitoring) {
     /**
-     * Stops the monitoring of a process during a certain duration a listened by a given listener.
+     * Stops the monitoring of a process during a certain duration and listened by a given listener.
      *
-     * @param proc: the Process to monitor
-     * @param duration: monitoring duration period
-     * @param listenerType: type of Listener that want to be unaware by monitoring
+     * @param proc: process to monitor.
+     * @param duration: monitoring duration period.
+     * @param listenerType: type of listener that wants to be unaware by monitoring.
      */
     def stop(proc: Process, duration: Duration, listenerType: Class[_ <: Listener]) {
       if (listenerType != null) {
@@ -156,26 +156,30 @@ class PowerAPI extends Component {
       }
     }
   }
-
 }
 
+/**
+ * PowerAPI companion object that provide an API to use PowerAPI library.
+ *
+ * @author abourdon
+ */
 object PowerAPI {
   implicit val system = ActorSystem("PowerAPI")
   lazy val engine = system.actorOf(Props[PowerAPI])
 
   /**
-   * Starts the Energy Module associated to the given type.
+   * Starts the energy module associated to the given type.
    *
-   * @param energyModuleType: Energy Module type to start.
+   * @param energyModuleType: energy module type to start.
    */
   def startEnergyModule(energyModuleType: Class[_ <: EnergyModule]) {
     engine ! StartComponent(energyModuleType)
   }
 
   /**
-   * Stops the Energy Module associated to the given type.
+   * Stops the energy module associated to the given type.
    *
-   * @param energyModuleType: Energy Module type to stop.
+   * @param energyModuleType: energy module type to stop.
    */
   def stopEnergyModule(energyModuleType: Class[_ <: EnergyModule]) {
     engine ! StopComponent(energyModuleType)
@@ -187,7 +191,7 @@ object PowerAPI {
    *
    * @param process: process to monitor.
    * @param duration: duration period monitoring.
-   * @param listener: listener which want to listen monitoring results.
+   * @param listener: listener that wants to listen monitoring results.
    */
   def startMonitoring(process: Process = Process(-1), duration: Duration = Duration.Zero, listenerType: Class[_ <: Listener] = null) {
     engine ! StartMonitoring(process, duration, listenerType)
@@ -195,14 +199,13 @@ object PowerAPI {
 
   /**
    * Stops the monitoring of the given process during the given duration period.
-   * An associated listener is also stopped.
+   * An associated listener can also be stopped.
    *
    * @param process: process to stop to monitor.
    * @param duration: duration period monitoring.
-   * @param listener: listener which want to be unaware by monitoring results.
+   * @param listener: listener that wants to be unaware by monitoring results.
    */
   def stopMonitoring(process: Process = Process(-1), duration: Duration = Duration.Zero, listenerType: Class[_ <: Listener] = null) {
     engine ! StopMonitoring(process, duration, listenerType)
   }
-
 }

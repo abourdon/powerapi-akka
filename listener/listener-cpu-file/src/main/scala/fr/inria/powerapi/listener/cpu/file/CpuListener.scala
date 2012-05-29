@@ -37,8 +37,8 @@ trait Configuration extends fr.inria.powerapi.core.Configuration {
 }
 
 /**
- * CPU Listener displaying received CpuFormulaValues into a file
- * and following propertis from a configuration file.
+ * CPU listener displaying received CpuFormulaValues into a file and following properties
+ * contained into a configuration file.
  *
  * @author abourdon
  */

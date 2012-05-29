@@ -41,7 +41,6 @@ class SimpleCpuListener extends Listener with ActorLogging {
 }
 
 class PowerAPISuite extends JUnitSuite with ShouldMatchersForJUnit {
-
   @Test
   def testPowerAPI {
     Array(classOf[CpuSensor], classOf[CpuFormula]).foreach(PowerAPI.startEnergyModule(_))

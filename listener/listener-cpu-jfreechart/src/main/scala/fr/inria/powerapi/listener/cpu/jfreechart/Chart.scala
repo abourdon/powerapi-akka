@@ -52,7 +52,7 @@ class Chart(title: String) {
 }
 
 /**
- * Chart companion object containing the JFreeChart ApplicationFrame and some configurations.
+ * Chart companion object containing the JFreeChart's ApplicationFrame and some configurations.
  *
  * @author abourdon
  */

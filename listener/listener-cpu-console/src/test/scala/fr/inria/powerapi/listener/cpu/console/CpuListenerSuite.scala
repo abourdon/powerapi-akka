@@ -33,7 +33,6 @@ import fr.inria.powerapi.sensor.cpu.proc.CpuSensor
 import scalax.io.Resource
 
 class SimpleCpuListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
-
   @Before
   def setUp {
     Array(classOf[CpuSensor], classOf[CpuFormula]).foreach(PowerAPI.startEnergyModule(_))
@@ -71,5 +70,4 @@ class SimpleCpuListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
   def tearDown {
     Array(classOf[CpuSensor], classOf[CpuFormula]).foreach(PowerAPI.stopEnergyModule(_))
   }
-
 }

@@ -24,8 +24,7 @@ import com.typesafe.config.ConfigException
 import com.typesafe.config.Config
 
 /**
- * Base trait that deals with configuration files
- * in using the Typesafe Config library
+ * Base trait that deals with configuration files using the Typesafe Config library.
  *
  * @see https://github.com/typesafehub/config
  *
@@ -43,14 +42,14 @@ trait Configuration extends Component {
    * @param request: closure symbolizing request to get information from configuration file.
    * @param default: default value returned in case of ConfigException.
    *
-   * @see ConfigException
+   * @see http://typesafehub.github.com/config/latest/api/com/typesafe/config/ConfigException.html
    */
   def load[T](request: Config => T)(default: T): T =
     try {
       request(conf)
     } catch {
       case ce: ConfigException => {
-        log.warning(ce.getMessage + " (Using " + default + " as default value)")
+        log.warning(ce.getMessage + " (using " + default + " as default value)")
         default
       }
     }

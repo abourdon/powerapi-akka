@@ -37,7 +37,7 @@ object Processes {
   lazy val conf = ConfigFactory.load
 
   /**
-   * Process CPU listening using information given by a configuration file.
+   * Process CPU listening using information given by the configuration file.
    */
   def fromConf {
     val pids = JavaConversions.asScalaBuffer(conf.getIntList("powerapi.pids")).toList
@@ -47,7 +47,7 @@ object Processes {
   }
 
   /**
-   * CPU listening in hardly specifying the monitored process.
+   * CPU listening which hardly specifying the monitored process.
    */
   def perso {
     PowerAPI.startMonitoring(Process(16617), 500 milliseconds, classOf[CpuListener])

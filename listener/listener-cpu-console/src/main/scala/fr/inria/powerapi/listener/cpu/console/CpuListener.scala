@@ -37,5 +37,4 @@ class CpuListener extends Listener {
   def process = {
     case cpuFormulaValues: CpuFormulaValues => process(cpuFormulaValues)
   }
-
 }

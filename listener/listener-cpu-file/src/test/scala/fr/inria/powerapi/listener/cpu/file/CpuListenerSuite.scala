@@ -34,11 +34,9 @@ trait ConfigurationMock extends Configuration {
     prefix = "powerapi.listener-cpu-file",
     deleteOnExit = false).path
 }
-
 class CpuListenerMock extends CpuListener with ConfigurationMock
 
 class CpuListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
-
   @Before
   def setUp {
     Array(classOf[CpuSensor], classOf[CpuFormula]).foreach(PowerAPI.startEnergyModule(_))

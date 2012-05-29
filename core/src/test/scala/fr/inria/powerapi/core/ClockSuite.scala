@@ -32,7 +32,6 @@ import org.junit.{ Test, Ignore }
 import org.scalatest.junit.{ ShouldMatchersForJUnit, JUnitSuite }
 
 case object Result
-
 class ByProcessTickReceiver extends akka.actor.Actor with ActorLogging {
   val receivedTicks = new HashMap[TickSubscription, Int] with SynchronizedMap[TickSubscription, Int]
 

@@ -164,5 +164,4 @@ class CpuFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
     cpuformula.underlyingActor.compute(now).energy.power should equal(power * usage)
   }
-
 }

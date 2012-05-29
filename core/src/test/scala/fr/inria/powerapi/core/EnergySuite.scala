@@ -26,7 +26,6 @@ import org.junit.Test
 import org.scalatest.junit.{ShouldMatchersForJUnit, JUnitSuite}
 
 class EnergySuite extends JUnitSuite with ShouldMatchersForJUnit {
-
   @Test
   def testFromPower {
     Energy.fromPower(3).power should equal(3)
@@ -47,5 +46,4 @@ class EnergySuite extends JUnitSuite with ShouldMatchersForJUnit {
   def testMkString {
     Energy.fromPower(3).mkString should equal((3.0).toString)
   }
-
 }

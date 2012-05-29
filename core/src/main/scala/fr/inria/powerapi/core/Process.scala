@@ -21,9 +21,9 @@
 package fr.inria.powerapi.core
 
 /**
- * Wrapper symbolizing a system process
+ * System process wrapper.
  *
- * @param pid: the associated Process IDentifier of the Process
+ * @param pid: the associated Process IDentifier of the process
  * 
  * @author abourdon
  */

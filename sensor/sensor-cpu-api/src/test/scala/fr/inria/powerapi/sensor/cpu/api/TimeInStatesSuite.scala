@@ -21,10 +21,9 @@
 package fr.inria.powerapi.sensor.cpu.api
 
 import org.junit.Test
-import org.scalatest.junit.{ ShouldMatchersForJUnit, JUnitSuite }
+import org.scalatest.junit.{ShouldMatchersForJUnit, JUnitSuite}
 
 class TimeInStatesSuite extends JUnitSuite with ShouldMatchersForJUnit {
-
   @Test
   def testDifference {
     val timesLeft = TimeInStates(Map(
@@ -45,5 +44,4 @@ class TimeInStatesSuite extends JUnitSuite with ShouldMatchersForJUnit {
       3 -> 27,
       4 -> 15)))
   }
-
 }

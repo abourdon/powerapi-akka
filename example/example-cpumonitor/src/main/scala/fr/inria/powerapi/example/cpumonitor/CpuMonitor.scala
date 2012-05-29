@@ -25,7 +25,9 @@ import fr.inria.powerapi.sensor.cpu.proc.CpuSensor
 import fr.inria.powerapi.formula.cpu.general.CpuFormula
 
 /**
- * CPU monitoring example.
+ * CPU monitoring example that deals with different use cases.
+ *
+ * @see Processes
  *
  * @author abourdon
  */

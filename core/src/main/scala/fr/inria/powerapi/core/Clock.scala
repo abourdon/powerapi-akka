@@ -27,7 +27,9 @@ import akka.util.duration.intToDurationInt
 import com.typesafe.config.ConfigException
 
 /**
- * Clock's messages definition
+ * Clock's messages definition.
+ * 
+ * @author abourdon
  */
 case class TickSubscription(process: Process, duration: Duration)
 case class TickIt(subscription: TickSubscription) extends Message
@@ -47,7 +49,7 @@ trait ClockConfiguration extends Configuration {
  * Clock component, that "tick" the event bus following a configured period.
  *
  * The PowerAPI architecture is based on a asynchronous architecture composed by several components.
- * Each component listen to a event bus and reacts following the message emit by the event bus.
+ * Each component listen to an event bus and reacts following messages emit by the event bus.
  * Thus, each component is in a passive state and only process its business part following the emit message.
  *
  * At the bottom of this architecture, the Clock component provide a "tick" message to wake up
@@ -103,16 +105,16 @@ class Clock extends Component with ClockConfiguration {
       val currentSubscriptions = subscriptions getOrElse (untickIt.subscription.duration, Set[TickSubscription]())
 
       // Iff subscriptions associated to the specified duration is empty,
-      // then we have to stop schedule and delete duration reference from maps
+      // then we have to stop schedule and delete duration reference from maps.
       if (currentSubscriptions.isEmpty) {
-        // Stop schedule associated to the associated duration
+        // Stop schedule associated to the associated duration.
         val schedule = schedulers getOrElse (duration, new Cancellable {
           def cancel() {}
           def isCancelled = true
         })
         schedule.cancel()
 
-        // Delete duration key from subscriptions and schedulers maps
+        // Delete duration key from subscriptions and schedulers maps.
         subscriptions -= duration
         schedulers -= duration
       }
