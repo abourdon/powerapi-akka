@@ -28,7 +28,9 @@ import akka.event.LoggingReceive
  * PowerAPI is based on a modular and asynchronous architecture
  * where modules are centralized into a common event bus.
  * Each module communicates with others through immutable messages in using
- * the Akka library (http://akka.io).
+ * the Akka library.
+ *
+ * @see http://akka.io
  *
  * @author abourdon
  */
