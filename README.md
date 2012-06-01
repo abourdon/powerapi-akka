@@ -81,7 +81,7 @@ Thus, we need to use the procfs CPU `Sensor` implementation and the general CPU 
 Array(
     classOf[fr.inria.powerapi.sensor.proc.CpuSensor],
     classOf[fr.inria.powerapi.formula.general.CpuFormula]
-).foreach(PowerAPI.startEnergyModules(_))
+).foreach(PowerAPI.startEnergyModule(_))
 ```
 
 2. Request to PowerAPI system the CPU energy spent by the 123 process, every 500 milliseconds:
