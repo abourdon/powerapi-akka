@@ -4,14 +4,14 @@ PowerAPI is a scala-based library for monitoring energy at the process-level. It
 
 PowerAPI differs from existing energy process-level monitoring tool in its pure software, fully customizable and modular aspect which let user to precisely define what he wants to monitor, without any external device.
 
-PowerAPI offers an [API](#API_details) which can be use to express request about energy spent by a processus, following its hardware resource utilization (in term of CPU, memory, disk, network, etc.).
+PowerAPI offers an API which can be use to express request about energy spent by a processus, following its hardware resource utilization (in term of CPU, memory, disk, network, etc.).
 
 ## Documentation
-* [Getting started](#Getting_started)
-* [Architecture details](#Architecture_details)
-* [API details](#API_details)
-* [Future works](#Future_works)
-* [License](#License)
+* [Getting started](#getting-started)
+* [Architecture details](#architecture-details)
+* [API details](#api-details)
+* [Future works](#future-works)
+* [License](#license)
 
 ## Getting started
 
