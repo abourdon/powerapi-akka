@@ -5,7 +5,7 @@
 	<artifactId>cpusensor-sigar</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>${project.artifactId}</name>
-	<description>CPU sensor module of the PowerAPI process-level energy consumption library.</description>
+  <description>Implements the PowerAPI CPU Sensor module in using the Hyperic SIGAR API (http://www.hyperic.com/products/sigar)</description>
 	<inceptionYear>2012</inceptionYear>
 
 	<parent>

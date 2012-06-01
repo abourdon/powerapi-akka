@@ -5,7 +5,7 @@
 	<groupId>fr.inria.powerapi.sensor</groupId>
 	<artifactId>sensor-cpu-api</artifactId>
 	<name>${project.artifactId}</name>
-	<description>CPU sensor module API of the PowerAPI process-level energy consumption library.</description>
+	<description>Base types for each CPU Sensor module implementations.</description>
 	<inceptionYear>2012</inceptionYear>
 
 	<parent>

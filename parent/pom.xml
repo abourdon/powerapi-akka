@@ -7,7 +7,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>${project.artifactId}</name>
 	<packaging>pom</packaging>
-	<description>Parent POM of the PowerAPI process-level energy consumption library.</description>
+	<description>Parent POM of each PowerAPI module.</description>
 	<inceptionYear>2012</inceptionYear>
 
 	<licenses>
@@ -160,6 +160,7 @@
 					</properties>
 					<excludes>
 						<exclude>**.gitignore</exclude>
+						<exclude>**README.md</exclude>
 						<exclude>**.cache</exclude>
 						<exclude>**/src/main/resources/**</exclude>
 						<exclude>**/src/test/resources/**</exclude>

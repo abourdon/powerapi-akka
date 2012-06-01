@@ -4,7 +4,7 @@
 	
 	<artifactId>library</artifactId>
 	<name>${project.artifactId}</name>
-	<description>Running module of the PowerAPI process-level energy consumption library.</description>
+	<description>Defines the API that can be use by user to interact with PowerAPI.</description>
 	<inceptionYear>2012</inceptionYear>
 
 	<parent>

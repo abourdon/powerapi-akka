@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.inria.powerapi.listener</groupId>
 	<name>${artifactId}</name>
-	<description>CPU listener storing information received by PowerAPI into a file</description>
+	<description>Listen to CPU Formula results and display it into the configured file.</description>
 	<artifactId>listener-cpu-file</artifactId>
 	<inceptionYear>2012</inceptionYear>
 

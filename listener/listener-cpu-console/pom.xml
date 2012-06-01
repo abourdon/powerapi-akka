@@ -5,7 +5,7 @@
 	<groupId>fr.inria.powerapi.listener</groupId>
 	<artifactId>listener-cpu-console</artifactId>
 	<name>${project.artifactId}</name>
-	<description>CPU listener displaying information providing by the PowerAPI process-level energy consumption library.</description>
+	<description>Listen to CPU Formula results and display it into the console.</description>
 	<inceptionYear>2012</inceptionYear>
 
 	<parent>

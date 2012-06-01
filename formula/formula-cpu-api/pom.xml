@@ -5,7 +5,7 @@
 	<groupId>fr.inria.powerapi.formula</groupId>
 	<artifactId>formula-cpu-api</artifactId>
 	<name>${project.artifactId}</name>
-	<description>CPU formula API module of the PowerAPI process-level energy consumption library.</description>
+	<description>Base types for each CPU Formula module implementations.</description>
 	<inceptionYear>2012</inceptionYear>
 
 	<parent>

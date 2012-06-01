@@ -4,7 +4,7 @@
 	<groupId>fr.inria.powerapi.example</groupId>
 	<artifactId>example-cpumonitor</artifactId>
 	<name>${project.artifactId}</name>
-	<description>CPU monitoring example of the PowerAPI process-level energy consumption library.</description>
+	<description>Set of CPU monitoring use cases.</description>
 	<inceptionYear>2012</inceptionYear>
 
 	<parent>

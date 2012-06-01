@@ -4,7 +4,9 @@
 	<groupId>fr.inria.powerapi.listener</groupId>
 	<artifactId>listener-cpu-jfreechart</artifactId>
 	<name>${project.artifactId}</name>
-	<description>CPU listener using the JFreeChart library to display PowerAPI values.</description>
+	<description>Listen to CPU Formula results and display it into a JFreeChart graph.
+
+See also: http://www.jfree.org/jfreechart.</description>
 	<inceptionYear>2012</inceptionYear>
 
 	<parent>

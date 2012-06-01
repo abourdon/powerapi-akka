@@ -5,7 +5,10 @@
 	<groupId>fr.inria.powerapi.formula</groupId>
 	<artifactId>formula-cpu-general</artifactId>
 	<name>${project.artifactId}</name>
-	<description>CPU formula module of the PowerAPI process-level energy consumption library.</description>
+	<description>Implements PowerAPI CPU Formula module in weighting each frequency by the time spent by CPU in working under it.
+
+Global CPU energy computation is based on the general well-known formula: P = c * f * V * V where c constant, f a frequency and
+V its associated voltage.</description>
 	<inceptionYear>2012</inceptionYear>
 
 	<parent>

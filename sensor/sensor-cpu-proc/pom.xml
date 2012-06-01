@@ -5,7 +5,9 @@
 	<groupId>fr.inria.powerapi.sensor</groupId>
 	<artifactId>sensor-cpu-proc</artifactId>
 	<name>${project.artifactId}</name>
-	<description>CPU sensor module of the PowerAPI process-level energy consumption library.</description>
+	<description>Implements the PowerAPI CPU Sensor module for systems based on a procfs/sysfs virtual filesystems, typically used by standard Linux distributions.
+
+See also: http://linux.die.net/man/5/proc.</description>
 	<inceptionYear>2012</inceptionYear>
 
 	<parent>
