@@ -1,3 +1,17 @@
 # PowerAPI CPU console listener
 
-Listen to CPU `Formula` results and display it into the console.
+## Presentation
+
+Display CPU `Formula` results into the console.
+
+## In
+
+Listen to `CPUFormulaValues`, which are typically provided by `fr.inria.powerapi.formula.formula-cpu-api` (inherited) module.
+
+## Out
+
+Display energy information into the console.
+
+## Configuration part
+
+There is no specific configuration for this module.

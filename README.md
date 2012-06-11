@@ -18,6 +18,8 @@ PowerAPI offers an API which can be use to express request about energy spent by
 PowerAPI is completely written in [Scala](http://www.scala-lang.org "Scala language") (v. 2.9.1+), using the [Akka library](http://akka.io "Akka library") (v 2.0.1+). Configuration part is managed by the [Typesafe Config](https://github.com/typesafehub/config "Typesafe Config") (integrated version from the [Akka library](http://akka.io "Akka library")).
 PowerAPI project is fully managed by [Maven](http://maven.apache.org "Maven") (v. 2/3).
 
+### How to run it
+
 To acquire PowerAPI, simply clone it via your Git client:
 
 ``` bash
@@ -31,6 +33,32 @@ cd powerapi-akka
 cd core
 mvn test
 ```
+
+### How to configure it
+
+As said above, configuration part is managed by the [Typesafe Config](https://github.com/typesafehub/config "Typesafe Config"). Thus, be aware to properly configure each module from its `.conf` file(s).
+
+Let's take an example for the `fr.inria.powerapi.formula.formula-cpu-general` module, which implements the PowerAPI CPU `Formula` in using the well-known formula, `P = c * f * V * V`, where `c` constant, `f` a frequency and `V` its associated voltage.
+
+To compute this formula, `fr.inria.powerapi.formula.formula-cpu-general` module has to know:
+* the CPU _Thermal Dissipation Power_ value;
+* the array of frequency/voltage used by the CPU
+
+These information can be written in the associated configuration file as the following:
+```
+powerapi {
+	cpu {
+		tdp = 105
+		frequencies = [
+			{ value = 1800002, voltage = 1.31 }
+			{ value = 2100002, voltage = 1.41 }
+			{ value = 2400003, voltage = 1.5 }
+		]
+	}
+}
+```
+
+Each module can have its own configuration part. See more details in the associated README file.
 
 ## Architecture details
 
@@ -47,7 +75,7 @@ This module also defines the essential `Clock` class, responsible of the periodi
 ### Sensors
 
 To compute the energy spent by a process through its hardware resource utilization, PowerAPI cutting computation in two parts:
-1. Monitor hardware resource process utilization ;
+1. Monitor hardware resource process utilization;
 2. Compute the energy implies by the hardware resource process utilization.
 
 Sensors is thus a set of `Sensor`, responsible of the monitoring of hardware resource process utilization. Thus, you have a CPU `Sensor`, a memory `Sensor`, a disk `Sensor` and so on.
