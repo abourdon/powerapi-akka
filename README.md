@@ -18,7 +18,7 @@ PowerAPI offers an API which can be use to express request about energy spent by
 PowerAPI is completely written in [Scala](http://www.scala-lang.org "Scala language") (v. 2.9.1+), using the [Akka library](http://akka.io "Akka library") (v 2.0.1+). Configuration part is managed by the [Typesafe Config](https://github.com/typesafehub/config "Typesafe Config") (integrated version from the [Akka library](http://akka.io "Akka library")).
 PowerAPI project is fully managed by [Maven](http://maven.apache.org "Maven") (v. 2/3).
 
-### How to run it
+### How to acquire it
 
 To acquire PowerAPI, simply clone it via your Git client:
 
@@ -26,11 +26,31 @@ To acquire PowerAPI, simply clone it via your Git client:
 git clone git://github.com/abourdon/powerapi-akka.git
 ```
 
-And then navigate to your desired module, symbolized as a [Maven](http://maven.apache.org "Maven") project:
+### How to compile it
+
+__Note that we are waiting for a Maven repository to avoid this boring compilation phase__
+
+PowerAPI's modules are symbolized as a [Maven](http://maven.apache.org "Maven") project.
+Thus, make sure that all dependencies of your desired module have been correctly satisfied:
 
 ``` bash
-cd powerapi-akka
-cd core
+cd ${powerapi-akka-directory}
+
+cd parent
+mvn install
+
+cd ../core
+mvn install
+
+(and so on)
+```
+
+### How to use it
+
+Now you can navigate to your desired module and use it:
+
+``` bash
+cd ${powerapi-akka-directory}/sensor/sensor-cpu-api
 mvn test
 ```
 
