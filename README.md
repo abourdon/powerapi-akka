@@ -28,7 +28,7 @@ git clone git://github.com/abourdon/powerapi-akka.git
 
 ### How to compile it
 
-__Note that we are waiting for a Maven repository to avoid this boring compilation phase__
+__Note that we are waiting for a Maven repository to avoid this boring compilation phase.__
 
 PowerAPI's modules are symbolized as a [Maven](http://maven.apache.org "Maven") project.
 Thus, make sure that all dependencies of your desired module have been correctly satisfied:
