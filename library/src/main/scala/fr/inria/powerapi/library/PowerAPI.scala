@@ -121,7 +121,7 @@ class PowerAPI extends Component {
 
   def process(startMonitoring: StartMonitoring) {
     /**
-     * Stops the monitoring of a process during a certain duration a listened by a given listener.
+     * Starts the monitoring of a process during a certain duration a listened by a given listener.
      *
      * @param proc: process to monitor.
      * @param duration: monitoring duration period.
