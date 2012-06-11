@@ -34,7 +34,7 @@ PowerAPI's modules are symbolized as a [Maven](http://maven.apache.org "Maven") 
 Thus, make sure that all dependencies of your desired module have been correctly satisfied:
 
 ``` bash
-cd ${powerapi-akka-directory}
+cd $powerapi_akka_directory
 
 cd parent
 mvn install
@@ -50,7 +50,7 @@ mvn install
 Now you can navigate to your desired module and use it:
 
 ``` bash
-cd ${powerapi-akka-directory}/sensor/sensor-cpu-api
+cd $powerapi_akka_directory/sensor/sensor-cpu-api
 mvn test
 ```
 
