@@ -155,6 +155,8 @@ class PowerAPI extends Component {
         context.system.eventStream.publish(UnTickIt(TickSubscription(proc, duration)))
       }
     }
+
+    stop(stopMonitoring.process, stopMonitoring.duration, stopMonitoring.listenerType)
   }
 }
 
