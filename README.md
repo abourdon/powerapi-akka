@@ -37,6 +37,8 @@ cd $powerapi_akka_directory
 mvn install
 ```
 
+By default, all modules are selected to be installed. Be careful to correctly selecting yours, depending on your environment and the use case you want to do (see `pom.xml` file at the root directory for more details).
+
 ### How to use it
 
 Navigate to your desired module and use it:
