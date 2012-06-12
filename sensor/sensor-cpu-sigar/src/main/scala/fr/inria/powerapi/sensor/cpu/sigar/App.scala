@@ -15,18 +15,15 @@
  * License along with this library; if not, write to the
  * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
  * Boston, MA  02110-1301, USA.
+ *
+ * Contact: powerapi-user-list@googlegroups.com
  */
 package powerapi.sensor.cpusensor_sigar
 
 import org.hyperic.sigar._
-import org.junit.Test
-import org.scalatest.junit.JUnitSuite
-import org.scalatest.junit.ShouldMatchersForJUnit
 
-class AppSuite extends JUnitSuite with ShouldMatchersForJUnit {
-
-  @Test
-  def testSigar {
+object App {
+  def main(args: Array[String]) {
     val sigar = SigarProxyCache.newInstance(new Sigar(), 1000);
     println(sigar.getCpuPerc())
   }
