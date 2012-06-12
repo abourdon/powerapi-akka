@@ -20,11 +20,16 @@
  */
 package powerapi.sensor.cpusensor_sigar
 
-import org.hyperic.sigar._
+import org.hyperic.sigar.{SigarProxyCache, Sigar}
+import org.junit.Test
+import org.scalatest.junit.{ShouldMatchersForJUnit, JUnitSuite}
 
-object App {
-  def main(args: Array[String]) {
+class CpuSensorSuite extends JUnitSuite with ShouldMatchersForJUnit {
+
+  @Test
+  def testSigar {
     val sigar = SigarProxyCache.newInstance(new Sigar(), 1000);
     println(sigar.getCpuPerc())
   }
+
 }
