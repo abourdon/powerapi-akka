@@ -20,6 +20,8 @@ PowerAPI project is fully managed by [Maven](http://maven.apache.org "Maven") (v
 
 ### How to acquire it
 
+__Note that we are waiting for a Maven repository to directly use PowerAPI instead of getting it through the SCM__
+
 To acquire PowerAPI, simply clone it via your Git client:
 
 ``` bash
@@ -28,29 +30,19 @@ git clone git://github.com/abourdon/powerapi-akka.git
 
 ### How to compile it
 
-__Note that we are waiting for a Maven repository to avoid this boring compilation phase.__
-
-PowerAPI's modules are symbolized as a [Maven](http://maven.apache.org "Maven") project.
-Thus, make sure that all dependencies of your desired module have been correctly satisfied:
+PowerAPI is a Maven managed project. Thus, all you have to do is to install it at the root:
 
 ``` bash
 cd $powerapi_akka_directory
-
-cd parent
 mvn install
-
-cd ../core
-mvn install
-
-(and so on)
 ```
 
 ### How to use it
 
-Now you can navigate to your desired module and use it:
+Navigate to your desired module and use it:
 
 ``` bash
-cd $powerapi_akka_directory/sensor/sensor-cpu-api
+cd $powerapi_akka_directory/sensors/sensor-cpu-api
 mvn test
 ```
 
