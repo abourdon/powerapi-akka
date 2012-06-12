@@ -30,7 +30,7 @@ git clone git://github.com/abourdon/powerapi-akka.git
 
 ### How to compile it
 
-PowerAPI is a Maven managed project. Thus, all you have to do is to install it at the root:
+PowerAPI is a [Maven](http://maven.apache.org "Maven") managed project. Thus, all you have to do is to launch the `install` command at the root:
 
 ``` bash
 cd $powerapi_akka_directory
