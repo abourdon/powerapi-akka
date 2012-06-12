@@ -13,6 +13,7 @@ See also: http://www.jfree.org/jfreechart.</description>
 		<groupId>fr.inria.powerapi</groupId>
 		<artifactId>parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
+    <relativePath>../../parent/pom.xml</relativePath>
 	</parent>
 
 	<dependencies>

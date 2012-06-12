@@ -8,19 +8,20 @@
 	<inceptionYear>2012</inceptionYear>
 	<description>Implements the PowerAPI CPU Sensor module in using the Hyperic SIGAR API (http://www.hyperic.com/products/sigar).</description>
 
+	<parent>
+		<groupId>fr.inria.powerapi</groupId>
+		<artifactId>parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+    <relativePath>../../parent/pom.xml</relativePath>
+	</parent>
+
 	<properties>
 		<target.lib>${project.build.directory}/lib</target.lib>
 		<sigar.version>1.6.5.132</sigar.version>
 		<sigar.dir>${target.lib}/hyperic-sigar-1.6.5/sigar-bin/lib</sigar.dir>
 	</properties>
-
-	<parent>
-		<groupId>fr.inria.powerapi</groupId>
-		<artifactId>parent</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-	</parent>
-
-	<dependencies>
+  
+  <dependencies>
 		<dependency>
 			<groupId>fr.inria.powerapi</groupId>
 			<artifactId>core</artifactId>
