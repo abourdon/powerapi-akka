@@ -165,7 +165,7 @@
 				<version>1.9.0</version>
 				<inherited>false</inherited>
 				<configuration>
-					<header>${basedir}/COPYING.HEADER</header>
+					<header>${basedir}/COPYING.LESSER.HEADER</header>
 					<failIfMissing>true</failIfMissing>
 					<aggregate>true</aggregate>
 					<strictCheck>true</strictCheck>
@@ -177,7 +177,8 @@
 					<excludes>
 						<exclude>**/README.md</exclude>
 						<exclude>**/COPYING</exclude>
-						<exclude>**/COPYING.HEADER</exclude>
+						<exclude>**/COPYING.LESSER</exclude>
+						<exclude>**/COPYING.LESSER.HEADER</exclude>
 						<exclude>**.gitignore</exclude>
 						<exclude>**/.cache</exclude>
 						<exclude>**/src/main/resources/**</exclude>
