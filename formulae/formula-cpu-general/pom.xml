@@ -13,9 +13,8 @@ V its associated voltage.</description>
 
 	<parent>
 		<groupId>fr.inria.powerapi</groupId>
-		<artifactId>parent</artifactId>
+		<artifactId>formulae</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
-    <relativePath>../../parent/pom.xml</relativePath>
 	</parent>
 
 	<dependencies>

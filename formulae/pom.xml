@@ -1,18 +1,22 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	
-	<groupId>fr.inria.powerapi</groupId>
-  <artifactId>formulae</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <packaging>pom</packaging>
+
+	<artifactId>formulae</artifactId>
+	<packaging>pom</packaging>
 	<name>${project.artifactId}</name>
 	<description>PowerAPI's formulae.</description>
 	<inceptionYear>2012</inceptionYear>
 
-  <modules>
-    <module>formula-cpu-api</module>
-    <module>formula-cpu-general</module>
-  </modules>
+	<parent>
+		<groupId>fr.inria.powerapi</groupId>
+		<artifactId>powerapi</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<modules>
+		<module>formula-cpu-api</module>
+		<module>formula-cpu-general</module>
+	</modules>
 
 </project>

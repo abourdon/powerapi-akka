@@ -4,15 +4,14 @@
 
 	<artifactId>core</artifactId>
 	<name>${project.artifactId}</name>
-	<description>As its name indicates, Core module gather all &quot;kernel&quot; functionnalities that will be use by other modules. More particulary, this module defines the whole types used by PowerAPI to define its architecture.
+	<description>As its name indicates, Core module gather all &quot;kernel&quot; functionalities that will be use by other modules. More precisely, this module defines the whole types used by PowerAPI to define its architecture.
 
-This module also defines the essential Clock class, responsible of the periodically emission of the Tick message, itself responsible of the process of the PowerAPI business part.</description>
+This module also defines the essential Clock class, responsible of the periodically sending of the Tick message, itself responsible of the process of the PowerAPI business part.</description>
 	<inceptionYear>2012</inceptionYear>
 
 	<parent>
 		<groupId>fr.inria.powerapi</groupId>
-		<artifactId>parent</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <relativePath>../parent/pom.xml</relativePath>
+		<artifactId>powerapi</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 </project>

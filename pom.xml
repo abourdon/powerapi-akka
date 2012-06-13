@@ -1,23 +1,200 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<groupId>fr.inria.powerapi</groupId>
-  <artifactId>powerapi</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <packaging>pom</packaging>
+	<artifactId>powerapi</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
 	<name>${project.artifactId}</name>
 	<description>PowerAPI is a library offering and API to monitor energy spent at the process-level.</description>
 	<inceptionYear>2012</inceptionYear>
 
-  <modules>
-    <module>parent</module>
-    <module>core</module>
-    <module>sensors</module>
-    <module>formulae</module>
-    <module>library</module>
-    <module>listeners</module>
-    <module>examples</module>
-  </modules>
+	<scm>
+		<url>https://github.com/abourdon/powerapi-akka.git</url>
+		<connection>scm:git:git://github.com/abourdon/powerapi-akka.git</connection>
+		<developerConnection>scm:git:git@github.com:abourdon/powerapi-akka.git</developerConnection>
+	</scm>
+
+	<licenses>
+		<license>
+			<name>The GNU Lesser General Public License, Version 2</name>
+			<url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>abourdon</id>
+			<name>Aurelien Bourdon</name>
+			<email>aurelien.bourdon@inria.fr</email>
+			<organization>Inria / University Lille 1</organization>
+			<organizationUrl>http://www.inria.fr</organizationUrl>
+			<roles>
+				<role>Architect</role>
+				<role>Developer</role>
+			</roles>
+		</developer>
+		<developer>
+			<id>rouvoy</id>
+			<name>Romain Rouvoy</name>
+			<email>romain.rouvoy@univ-lille1.fr</email>
+			<organization>University Lille 1 / Inria</organization>
+			<organizationUrl>http://www.univ-lille1.fr</organizationUrl>
+			<roles>
+				<role>Architect</role>
+			</roles>
+		</developer>
+	</developers>
+
+	<modules>
+		<module>core</module>
+		<module>sensors</module>
+		<module>formulae</module>
+		<module>library</module>
+		<module>listeners</module>
+		<module>examples</module>
+	</modules>
+
+	<properties>
+		<maven.compiler.source>1.7</maven.compiler.source>
+		<maven.compiler.target>1.7</maven.compiler.target>
+		<encoding>UTF-8</encoding>
+		<scala.version>2.9.1</scala.version>
+		<akka.version>2.0.1</akka.version>
+		<firstAuthor.name>Aurelien Bourdon</firstAuthor.name>
+		<firstAuthor.email>aurelien.bourdon@inria.fr</firstAuthor.email>
+	</properties>
+
+	<repositories>
+		<repository>
+			<id>typesafe</id>
+			<name>Typesafe Repository</name>
+			<url>http://repo.typesafe.com/typesafe/releases/</url>
+		</repository>
+	</repositories>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.github.scala-incubator.io</groupId>
+				<artifactId>scala-io-core_${scala.version}</artifactId>
+				<version>0.4.0</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.scala-incubator.io</groupId>
+				<artifactId>scala-io-file_${scala.version}</artifactId>
+				<version>0.4.0</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.scala-lang</groupId>
+			<artifactId>scala-library</artifactId>
+			<version>${scala.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.typesafe.akka</groupId>
+			<artifactId>akka-actor</artifactId>
+			<version>${akka.version}</version>
+		</dependency>
+
+		<!-- Test scope -->
+		<dependency>
+			<groupId>com.typesafe.akka</groupId>
+			<artifactId>akka-testkit</artifactId>
+			<version>${akka.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.scalatest</groupId>
+			<artifactId>scalatest</artifactId>
+			<version>1.3</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<sourceDirectory>src/main/scala</sourceDirectory>
+		<testSourceDirectory>src/test/scala</testSourceDirectory>
+		<plugins>
+			<plugin>
+				<groupId>org.scala-tools</groupId>
+				<artifactId>maven-scala-plugin</artifactId>
+				<version>2.15.0</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>compile</goal>
+							<goal>testCompile</goal>
+						</goals>
+						<configuration>
+							<args>
+								<arg>-deprecation</arg>
+								<arg>-dependencyfile</arg>
+								<arg>${project.build.directory}/.scala_dependencies</arg>
+							</args>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<useFile>false</useFile>
+					<disableXmlReport>true</disableXmlReport>
+					<includes>
+						<include>**/*Test.*</include>
+						<include>**/*Suite.*</include>
+					</includes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.mycila.maven-license-plugin</groupId>
+				<artifactId>maven-license-plugin</artifactId>
+				<version>1.9.0</version>
+				<inherited>false</inherited>
+				<configuration>
+					<header>${basedir}/COPYING.HEADER</header>
+					<failIfMissing>true</failIfMissing>
+					<aggregate>true</aggregate>
+					<strictCheck>true</strictCheck>
+					<properties>
+						<license.name>Inria, University Lille 1</license.name>
+						<license.year>${project.inceptionYear}</license.year>
+						<contact.name>powerapi-user-list@googlegroups.com</contact.name>
+					</properties>
+					<excludes>
+						<exclude>**/README.md</exclude>
+						<exclude>**/COPYING</exclude>
+						<exclude>**/COPYING.HEADER</exclude>
+						<exclude>**.gitignore</exclude>
+						<exclude>**/.cache</exclude>
+						<exclude>**/src/main/resources/**</exclude>
+						<exclude>**/src/test/resources/**</exclude>
+					</excludes>
+				</configuration>
+				<executions>
+					<execution>
+						<id>check-headers</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>

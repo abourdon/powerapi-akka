@@ -1,19 +1,23 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	
-	<groupId>fr.inria.powerapi</groupId>
-  <artifactId>listeners</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <packaging>pom</packaging>
+
+	<artifactId>listeners</artifactId>
+	<packaging>pom</packaging>
 	<name>${project.artifactId}</name>
 	<description>PowerAPI's listeners.</description>
 	<inceptionYear>2012</inceptionYear>
 
-  <modules>
-    <module>listener-cpu-console</module>
-    <module>listener-cpu-file</module>
-    <module>listener-cpu-jfreechart</module>
-  </modules>
+	<parent>
+		<groupId>fr.inria.powerapi</groupId>
+		<artifactId>powerapi</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<modules>
+		<module>listener-cpu-console</module>
+		<module>listener-cpu-file</module>
+		<module>listener-cpu-jfreechart</module>
+	</modules>
 
 </project>

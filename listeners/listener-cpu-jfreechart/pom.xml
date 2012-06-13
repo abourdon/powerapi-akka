@@ -11,9 +11,8 @@ See also: http://www.jfree.org/jfreechart.</description>
 
 	<parent>
 		<groupId>fr.inria.powerapi</groupId>
-		<artifactId>parent</artifactId>
+		<artifactId>listeners</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
-    <relativePath>../../parent/pom.xml</relativePath>
 	</parent>
 
 	<dependencies>
