@@ -48,10 +48,10 @@ trait ClockConfiguration extends Configuration {
  * Clock component, that "tick" the event bus following a configured period.
  *
  * The PowerAPI architecture is based on a asynchronous architecture composed by several components.
- * Each component listen to an event bus and reacts following messages emit by the event bus.
- * Thus, each component is in a passive state and only process its business part following the emit message.
+ * Each component listen to an event bus and reacts following messages sent by the event bus.
+ * Thus, each component is in a passive state and only run its business part following the sent message.
  *
- * At the bottom of this architecture, the Clock component provide a "tick" message to wake up
+ * At the bottom of this architecture, the Clock component provides a "tick" message to wake up
  * components which are listen to it.
  *
  * Clock component reacts to both TickIt and UnTickIt messages which respectively ask to

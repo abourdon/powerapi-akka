@@ -56,7 +56,7 @@ trait Component extends akka.actor.Actor with akka.actor.ActorLogging {
   def process: Receive
 
   /**
-   * Defines what kind a Message this component wants to be aware
+   * Defines what kind of Message this component wants to be aware
    * from the common event bus.
    */
   def messagesToListen: Array[Class[_ <: Message]]

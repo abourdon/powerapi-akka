@@ -4,7 +4,7 @@ PowerAPI Akka version is a scala-based library for monitoring energy at the proc
 
 PowerAPI differs from existing energy process-level monitoring tool in its pure software, fully customizable and modular aspect which let user to precisely define what he wants to monitor, without any external device.
 
-PowerAPI offers an API which can be use to express request about energy spent by a processus, following its hardware resource utilization (in term of CPU, memory, disk, network, etc.).
+PowerAPI offers an API which can be used to express request about energy spent by a processus, following its hardware resource utilization (in term of CPU, memory, disk, network, etc.).
 
 ## Documentation
 * [Getting started](#getting-started)
@@ -58,7 +58,7 @@ To compute this formula, `fr.inria.powerapi.formula.formula-cpu-general` module 
 * the CPU _Thermal Dissipation Power_ value;
 * the array of frequency/voltage used by the CPU
 
-These information can be written in the associated configuration file as the following:
+These information can be written in its associated configuration file as the following:
 ```
 powerapi {
 	cpu {
@@ -72,52 +72,52 @@ powerapi {
 }
 ```
 
-Each module can have its own configuration part. See more details in the associated README file.
+Each module can have its own configuration part. See more details in its associated README file.
 
 ## Architecture details
 
-PowerAPI is based on a modular and asynchronous event-driven architecture using the [Akka library](http://akka.io "Akka library"). Architecture is centralized around a common event bus where each module can publish/subscribe to emitted events. One particularity of this architecture is that each module is in passive state and reacts to event emitted by the common event bus.
+PowerAPI is based on a modular and asynchronous event-driven architecture using the [Akka library](http://akka.io "Akka library"). Architecture is centralized around a common event bus where each module can publish/subscribe to sending events. One particularity of this architecture is that each module is in passive state and reacts to events sent by the common event bus.
 
 These modules are organized as follow:
 
 ### Core
 
-As its name indicates, `Core` module gather all *kernel* functionnalities that will be use by other modules. More particulary, this module defines the whole types used by PowerAPI to define its architecture.
+As its name indicates, `Core` module gather all *kernel* functionnalities that will be used by other modules. More particulary, this module defines the whole types used by PowerAPI to define its architecture.
 
-This module also defines the essential `Clock` class, responsible of the periodically emission of the `Tick` message, itself responsible of the process of the PowerAPI business part.
+This module also defines the essential `Clock` class, responsible of the periodically sending of the `Tick` message, itself responsible of the process of the PowerAPI business part.
 
 ### Sensors
 
-To compute the energy spent by a process through its hardware resource utilization, PowerAPI cutting computation in two parts:
-1. Monitor hardware resource process utilization;
-2. Compute the energy implies by the hardware resource process utilization.
+To compute the energy spent by a process through its hardware resource utilization, PowerAPI cuts computation in two parts:
+1. Monitoring of hardware resource process utilization;
+2. Computing the energy implies by the hardware resource process utilization.
 
-Sensors is thus a set of `Sensor`, responsible of the monitoring of hardware resource process utilization. Thus, you have a CPU `Sensor`, a memory `Sensor`, a disk `Sensor` and so on.
+The Sensor modules or _Sensors_ represents a set of `Sensor`, responsible of the monitoring of hardware resource process utilization. Thus, you have a CPU `Sensor`, a memory `Sensor`, a disk `Sensor` and so on.
 As these information are given by operating system, there is one `Sensor` implementation by operating system type. Thus you may have a CPU Linux `Sensor`, a CPU Windows `Sensor`, and so on.
 
 ### Formulae
 
 Set of `Formula`, responsible of the computation of the energy spent by a process on a particular hardware resource (e.g CPU, memory, disk or network), following information provided by its associated `Sensor`.
-A `Formula` may depend on the type of the monitorded hardware resource. Thus, for the same hardware resource, several `Formula` implementations are possible.
+A `Formula` may depend on the type of the monitored hardware resource. Thus, for the same hardware resource, several `Formula` implementations could exist.
 
 ### Listeners
 
-Set of `Listener`, that listen `Formula` events emitted by the common event bus. Thus, a `Listener` define the actions to do when receiving results from the energy computation (e.g display information, produce and submit a new information in the common event bus, etc.). 
+Set of `Listener`, that listen `Formula` events sending by the common event bus. Thus, a `Listener` define the actions to do when receiving results from the energy computation (e.g displaying information, producing and submitting information to the common event bus, etc.).
 
 ### Library
 
-The Library module defines the API that can be use by user to interact with PowerAPI.
+The Library module defines the API that can be used by user to interact with PowerAPI.
 
 ## API details
 
-Process-level energy monitoring is based on a periodically computation that can be expressed via the API. Here there are several examples to describes PowerAPI's API:
+Process-level energy monitoring is based on a periodically computation that can be expressed via the API. Here there are several examples to describe PowerAPI's API:
 
 ### What is the CPU energy spent by the 123 process? Please give me fresh results every 500 milliseconds
 
-Considering that process run under Linux, using a procfs file system on a *standard* CPU architecture.
-Thus, we need to use the procfs CPU `Sensor` implementation and the general CPU `Formula` implementation. Add to this the desire to display CPU energy spent by process into the console. So we need to:
+Considering that process run under Linux, using a _procfs_ file system on a *standard* CPU architecture.
+Thus, we need to use the _procfs_ CPU `Sensor` implementation and the general CPU `Formula` implementation. Add to this the desire to display CPU energy spent by process into the console. So we need to:
 
-1. Activate desired modules:
+1. Activate the desired modules:
 
 ``` scala
 Array(
@@ -126,7 +126,7 @@ Array(
 ).foreach(PowerAPI.startEnergyModule(_))
 ```
 
-2. Request to PowerAPI system the CPU energy spent by the 123 process, every 500 milliseconds:
+2. Request to PowerAPI the CPU energy spent by the 123 process, every 500 milliseconds:
 
 ``` scala
 PowerAPI.startMonitoring(
@@ -138,8 +138,8 @@ PowerAPI.startMonitoring(
 
 ### Based on the first request, how can I display CPU energy information into a chart too?
 
-Based on the previous code, we simply have to add a new `Listener` that is able to display CPU energy information into a chart.
-PowerAPI integrates a `Listener` using the [JFreeChart](http://www.jfree.org/jfreechart "JFreeChart") implementation. So let's add it to the PowerAPI system:
+Based on the previous code, we simply have to add a new `Listener` which will be able to display CPU energy information into a chart.
+PowerAPI integrates a `Listener` using the [JFreeChart](http://www.jfree.org/jfreechart "JFreeChart") Java graph library. So let's add it to the PowerAPI system:
 
 ``` scala
 PowerAPI.startMonitoring(

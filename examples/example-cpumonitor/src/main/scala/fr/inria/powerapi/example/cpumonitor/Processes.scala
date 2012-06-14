@@ -28,7 +28,7 @@ import scalax.io.Resource
 import scala.collection.JavaConversions
 
 /**
- * Set of different use cases of process CPU listening.
+ * Set of different use cases of CPU energy monitoring.
  *
  * @author abourdon
  */
@@ -36,7 +36,7 @@ object Processes {
   lazy val conf = ConfigFactory.load
 
   /**
-   * Process CPU listening using information given by the configuration file.
+   * Process CPU monitoring using information given by the configuration file.
    */
   def fromConf {
     val pids = JavaConversions.asScalaBuffer(conf.getIntList("powerapi.pids")).toList
@@ -46,7 +46,7 @@ object Processes {
   }
 
   /**
-   * CPU listening which hardly specifying the monitored process.
+   * CPU monitoring which hardly specifying the monitored process.
    */
   def perso {
     PowerAPI.startMonitoring(Process(16617), 500 milliseconds, classOf[CpuListener])
@@ -55,7 +55,7 @@ object Processes {
   }
 
   /**
-   * Current process CPU listening.
+   * Current process CPU monitoring.
    */
   def current {
     val currentPid = ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
@@ -65,7 +65,7 @@ object Processes {
   }
 
   /**
-   * Intensive process CPU listening in periodically scanning all current processes.
+   * Intensive process CPU monitoring in periodically scanning all current processes.
    */
   def intensive {
     def getPids = {

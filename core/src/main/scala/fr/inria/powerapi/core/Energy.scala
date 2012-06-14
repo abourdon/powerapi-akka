@@ -26,7 +26,7 @@ import akka.util.Duration
  * Energy information wrapper.
  *
  * Note that constructor is private, so it needs to deals with
- * its associated companion object.
+ * its associated companion object to create new instances.
  *
  * @param power: the power value of the Energy class
  *

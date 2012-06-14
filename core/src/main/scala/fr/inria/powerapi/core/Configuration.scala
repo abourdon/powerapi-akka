@@ -23,7 +23,7 @@ import com.typesafe.config.ConfigException
 import com.typesafe.config.Config
 
 /**
- * Base trait that deals with configuration files using the Typesafe Config library.
+ * Base trait dealing with configuration files using the Typesafe Config library.
  *
  * @see https://github.com/typesafehub/config
  *
@@ -38,7 +38,7 @@ trait Configuration extends Component {
   /**
    * Default pattern to get information from configuration file.
    *
-   * @param request: closure symbolizing request to get information from configuration file.
+   * @param request: request to get information from configuration file.
    * @param default: default value returned in case of ConfigException.
    *
    * @see http://typesafehub.github.com/config/latest/api/com/typesafe/config/ConfigException.html

@@ -5,7 +5,7 @@
 	<groupId>fr.inria.powerapi.formula</groupId>
 	<artifactId>formula-cpu-api</artifactId>
 	<name>${project.artifactId}</name>
-	<description>Base types for each CPU Formula module implementations.</description>
+	<description>Base types for each CPU Formula module implementation.</description>
 	<inceptionYear>2012</inceptionYear>
 
 	<parent>

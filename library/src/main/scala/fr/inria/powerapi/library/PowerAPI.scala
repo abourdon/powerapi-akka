@@ -45,7 +45,7 @@ case class StopMonitoring(
   listenerType: Class[_ <: Listener] = null) extends Message
 
 /**
- * PowerAPI engine which start/stop every PowerAPI component such as listener or energy module.
+ * PowerAPI engine which start/stop every PowerAPI components such as Listener or Energy Module.
  *
  * Current implementation start/stop component in giving the component type.
  * This restriction helps to instantiate only one implementation of a given component.
@@ -165,7 +165,7 @@ class PowerAPI extends Component {
  * @author abourdon
  */
 object PowerAPI {
-  implicit val system = ActorSystem("PowerAPI")
+  implicit lazy val system = ActorSystem("PowerAPI")
   lazy val engine = system.actorOf(Props[PowerAPI])
 
   /**
