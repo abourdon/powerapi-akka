@@ -68,14 +68,9 @@
 
 	<repositories>
 		<repository>
-			<id>akka.repository</id>
-			<name>Akka Maven Repository</name>
-			<url>http://akka.io/repository</url>
-		</repository>
-		<repository>
-			<id>jboss.repository</id>
-			<name>JBoss Maven Repository</name>
-			<url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
+			<id>typesafe</id>
+			<name>Typesafe Repository</name>
+			<url>http://repo.typesafe.com/typesafe/releases/</url>
 		</repository>
 	</repositories>
 
