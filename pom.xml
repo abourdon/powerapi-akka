@@ -12,14 +12,14 @@
 
 	<scm>
 		<url>https://github.com/abourdon/powerapi-akka.git</url>
-		<connection>scm:git:git://github.com/abourdon/powerapi-akka.git</connection>
-		<developerConnection>scm:git:git@github.com:abourdon/powerapi-akka.git</developerConnection>
+		<connection>scm:git:ssh://git@github.com/abourdon/powerapi-akka.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/abourdon/powerapi-akka.git</developerConnection>
 	</scm>
 
 	<licenses>
 		<license>
-			<name>The GNU Lesser General Public License, Version 2</name>
-			<url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
+			<name>The GNU Lesser General Public License, Version 3</name>
+			<url>http://www.gnu.org/licenses/lgpl.html</url>
 		</license>
 	</licenses>
 
@@ -68,9 +68,14 @@
 
 	<repositories>
 		<repository>
-			<id>typesafe</id>
-			<name>Typesafe Repository</name>
-			<url>http://repo.typesafe.com/typesafe/releases/</url>
+			<id>akka.repository</id>
+			<name>Akka Maven Repository</name>
+			<url>http://akka.io/repository</url>
+		</repository>
+		<repository>
+			<id>jboss.repository</id>
+			<name>JBoss Maven Repository</name>
+			<url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
 		</repository>
 	</repositories>
 
@@ -174,16 +179,10 @@
 						<license.year>${project.inceptionYear}</license.year>
 						<contact.name>powerapi-user-list@googlegroups.com</contact.name>
 					</properties>
-					<excludes>
-						<exclude>**/README.md</exclude>
-						<exclude>**/COPYING</exclude>
-						<exclude>**/COPYING.LESSER</exclude>
-						<exclude>**/COPYING.LESSER.HEADER</exclude>
-						<exclude>**.gitignore</exclude>
-						<exclude>**/.cache</exclude>
-						<exclude>**/src/main/resources/**</exclude>
-						<exclude>**/src/test/resources/**</exclude>
-					</excludes>
+					<includes>
+						<include>**/*.scala</include>
+						<include>**/*.java</include>
+					</includes>
 				</configuration>
 				<executions>
 					<execution>
@@ -194,6 +193,20 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
