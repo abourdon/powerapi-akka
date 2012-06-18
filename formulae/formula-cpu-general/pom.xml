@@ -13,7 +13,7 @@ V its associated voltage.</description>
 	<parent>
 		<groupId>fr.inria.powerapi</groupId>
 		<artifactId>formulae</artifactId>
-		<version>1.2-SNAPSHOT</version>
+		<version>1.1-SNAPSHOT</version>
 	</parent>
 
 	<dependencies>
