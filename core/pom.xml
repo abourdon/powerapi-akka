@@ -11,6 +11,6 @@ This module also defines the essential Clock class, responsible of the periodica
 	<parent>
 		<groupId>fr.inria.powerapi</groupId>
 		<artifactId>powerapi</artifactId>
-		<version>1.1</version>
+		<version>1.2-SNAPSHOT</version>
 	</parent>
 </project>
