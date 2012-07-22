@@ -18,11 +18,12 @@
  * Contact: powerapi-user-list@googlegroups.com
  */
 package fr.inria.powerapi.listener.cpu.file
-import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
+
 import fr.inria.powerapi.core.Listener
-import scalax.io.Resource
-import scalax.io.Line
+import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
 import scalax.file.Path
+import scalax.io.Line
+import scalax.io.Resource
 
 /**
  * CpuListener's configuration.

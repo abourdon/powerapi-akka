@@ -18,7 +18,6 @@
  * Contact: powerapi-user-list@googlegroups.com
  */
 package fr.inria.powerapi.core
-import scala.collection.mutable.{ SynchronizedMap, HashMap }
 
 import akka.actor.{ ActorSystem, ActorLogging }
 import akka.dispatch.Await
@@ -26,21 +25,22 @@ import akka.pattern.ask
 import akka.testkit.TestActorRef
 import akka.util.Timeout
 import akka.util.duration._
-
 import org.junit.{ Test, Ignore }
 import org.scalatest.junit.{ ShouldMatchersForJUnit, JUnitSuite }
+import scala.collection.mutable.{ SynchronizedMap, HashMap }
+
 
 case object Result
 class ByProcessTickReceiver extends akka.actor.Actor with ActorLogging {
   val receivedTicks = new HashMap[TickSubscription, Int] with SynchronizedMap[TickSubscription, Int]
 
-  private def incr(tickSubscription: TickSubscription) {
+  private def increment(tickSubscription: TickSubscription) {
     val currentTick = receivedTicks getOrElse (tickSubscription, 0)
     receivedTicks += (tickSubscription -> (currentTick + 1))
   }
 
   def receive = {
-    case tick: Tick => incr(tick.subscription)
+    case tick: Tick => increment(tick.subscription)
     case Result => sender ! receivedTicks
     case unknown => throw new UnsupportedOperationException("unable to process message " + unknown)
   }
@@ -59,7 +59,7 @@ class ClockSuite extends JUnitSuite with ShouldMatchersForJUnit {
   val clock = TestActorRef[Clock]
 
   @Test
-  def testMessagesToListen {
+  def testMessagesToListen() {
     implicit val timeout = Timeout(5 seconds)
     val request = clock ? MessagesToListen
     val messages = Await.result(request, timeout.duration).asInstanceOf[Array[Class[_ <: Message]]]
@@ -70,7 +70,7 @@ class ClockSuite extends JUnitSuite with ShouldMatchersForJUnit {
   }
 
   @Test
-  def testReceivedSimpleTicks {
+  def testReceivedSimpleTicks() {
     val tickReceiver = TestActorRef[ByProcessTickReceiver]
     system.eventStream.subscribe(tickReceiver, classOf[Tick])
 
@@ -93,7 +93,7 @@ class ClockSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
   @Ignore
   @Test
-  def testReceivedIntensiveTicks {
+  def testReceivedIntensiveTicks() {
     val tickReceiver = TestActorRef[SimpleTickReceiver]
     val duration = 100 milliseconds
     val sleep = 10 seconds

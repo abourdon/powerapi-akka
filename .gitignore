@@ -4,4 +4,6 @@ target
 .settings
 .project
 .metadata
+.idea
+*.iml
 *~

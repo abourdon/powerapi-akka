@@ -19,14 +19,11 @@
  */
 package fr.inria.powerapi.formula.cpu.general
 
-import scala.collection.mutable.HashMap
-import scala.collection.JavaConversions
-
 import com.typesafe.config.Config
-
 import fr.inria.powerapi.core.{ TickSubscription, Energy }
 import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
 import fr.inria.powerapi.sensor.cpu.api.{ TimeInStates, ProcessElapsedTime, GlobalElapsedTime, CpuSensorValues }
+import scala.collection.JavaConversions
 
 /**
  * CPU formula configuration.
@@ -58,10 +55,13 @@ trait Configuration extends fr.inria.powerapi.core.Configuration {
  * @author abourdon
  */
 class CpuFormula extends fr.inria.powerapi.formula.cpu.api.CpuFormula with Configuration {
+
+  import collection.mutable
+
   lazy val constant = (0.7 * tdp) / (frequencies.max._1 * math.pow(frequencies.max._2, 2))
   lazy val powers = frequencies.map(frequency => (frequency._1, (constant * frequency._1 * math.pow(frequency._2, 2))))
 
-  lazy val cache = HashMap[TickSubscription, CpuSensorValues]()
+  lazy val cache = mutable.HashMap[TickSubscription, CpuSensorValues]()
   lazy val defaultSensorValue =
     CpuSensorValues(
       TimeInStates(frequencies.map(fv => (fv._1, 0: Long))),

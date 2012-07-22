@@ -19,14 +19,13 @@
  */
 package fr.inria.powerapi.listener.cpu.jfreechart
 
+import fr.inria.powerapi.core.Process
+import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
 import java.awt.{ Toolkit, Dimension }
-
 import org.jfree.chart.{ ChartPanel, ChartFactory }
 import org.jfree.data.time.{ TimeSeriesDataItem, TimeSeriesCollection, TimeSeries, FixedMillisecond }
 import org.jfree.ui.{ RefineryUtilities, ApplicationFrame }
 
-import fr.inria.powerapi.core.Process
-import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
 
 /**
  * Display received CpuFormulaValues to the wrapped JFreeChart chart.
@@ -36,7 +35,7 @@ import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
 class Chart(title: String) {
   val dataset = new TimeSeriesCollection
   val chart = ChartFactory.createTimeSeriesChart(title,
-    Chart.xValues, Chart.yValues, dataset, true, true, false);
+    Chart.xValues, Chart.yValues, dataset, true, true, false)
   val timeSeries = collection.mutable.HashMap[Process, TimeSeries]()
 
   def process(implicit cpuFormulaValues: CpuFormulaValues) {
@@ -63,10 +62,10 @@ object Chart {
 
   val chartPanel = {
     val panel = new ChartPanel(chart.chart)
-    panel.setMouseWheelEnabled(true);
-    panel.setDomainZoomable(true);
-    panel.setFillZoomRectangle(true);
-    panel.setRangeZoomable(true);
+    panel.setMouseWheelEnabled(true)
+    panel.setDomainZoomable(true)
+    panel.setFillZoomRectangle(true)
+    panel.setRangeZoomable(true)
     panel
   }
 
@@ -77,7 +76,7 @@ object Chart {
 
   def run() {
     applicationFrame.setContentPane(chartPanel)
-    val dimension = Toolkit.getDefaultToolkit().getScreenSize()
+    val dimension = Toolkit.getDefaultToolkit.getScreenSize
     applicationFrame.setSize(new Dimension(5 * dimension.width / 6, 5 * dimension.height / 6))
     applicationFrame.setVisible(true)
     RefineryUtilities.centerFrameOnScreen(applicationFrame)

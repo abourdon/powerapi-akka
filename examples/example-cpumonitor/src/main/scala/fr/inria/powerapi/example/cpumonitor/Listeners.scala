@@ -18,6 +18,7 @@
  * Contact: powerapi-user-list@googlegroups.com
  */
 package fr.inria.powerapi.example.cpumonitor
+
 import fr.inria.powerapi.core.{ Tick, Energy, Process, TickSubscription }
 import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
 import fr.inria.powerapi.listener.cpu.jfreechart.{ CpuListener, Chart }

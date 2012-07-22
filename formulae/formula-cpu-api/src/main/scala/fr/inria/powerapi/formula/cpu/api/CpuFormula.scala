@@ -18,6 +18,7 @@
  * Contact: powerapi-user-list@googlegroups.com
  */
 package fr.inria.powerapi.formula.cpu.api
+
 import fr.inria.powerapi.core.{ Energy, Formula, Tick, Message }
 import fr.inria.powerapi.sensor.cpu.api.CpuSensorValues
 

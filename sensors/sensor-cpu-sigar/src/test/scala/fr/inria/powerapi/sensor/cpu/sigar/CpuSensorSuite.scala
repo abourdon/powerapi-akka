@@ -17,7 +17,7 @@
  *
  * Contact: powerapi-user-list@googlegroups.com
  */
-package powerapi.sensor.cpusensor_sigar
+package fr.inria.powerapi.sensor.cpu.sigar
 
 import org.hyperic.sigar.{SigarProxyCache, Sigar}
 import org.junit.Test
@@ -26,9 +26,9 @@ import org.scalatest.junit.{ShouldMatchersForJUnit, JUnitSuite}
 class CpuSensorSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
   @Test
-  def testSigar {
-    val sigar = SigarProxyCache.newInstance(new Sigar(), 1000);
-    println(sigar.getCpuPerc())
+  def testSigar() {
+    val sigar = SigarProxyCache.newInstance(new Sigar(), 1000)
+    println(sigar.getCpuPerc)
   }
 
 }

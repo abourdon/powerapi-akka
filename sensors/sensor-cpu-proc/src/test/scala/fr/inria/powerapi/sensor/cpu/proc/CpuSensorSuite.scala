@@ -19,20 +19,17 @@
  */
 package fr.inria.powerapi.sensor.cpu.proc
 
-import java.net.URL
-
-import scala.util.Properties
-
 import akka.actor.actorRef2Scala
 import akka.actor.{Props, ActorSystem, Actor}
 import akka.testkit.TestActorRef
 import akka.util.duration.intToDurationInt
-
-import org.junit.Test
-import org.scalatest.junit.{ShouldMatchersForJUnit, JUnitSuite}
-
 import fr.inria.powerapi.core.{UnTickIt, TickSubscription, TickIt, Tick, Process, Clock}
 import fr.inria.powerapi.sensor.cpu.api.{TimeInStates, ProcessElapsedTime, GlobalElapsedTime, CpuSensorValues}
+import java.net.URL
+import org.junit.Test
+import org.scalatest.junit.{ShouldMatchersForJUnit, JUnitSuite}
+import scala.util.Properties
+
 
 class CpuSensorReceiver extends Actor {
   var receivedData: Option[CpuSensorValues] = None
@@ -65,7 +62,7 @@ class CpuSensorSuite extends JUnitSuite with ShouldMatchersForJUnit {
   }
 
   @Test
-  def testTimeInStates {
+  def testTimeInStates() {
     testTimeInStates(TimeInStates(cpuSensor.underlyingActor.timeInStates))
   }
 
@@ -74,7 +71,7 @@ class CpuSensorSuite extends JUnitSuite with ShouldMatchersForJUnit {
   }
 
   @Test
-  def testGlobalElapsedTime {
+  def testGlobalElapsedTime() {
     testGlobalElapsedTime(GlobalElapsedTime(cpuSensor.underlyingActor.elapsedTime))
   }
 
@@ -83,7 +80,7 @@ class CpuSensorSuite extends JUnitSuite with ShouldMatchersForJUnit {
   }
 
   @Test
-  def testProcessElapsedTime {
+  def testProcessElapsedTime() {
     testProcessElapsedTime(ProcessElapsedTime(cpuSensor.underlyingActor.elapsedTime(Process(123))))
   }
 
@@ -99,7 +96,7 @@ class CpuSensorSuite extends JUnitSuite with ShouldMatchersForJUnit {
     clock ! UnTickIt(TickSubscription(Process(123), 10 seconds))
 
     cpuSensorReceiver.underlyingActor.receivedData match {
-      case None => fail
+      case None => fail()
       case Some(cpuSensorValues) => {
         testTimeInStates(cpuSensorValues.timeInStates)
         testGlobalElapsedTime(cpuSensorValues.globalElapsedTime)

@@ -18,8 +18,9 @@
  * Contact: powerapi-user-list@googlegroups.com
  */
 package fr.inria.powerapi.listener.cpu.console
-import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
+
 import fr.inria.powerapi.core.Listener
+import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
 
 /**
  * CPU listener which simply display received CpuFormulaValues to the console

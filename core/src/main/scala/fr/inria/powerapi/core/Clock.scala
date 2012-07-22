@@ -18,12 +18,11 @@
  * Contact: powerapi-user-list@googlegroups.com
  */
 package fr.inria.powerapi.core
-import scala.collection.mutable.HashMap
-import akka.util.Duration
-import scala.collection.mutable.SynchronizedMap
+
 import akka.actor.Cancellable
+import akka.util.Duration
 import akka.util.duration.intToDurationInt
-import com.typesafe.config.ConfigException
+import collection.mutable
 
 /**
  * Clock's messages definition.
@@ -60,8 +59,8 @@ trait ClockConfiguration extends Configuration {
  * @author abourdon
  */
 class Clock extends Component with ClockConfiguration {
-  val subscriptions = new HashMap[Duration, Set[TickSubscription]] with SynchronizedMap[Duration, Set[TickSubscription]]
-  val schedulers = new HashMap[Duration, Cancellable]
+  val subscriptions = new mutable.HashMap[Duration, Set[TickSubscription]] with mutable.SynchronizedMap[Duration, Set[TickSubscription]]
+  val schedulers = new mutable.HashMap[Duration, Cancellable]
   val system = context.system
 
   def makeItTick(implicit tickIt: TickIt) {

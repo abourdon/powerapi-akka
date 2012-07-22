@@ -18,15 +18,15 @@
  * Contact: powerapi-user-list@googlegroups.com
  */
 package fr.inria.powerapi.library
+
 import akka.actor.{ Props, ActorSystem, ActorPath }
 import akka.dispatch.Await
+import akka.pattern.ask
 import akka.util.duration._
 import akka.util.{ Timeout, Duration }
-import akka.pattern.ask
-import fr.inria.powerapi.core.{ Message, MessagesToListen, Listener, Component, TickIt, UnTickIt, TickSubscription, Process }
 import fr.inria.powerapi.core.Clock
 import fr.inria.powerapi.core.EnergyModule
-import scala.collection.mutable.SynchronizedMap
+import fr.inria.powerapi.core.{ Message, MessagesToListen, Listener, Component, TickIt, UnTickIt, TickSubscription, Process }
 
 /**
  * PowerAPI's messages definition
@@ -192,7 +192,7 @@ object PowerAPI {
    *
    * @param process: process to monitor.
    * @param duration: duration period monitoring.
-   * @param listener: listener that wants to listen monitoring results.
+   * @param listenerType: listener type which will be aware by monitoring results.
    */
   def startMonitoring(process: Process = Process(-1), duration: Duration = Duration.Zero, listenerType: Class[_ <: Listener] = null) {
     engine ! StartMonitoring(process, duration, listenerType)
@@ -204,7 +204,7 @@ object PowerAPI {
    *
    * @param process: process to stop to monitor.
    * @param duration: duration period monitoring.
-   * @param listener: listener that wants to be unaware by monitoring results.
+   * @param listenerType: listener type which will be unaware by monitoring results.
    */
   def stopMonitoring(process: Process = Process(-1), duration: Duration = Duration.Zero, listenerType: Class[_ <: Listener] = null) {
     engine ! StopMonitoring(process, duration, listenerType)

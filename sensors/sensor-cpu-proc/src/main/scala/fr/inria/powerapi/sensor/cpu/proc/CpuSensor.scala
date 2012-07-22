@@ -19,12 +19,12 @@
  */
 package fr.inria.powerapi.sensor.cpu.proc
 
-import java.io.{ IOException, FileInputStream }
-import java.net.URL
-
 import fr.inria.powerapi.core.{ Tick, Process }
 import fr.inria.powerapi.sensor.cpu.api.{ TimeInStates, ProcessElapsedTime, GlobalElapsedTime, CpuSensorValues }
+import java.io.{ IOException, FileInputStream }
+import java.net.URL
 import scalax.io.Resource
+
 
 /**
  * CPU sensor configuration.
@@ -51,6 +51,7 @@ class CpuSensor extends fr.inria.powerapi.sensor.cpu.api.CpuSensor with Configur
    * Delegation class collecting frequency information contained into the timeInStatePath file
    */
   class Frequency {
+    // time_in_state line format: frequency time
     lazy val TimeInStateFormat = """(\d+)\s+(\d+)""".r
     def timeInStates = {
       val result = collection.mutable.HashMap[Int, Long]()
@@ -59,9 +60,9 @@ class CpuSensor extends fr.inria.powerapi.sensor.cpu.api.CpuSensor with Configur
         try {
           // FIXME: Due to Java JDK bug #7132461, there is no way to apply buffer to procfs files and thus, directly open stream from the given URL.
           // Then, we simply read these files thanks to a FileInputStream in getting those local path
-          Resource.fromInputStream(new FileInputStream(new URL(timeInStateFile).getPath())).lines().foreach(line => {
+          Resource.fromInputStream(new FileInputStream(new URL(timeInStateFile).getPath)).lines().foreach(f = line => {
             line match {
-              case TimeInStateFormat(frequency, time) => result += (frequency.toInt -> (time.toLong + (result getOrElse (frequency.toInt, 0: Long))))
+              case TimeInStateFormat(freq, t) => result += (freq.toInt -> (t.toLong + (result getOrElse(freq.toInt, 0: Long))))
               case _ => log.warning("unable to parse line \"" + line + "\" from file \"" + timeInStateFile)
             }
           })
@@ -85,7 +86,7 @@ class CpuSensor extends fr.inria.powerapi.sensor.cpu.api.CpuSensor with Configur
       try {
         // FIXME: Due to Java JDK bug #7132461, there is no way to apply buffer to procfs files and thus, directly open stream from the given URL.
         // Then, we simply read these files thanks to a FileInputStream in getting those local path
-        Resource.fromInputStream(new FileInputStream(new URL(globalStatPath).getPath())).lines().toIndexedSeq(0) match {
+        Resource.fromInputStream(new FileInputStream(new URL(globalStatPath).getPath)).lines().toIndexedSeq(0) match {
           case GlobalStatFormat(times) => times.split(' ').foldLeft(0: Long) { (acc, x) => (acc + x.toLong) }
           case _ => {
             log.warning("unable to parse line from file \"" + globalStatPath)
@@ -104,7 +105,7 @@ class CpuSensor extends fr.inria.powerapi.sensor.cpu.api.CpuSensor with Configur
       try {
         // FIXME: Due to Java JDK bug #7132461, there is no way to apply buffer to procfs files and thus, directly open stream from the given URL.
         // Then, we simply read these files thanks to a FileInputStream in getting those local path
-        val line = Resource.fromInputStream(new FileInputStream(new URL(processStatPath replace ("%?", process.pid.toString)).getPath())).lines().toIndexedSeq(0) split ("\\s")
+        val line = Resource.fromInputStream(new FileInputStream(new URL(processStatPath replace("%?", process.pid.toString)).getPath)).lines().toIndexedSeq(0) split ("\\s")
         // User time + System time + Block IO waiting time
         line(13).toLong + line(14).toLong + line(41).toLong
       } catch {

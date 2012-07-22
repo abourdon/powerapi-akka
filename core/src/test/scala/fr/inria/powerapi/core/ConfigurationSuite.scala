@@ -18,13 +18,14 @@
  * Contact: powerapi-user-list@googlegroups.com
  */
 package fr.inria.powerapi.core
-import org.scalatest.junit.JUnitSuite
+
 import akka.actor.ActorSystem
 import akka.testkit.TestActorRef
+import com.typesafe.config.Config
+import org.junit.Test
+import org.scalatest.junit.JUnitSuite
 import org.scalatest.junit.ShouldMatchersForJUnit
 import scala.collection.JavaConversions
-import org.junit.Test
-import com.typesafe.config.Config
 
 case class Item(id: Int, value: Double)
 class ConfigurationMock extends Configuration {
@@ -56,12 +57,12 @@ class ConfigurationSuite extends JUnitSuite with ShouldMatchersForJUnit {
   val configuration = TestActorRef[ConfigurationMock].underlyingActor
 
   @Test
-  def testKeyFromConf {
+  def testKeyFromConf() {
     configuration.key should equal("value")
   }
 
   @Test
-  def testStringsFromConf {
+  def testStringsFromConf() {
     configuration.strings should have size (3)
     configuration.strings(0) should equal("string1")
     configuration.strings(1) should equal("string2")
@@ -69,19 +70,19 @@ class ConfigurationSuite extends JUnitSuite with ShouldMatchersForJUnit {
   }
 
   @Test
-  def testIntsFromConf {
+  def testIntsFromConf() {
     configuration.ints.reduceLeft((acc, x) => acc + x) should equal(6)
   }
 
   @Test
-  def testItemsFromConf {
+  def testItemsFromConf() {
     configuration.items should have size (2)
     configuration.items(0) should equal(Item(1, 1.5))
     configuration.items(1) should equal(Item(2, 2.0))
   }
 
   @Test
-  def testNotFound {
+  def testNotFound() {
     configuration.notFound should be(false)
   }
 }

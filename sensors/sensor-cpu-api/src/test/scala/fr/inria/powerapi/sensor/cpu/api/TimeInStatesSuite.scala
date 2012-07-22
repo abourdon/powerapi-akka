@@ -24,7 +24,7 @@ import org.scalatest.junit.{ShouldMatchersForJUnit, JUnitSuite}
 
 class TimeInStatesSuite extends JUnitSuite with ShouldMatchersForJUnit {
   @Test
-  def testDifference {
+  def testDifference() {
     val timesLeft = TimeInStates(Map(
       1 -> 10,
       2 -> 20,

@@ -20,9 +20,9 @@
 package fr.inria.powerapi.core
 
 import akka.util.duration.intToDurationInt
-
 import org.junit.Test
 import org.scalatest.junit.{ShouldMatchersForJUnit, JUnitSuite}
+
 
 class EnergySuite extends JUnitSuite with ShouldMatchersForJUnit {
   @Test

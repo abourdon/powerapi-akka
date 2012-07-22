@@ -18,6 +18,7 @@
  * Contact: powerapi-user-list@googlegroups.com
  */
 package fr.inria.powerapi.sensor.cpu.sigar
+
 import fr.inria.powerapi.core.{Tick, Process}
 import fr.inria.powerapi.sensor.cpu.api.{TimeInStates, ProcessElapsedTime, GlobalElapsedTime, CpuSensorValues}
 

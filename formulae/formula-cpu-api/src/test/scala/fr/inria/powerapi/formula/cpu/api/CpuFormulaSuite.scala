@@ -18,18 +18,17 @@
  * Contact: powerapi-user-list@googlegroups.com
  */
 package fr.inria.powerapi.formula.cpu.api
+
 import akka.actor.{ Props, ActorSystem }
 import akka.dispatch.Await
 import akka.pattern.ask
 import akka.util.Timeout
 import akka.util.duration._
-
-import org.junit.Test
-
-import org.scalatest.junit.{ ShouldMatchersForJUnit, JUnitSuite }
-
 import fr.inria.powerapi.core.{ Message, MessagesToListen }
 import fr.inria.powerapi.sensor.cpu.api.CpuSensorValues
+import org.junit.Test
+import org.scalatest.junit.{ ShouldMatchersForJUnit, JUnitSuite }
+
 
 class CpuFormulaMock extends CpuFormula {
   def process(cpuSensorValues: CpuSensorValues) {}
@@ -40,7 +39,7 @@ class CpuFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
   implicit lazy val timeout = Timeout(5 seconds)
 
   @Test
-  def testMessagesToListen {
+  def testMessagesToListen() {
     val cpuFormula = system.actorOf(Props[CpuFormulaMock], name = "cpuFormulaMock")
     val request = cpuFormula ? MessagesToListen
     val messages = Await.result(request, timeout.duration).asInstanceOf[Array[Class[_ <: Message]]]

@@ -33,12 +33,12 @@ import scalax.io.Resource
 
 class CpuListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
   @Before
-  def setUp {
+  def setUp() {
     Array(classOf[CpuSensor], classOf[CpuFormula]).foreach(PowerAPI.startEnergyModule(_))
   }
 
   @Test
-  def testCurrentPid {
+  def testCurrentPid() {
     val currentPid = ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
     PowerAPI.startMonitoring(Process(currentPid), 500 milliseconds, classOf[CpuListener])
     Thread.sleep((10 seconds).toMillis)
@@ -47,11 +47,11 @@ class CpuListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
   @Ignore
   @Test
-  def testAllPids {
+  def testAllPids() {
     val PSFormat = """^\s*(\d+).*""".r
     val pids = Resource.fromInputStream(Runtime.getRuntime.exec(Array("ps", "-A")).getInputStream).lines().toList.map({ pid =>
       pid match {
-        case PSFormat(pid) => pid.toInt
+        case PSFormat(id) => id.toInt
         case _ => 1
       }
     })
@@ -65,7 +65,7 @@ class CpuListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
   }
 
   @After
-  def tearDown {
+  def tearDown() {
     Array(classOf[CpuSensor], classOf[CpuFormula]).foreach(PowerAPI.stopEnergyModule(_))
   }
 }

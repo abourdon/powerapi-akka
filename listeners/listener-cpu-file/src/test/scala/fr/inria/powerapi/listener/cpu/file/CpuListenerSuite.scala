@@ -18,14 +18,15 @@
  * Contact: powerapi-user-list@googlegroups.com
  */
 package fr.inria.powerapi.listener.cpu.file
-import java.lang.management.ManagementFactory
+
 import akka.util.duration.intToDurationInt
-import org.junit.{ Test, Before, After }
-import org.scalatest.junit.{ ShouldMatchersForJUnit, JUnitSuite }
-import fr.inria.powerapi.core.{ Clock, Process }
+import fr.inria.powerapi.core.Process
 import fr.inria.powerapi.formula.cpu.general.CpuFormula
 import fr.inria.powerapi.library.PowerAPI
 import fr.inria.powerapi.sensor.cpu.proc.CpuSensor
+import java.lang.management.ManagementFactory
+import org.junit.{ Test, Before, After }
+import org.scalatest.junit.{ ShouldMatchersForJUnit, JUnitSuite }
 import scalax.file.Path
 
 trait ConfigurationMock extends Configuration {
@@ -37,12 +38,12 @@ class CpuListenerMock extends CpuListener with ConfigurationMock
 
 class CpuListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
   @Before
-  def setUp {
+  def setUp() {
     Array(classOf[CpuSensor], classOf[CpuFormula]).foreach(PowerAPI.startEnergyModule(_))
   }
 
   @Test
-  def testCurrentPid {
+  def testCurrentPid() {
     val currentPid = ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
     PowerAPI.startMonitoring(Process(currentPid), 500 milliseconds, classOf[CpuListenerMock])
     Thread.sleep((5 seconds).toMillis)
@@ -50,7 +51,7 @@ class CpuListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
   }
 
   @After
-  def tearDown {
+  def tearDown() {
     Array(classOf[CpuSensor], classOf[CpuFormula]).foreach(PowerAPI.stopEnergyModule(_))
   }
 }

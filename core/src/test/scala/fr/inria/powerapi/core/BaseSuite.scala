@@ -18,14 +18,15 @@
  * Contact: powerapi-user-list@googlegroups.com
  */
 package fr.inria.powerapi.core
+
 import akka.actor.{ Props, ActorSystem }
 import akka.dispatch.Await
 import akka.pattern.ask
 import akka.util.Timeout
 import akka.util.duration._
-
 import org.junit.Test
 import org.scalatest.junit.{ ShouldMatchersForJUnit, JUnitSuite }
+
 
 case class FooMessage() extends Message
 case class BarMessage() extends Message
@@ -44,7 +45,7 @@ class BaseSuite extends JUnitSuite with ShouldMatchersForJUnit {
   implicit val timeout = Timeout(5 seconds)
 
   @Test
-  def testMessagesToListen {
+  def testMessagesToListen() {
     val request = simpleActor ? MessagesToListen
     val messages = Await.result(request, timeout.duration).asInstanceOf[Array[Class[_ <: Message]]]
 
@@ -54,7 +55,7 @@ class BaseSuite extends JUnitSuite with ShouldMatchersForJUnit {
   }
 
   @Test
-  def testListen {
+  def testListen() {
     val request = simpleActor ? "hello"
     val answer = Await.result(request, timeout.duration).asInstanceOf[String]
 

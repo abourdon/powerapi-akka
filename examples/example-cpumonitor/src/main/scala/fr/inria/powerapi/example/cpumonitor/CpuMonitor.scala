@@ -18,10 +18,10 @@
  * Contact: powerapi-user-list@googlegroups.com
  */
 package fr.inria.powerapi.example.cpumonitor
-import fr.inria.powerapi.library.PowerAPI
-import fr.inria.powerapi.core.Clock
-import fr.inria.powerapi.sensor.cpu.proc.CpuSensor
+
 import fr.inria.powerapi.formula.cpu.general.CpuFormula
+import fr.inria.powerapi.library.PowerAPI
+import fr.inria.powerapi.sensor.cpu.proc.CpuSensor
 
 /**
  * CPU monitoring example that deals with different use cases.
@@ -31,17 +31,17 @@ import fr.inria.powerapi.formula.cpu.general.CpuFormula
  * @author abourdon
  */
 object CpuMonitor {
-  private def beforeStart {
+  private def beforeStart() {
     Array(classOf[CpuSensor], classOf[CpuFormula]).foreach(PowerAPI.startEnergyModule(_))
   }
 
-  private def beforeEnd {
+  private def beforeEnd() {
     Array(classOf[CpuSensor], classOf[CpuFormula]).foreach(PowerAPI.stopEnergyModule(_))
   }
 
   def main(args: Array[String]) {
-    beforeStart
+    beforeStart()
     Processes.intensive
-    beforeEnd
+    beforeEnd()
   }
 }
