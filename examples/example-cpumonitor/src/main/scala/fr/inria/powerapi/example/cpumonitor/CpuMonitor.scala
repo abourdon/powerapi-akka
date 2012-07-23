@@ -41,7 +41,7 @@ object CpuMonitor {
 
   def main(args: Array[String]) {
     beforeStart()
-    Processes.intensive
+    Processes.current()
     beforeEnd()
   }
 }

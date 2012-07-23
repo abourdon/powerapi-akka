@@ -56,6 +56,15 @@ object Processes {
   }
 
   /**
+   * CPU monitoring wich hardly specifying the monitored process and write results into a file.
+   */
+  def persoFile() {
+    PowerAPI.startMonitoring(Process(5247), 500 milliseconds, classOf[fr.inria.powerapi.listener.cpu.file.CpuListener])
+    Thread.sleep((5 minutes).toMillis)
+    PowerAPI.stopMonitoring(Process(5247), 500 milliseconds, classOf[fr.inria.powerapi.listener.cpu.file.CpuListener])
+  }
+
+  /**
    * Current process CPU monitoring.
    */
   def current() {

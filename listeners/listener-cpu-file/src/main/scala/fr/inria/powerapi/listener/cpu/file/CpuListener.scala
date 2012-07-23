@@ -31,9 +31,9 @@ import scalax.io.Resource
  * @author abourdon
  */
 trait Configuration extends fr.inria.powerapi.core.Configuration {
-  lazy val filePath = load { _.getString("powerapi.listener.cpu-console.file-path") }(Path.createTempFile(prefix = "powerapi.listener-cpu-file", deleteOnExit = false).path)
-  lazy val append = load { _.getBoolean("powerapi.listener.cpu-console.append") }(true)
-  lazy val justPower = load { _.getBoolean("powerapi.listener.cpu-console.just-power") }(false)
+  lazy val filePath = load(_.getString("powerapi.listener.cpu-console.out-prefix") + System.nanoTime())(Path.createTempFile(prefix = "powerapi.listener-cpu-file", deleteOnExit = false).path)
+  lazy val append = load(_.getBoolean("powerapi.listener.cpu-console.append"))(true)
+  lazy val justPower = load(_.getBoolean("powerapi.listener.cpu-console.just-power"))(false)
 }
 
 /**
@@ -43,7 +43,10 @@ trait Configuration extends fr.inria.powerapi.core.Configuration {
  * @author abourdon
  */
 class CpuListener extends Listener with Configuration {
-  lazy val output = Resource.fromFile(filePath)
+  lazy val output = {
+    log.info("using " + filePath + " as output file")
+    Resource.fromFile(filePath)
+  }
 
   def process(cpuFormulaValues: CpuFormulaValues) {
     val toWrite =
