@@ -1,20 +1,21 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<artifactId>examples</artifactId>
-	<packaging>pom</packaging>
-	<name>${project.artifactId}</name>
-	<description>Set of examples of the PowerAPI library.</description>
-	<inceptionYear>2012</inceptionYear>
+    <artifactId>examples</artifactId>
+    <packaging>pom</packaging>
+    <name>${project.artifactId}</name>
+    <description>Set of examples of the PowerAPI library.</description>
+    <inceptionYear>2012</inceptionYear>
 
-	<parent>
-		<groupId>fr.inria.powerapi</groupId>
-		<artifactId>powerapi</artifactId>
-		<version>1.2-SNAPSHOT</version>
-	</parent>
+    <parent>
+        <groupId>fr.inria.powerapi</groupId>
+        <artifactId>powerapi</artifactId>
+        <version>1.2-SNAPSHOT</version>
+    </parent>
 
-	<modules>
-		<module>example-cpumonitor</module>
-	</modules>
+    <modules>
+        <module>example-cpumonitor</module>
+    </modules>
 
 </project>

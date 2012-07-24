@@ -26,12 +26,15 @@ import collection.mutable
 
 /**
  * Clock's messages definition.
- * 
+ *
  * @author abourdon
  */
 case class TickSubscription(process: Process, duration: Duration)
+
 case class TickIt(subscription: TickSubscription) extends Message
+
 case class UnTickIt(subscription: TickSubscription) extends Message
+
 case class Tick(subscription: TickSubscription, timestamp: Long = System.currentTimeMillis) extends Message
 
 /**
@@ -40,7 +43,9 @@ case class Tick(subscription: TickSubscription, timestamp: Long = System.current
  * @author abourdon
  */
 trait ClockConfiguration extends Configuration {
-  lazy val minimumTickDuration = load { conf => Duration.parse(conf.getString("akka.scheduler.tick-duration")) }(10 milliseconds)
+  lazy val minimumTickDuration = load {
+    conf => Duration.parse(conf.getString("akka.scheduler.tick-duration"))
+  }(10 milliseconds)
 }
 
 /**
@@ -65,11 +70,11 @@ class Clock extends Component with ClockConfiguration {
 
   def makeItTick(implicit tickIt: TickIt) {
     def subscribe(implicit tickIt: TickIt) {
-      val currentSubscriptions = subscriptions getOrElse (tickIt.subscription.duration, Set[TickSubscription]())
+      val currentSubscriptions = subscriptions getOrElse(tickIt.subscription.duration, Set[TickSubscription]())
       subscriptions += (tickIt.subscription.duration -> (currentSubscriptions + tickIt.subscription))
     }
 
-    def scheduleRegistration(implicit tickIt: TickIt) {
+    def schedule(implicit tickIt: TickIt) {
       val duration = if (tickIt.subscription.duration < minimumTickDuration) {
         log.warning("unable to schedule a duration less than that specified in the configuration file (" + tickIt.subscription.duration + " vs " + minimumTickDuration)
         minimumTickDuration
@@ -87,12 +92,12 @@ class Clock extends Component with ClockConfiguration {
     }
 
     subscribe
-    scheduleRegistration
+    schedule
   }
 
   def unmakeItTick(implicit untickIt: UnTickIt) {
     def unsubscribe(implicit untickIt: UnTickIt) {
-      val currentSubscriptions = subscriptions getOrElse (untickIt.subscription.duration, Set[TickSubscription]())
+      val currentSubscriptions = subscriptions getOrElse(untickIt.subscription.duration, Set[TickSubscription]())
       if (!currentSubscriptions.isEmpty) {
         subscriptions += (untickIt.subscription.duration -> (currentSubscriptions - untickIt.subscription))
       }
@@ -100,14 +105,15 @@ class Clock extends Component with ClockConfiguration {
 
     def unschedule(implicit untickIt: UnTickIt) {
       val duration = untickIt.subscription.duration
-      val currentSubscriptions = subscriptions getOrElse (untickIt.subscription.duration, Set[TickSubscription]())
+      val currentSubscriptions = subscriptions getOrElse(untickIt.subscription.duration, Set[TickSubscription]())
 
       // Iff subscriptions associated to the specified duration is empty,
       // then we have to stop schedule and delete duration reference from maps.
       if (currentSubscriptions.isEmpty) {
         // Stop schedule associated to the associated duration.
-        val schedule = schedulers getOrElse (duration, new Cancellable {
+        val schedule = schedulers getOrElse(duration, new Cancellable {
           def cancel() {}
+
           def isCancelled = true
         })
         schedule.cancel()

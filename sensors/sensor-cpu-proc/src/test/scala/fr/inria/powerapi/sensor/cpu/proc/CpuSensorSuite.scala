@@ -40,6 +40,7 @@ class CpuSensorReceiver extends Actor {
 }
 
 class CpuSensorSuite extends JUnitSuite with ShouldMatchersForJUnit {
+
   trait ConfigurationMock extends Configuration {
     override lazy val cores = 4
 

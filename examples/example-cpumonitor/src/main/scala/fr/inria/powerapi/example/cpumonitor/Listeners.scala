@@ -19,9 +19,9 @@
  */
 package fr.inria.powerapi.example.cpumonitor
 
-import fr.inria.powerapi.core.{ Tick, Energy, Process, TickSubscription }
+import fr.inria.powerapi.core.{Tick, Energy, Process, TickSubscription}
 import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
-import fr.inria.powerapi.listener.cpu.jfreechart.{ CpuListener, Chart }
+import fr.inria.powerapi.listener.cpu.jfreechart.{CpuListener, Chart}
 
 /**
  * CPU Listener which filter received information before display it into a graph.
@@ -34,7 +34,7 @@ class FilteredChart extends CpuListener {
   override def process = {
     case cpuFormulaValues: CpuFormulaValues => {
       val process = cpuFormulaValues.tick.subscription.process
-      val old = powers getOrElse (process, Double.PositiveInfinity)
+      val old = powers getOrElse(process, Double.PositiveInfinity)
       val now = cpuFormulaValues.energy.power
       // We only process the chart if the difference between old and new value are over 10%
       if (math.min(now, old) / math.max(now, old) < 0.1) {

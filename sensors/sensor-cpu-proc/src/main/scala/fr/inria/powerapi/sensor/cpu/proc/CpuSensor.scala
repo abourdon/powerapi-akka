@@ -19,9 +19,9 @@
  */
 package fr.inria.powerapi.sensor.cpu.proc
 
-import fr.inria.powerapi.core.{ Tick, Process }
-import fr.inria.powerapi.sensor.cpu.api.{ TimeInStates, ProcessElapsedTime, GlobalElapsedTime, CpuSensorValues }
-import java.io.{ IOException, FileInputStream }
+import fr.inria.powerapi.core.{Tick, Process}
+import fr.inria.powerapi.sensor.cpu.api.{TimeInStates, ProcessElapsedTime, GlobalElapsedTime, CpuSensorValues}
+import java.io.{IOException, FileInputStream}
 import java.net.URL
 import scalax.io.Resource
 
@@ -32,10 +32,18 @@ import scalax.io.Resource
  * @author abourdon
  */
 trait Configuration extends fr.inria.powerapi.core.Configuration {
-  lazy val cores = load { _.getInt("powerapi.cpu.cores") }(0)
-  lazy val globalStatPath = load { _.getString("powerapi.cpu.global-stat") }("file:///proc/stat")
-  lazy val processStatPath = load { _.getString("powerapi.cpu.process-stat") }("file:///proc/%?/stat")
-  lazy val timeInStatePath = load { _.getString("powerapi.cpu.time-in-state") }("file:///sys/devices/system/cpu/cpu%?/cpufreq/stats/time_in_state")
+  lazy val cores = load {
+    _.getInt("powerapi.cpu.cores")
+  }(0)
+  lazy val globalStatPath = load {
+    _.getString("powerapi.cpu.global-stat")
+  }("file:///proc/stat")
+  lazy val processStatPath = load {
+    _.getString("powerapi.cpu.process-stat")
+  }("file:///proc/%?/stat")
+  lazy val timeInStatePath = load {
+    _.getString("powerapi.cpu.time-in-state")
+  }("file:///sys/devices/system/cpu/cpu%?/cpufreq/stats/time_in_state")
 }
 
 /**
@@ -47,16 +55,18 @@ trait Configuration extends fr.inria.powerapi.core.Configuration {
  * @author abourdon
  */
 class CpuSensor extends fr.inria.powerapi.sensor.cpu.api.CpuSensor with Configuration {
+
   /**
    * Delegation class collecting frequency information contained into the timeInStatePath file
    */
   class Frequency {
     // time_in_state line format: frequency time
     lazy val TimeInStateFormat = """(\d+)\s+(\d+)""".r
+
     def timeInStates = {
       val result = collection.mutable.HashMap[Int, Long]()
 
-      (for (core <- 0 until cores) yield (timeInStatePath replace ("%?", core.toString))).foreach(timeInStateFile => {
+      (for (core <- 0 until cores) yield (timeInStatePath replace("%?", core.toString))).foreach(timeInStateFile => {
         try {
           // FIXME: Due to Java JDK bug #7132461, there is no way to apply buffer to procfs files and thus, directly open stream from the given URL.
           // Then, we simply read these files thanks to a FileInputStream in getting those local path
@@ -82,12 +92,15 @@ class CpuSensor extends fr.inria.powerapi.sensor.cpu.api.CpuSensor with Configur
    */
   class Time {
     lazy val GlobalStatFormat = """cpu\s+([\d\s]+)""".r
+
     def globalElapsedTime = {
       try {
         // FIXME: Due to Java JDK bug #7132461, there is no way to apply buffer to procfs files and thus, directly open stream from the given URL.
         // Then, we simply read these files thanks to a FileInputStream in getting those local path
         Resource.fromInputStream(new FileInputStream(new URL(globalStatPath).getPath)).lines().toIndexedSeq(0) match {
-          case GlobalStatFormat(times) => times.split(' ').foldLeft(0: Long) { (acc, x) => (acc + x.toLong) }
+          case GlobalStatFormat(times) => times.split(' ').foldLeft(0: Long) {
+            (acc, x) => (acc + x.toLong)
+          }
           case _ => {
             log.warning("unable to parse line from file \"" + globalStatPath)
             0
@@ -125,9 +138,11 @@ class CpuSensor extends fr.inria.powerapi.sensor.cpu.api.CpuSensor with Configur
   }
 
   lazy val frequency = new Frequency
+
   def timeInStates = frequency.timeInStates
 
   lazy val time = new Time
+
   def elapsedTime(implicit process: Process = Process(-1)) = time.elapsedTime
 
   def process(tick: Tick) {

@@ -28,9 +28,10 @@ import fr.inria.powerapi.sensor.cpu.api.{TimeInStates, ProcessElapsedTime, Globa
 import org.junit.Test
 import org.scalatest.junit.{ShouldMatchersForJUnit, JUnitSuite}
 
-
 case object Timestamps
+
 case object NumberOfTicks
+
 class TickReceiver extends Actor with ActorLogging {
   val timestamps = collection.mutable.Set[Long]()
   var numberOfTicks = 0
@@ -82,7 +83,7 @@ class CpuFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
       ProcessElapsedTime(50),
       Tick(TickSubscription(Process(123), 500 milliseconds)))
     cpuformula.underlyingActor.refreshCache(old)
-    cpuformula.underlyingActor.cache getOrElse (TickSubscription(Process(123), 500 milliseconds), null) should equal(old)
+    cpuformula.underlyingActor.cache getOrElse(TickSubscription(Process(123), 500 milliseconds), null) should equal(old)
 
     val now = CpuSensorValues(
       TimeInStates(Map[Int, Long]()),
@@ -90,9 +91,9 @@ class CpuFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
       ProcessElapsedTime(80),
       Tick(TickSubscription(Process(123), 500 milliseconds)))
     cpuformula.underlyingActor.refreshCache(now)
-    cpuformula.underlyingActor.cache getOrElse (TickSubscription(Process(123), 500 milliseconds), null) should equal(now)
+    cpuformula.underlyingActor.cache getOrElse(TickSubscription(Process(123), 500 milliseconds), null) should equal(now)
 
-    cpuformula.underlyingActor.cache getOrElse (TickSubscription(Process(123), 123 milliseconds), null) should be(null)
+    cpuformula.underlyingActor.cache getOrElse(TickSubscription(Process(123), 123 milliseconds), null) should be(null)
   }
 
   @Test
@@ -129,8 +130,12 @@ class CpuFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
       null)
 
     val diffTimeInStates = nowTimInStates - oldTimeInStates
-    val totalPowers = diffTimeInStates.times.foldLeft(0: Double) { (acc, time) => acc + (cpuformula.underlyingActor.powers(time._1) * time._2) }
-    val totalTimes = diffTimeInStates.times.foldLeft(0: Long) { (acc, time) => acc + time._2 }
+    val totalPowers = diffTimeInStates.times.foldLeft(0: Double) {
+      (acc, time) => acc + (cpuformula.underlyingActor.powers(time._1) * time._2)
+    }
+    val totalTimes = diffTimeInStates.times.foldLeft(0: Long) {
+      (acc, time) => acc + time._2
+    }
 
     cpuformula.underlyingActor.power(old, now) should equal(totalPowers / totalTimes)
   }
@@ -154,8 +159,12 @@ class CpuFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
       tick)
 
     val diffTimeInStates = nowTimInStates - oldTimeInStates
-    val totalPowers = diffTimeInStates.times.foldLeft(0: Double) { (acc, time) => acc + (cpuformula.underlyingActor.powers(time._1) * time._2) }
-    val totalTimes = diffTimeInStates.times.foldLeft(0: Long) { (acc, time) => acc + time._2 }
+    val totalPowers = diffTimeInStates.times.foldLeft(0: Double) {
+      (acc, time) => acc + (cpuformula.underlyingActor.powers(time._1) * time._2)
+    }
+    val totalTimes = diffTimeInStates.times.foldLeft(0: Long) {
+      (acc, time) => acc + time._2
+    }
 
     val power = totalPowers / totalTimes
     val usage = (80.toDouble - 50) / (300 - 100)

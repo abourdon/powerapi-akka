@@ -30,11 +30,11 @@ import fr.inria.powerapi.sensor.cpu.api.{TimeInStates, ProcessElapsedTime, Globa
  * @author abourdon
  */
 class CpuSensor extends fr.inria.powerapi.sensor.cpu.api.CpuSensor {
-  
+
   def timeInStates = Map[Int, Long]()
-  
+
   def elapsedTime(implicit process: Process = Process(-1)) = 0L
-  
+
   def process(tick: Tick) {
     publish(
       CpuSensorValues(

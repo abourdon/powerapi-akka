@@ -28,22 +28,33 @@ import org.scalatest.junit.ShouldMatchersForJUnit
 import scala.collection.JavaConversions
 
 case class Item(id: Int, value: Double)
+
 class ConfigurationMock extends Configuration {
-  lazy val key = load { _.getString("powerapi.key") }("error")
+  lazy val key = load {
+    _.getString("powerapi.key")
+  }("error")
 
   lazy val strings = for (
-    config <- JavaConversions.asScalaBuffer(load { _.getConfigList("powerapi.strings") }(new java.util.ArrayList()))
+    config <- JavaConversions.asScalaBuffer(load {
+      _.getConfigList("powerapi.strings")
+    }(new java.util.ArrayList()))
   ) yield (config.asInstanceOf[Config].getString("string"))
 
   lazy val ints = for (
-    config <- JavaConversions.asScalaBuffer(load { _.getConfigList("powerapi.ints") }(new java.util.ArrayList()))
+    config <- JavaConversions.asScalaBuffer(load {
+      _.getConfigList("powerapi.ints")
+    }(new java.util.ArrayList()))
   ) yield (config.asInstanceOf[Config].getInt("int"))
 
   lazy val items = for (
-    config <- JavaConversions.asScalaBuffer(load { _.getConfigList("powerapi.items") }(new java.util.ArrayList()))
+    config <- JavaConversions.asScalaBuffer(load {
+      _.getConfigList("powerapi.items")
+    }(new java.util.ArrayList()))
   ) yield (Item(config.asInstanceOf[Config].getInt("id"), config.asInstanceOf[Config].getDouble("value")))
 
-  lazy val notFound = load { _.getBoolean("not-found") || true }(false)
+  lazy val notFound = load {
+    _.getBoolean("not-found") || true
+  }(false)
 
   def messagesToListen = Array()
 

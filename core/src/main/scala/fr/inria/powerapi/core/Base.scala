@@ -62,6 +62,7 @@ trait Component extends akka.actor.Actor with akka.actor.ActorLogging {
   def messagesToListen: Array[Class[_ <: Message]]
 
   private lazy val messages = messagesToListen
+
   private def listenToMessages: Receive = {
     case MessagesToListen => sender ! messages
   }

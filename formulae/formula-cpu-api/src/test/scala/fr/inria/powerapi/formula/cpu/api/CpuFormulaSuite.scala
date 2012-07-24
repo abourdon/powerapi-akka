@@ -19,15 +19,15 @@
  */
 package fr.inria.powerapi.formula.cpu.api
 
-import akka.actor.{ Props, ActorSystem }
+import akka.actor.{Props, ActorSystem}
 import akka.dispatch.Await
 import akka.pattern.ask
 import akka.util.Timeout
 import akka.util.duration._
-import fr.inria.powerapi.core.{ Message, MessagesToListen }
+import fr.inria.powerapi.core.{Message, MessagesToListen}
 import fr.inria.powerapi.sensor.cpu.api.CpuSensorValues
 import org.junit.Test
-import org.scalatest.junit.{ ShouldMatchersForJUnit, JUnitSuite }
+import org.scalatest.junit.{ShouldMatchersForJUnit, JUnitSuite}
 
 
 class CpuFormulaMock extends CpuFormula {

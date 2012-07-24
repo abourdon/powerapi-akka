@@ -18,18 +18,17 @@
  * Contact: powerapi-user-list@googlegroups.com
  */
 package fr.inria.powerapi.listener.cpu.jfreechart
-import java.lang.management.ManagementFactory
 
 import akka.util.duration._
-
-import org.junit.{ Test, Ignore, Before, After }
-import org.scalatest.junit.{ ShouldMatchersForJUnit, JUnitSuite }
-
-import fr.inria.powerapi.core.{ Clock, Process }
+import fr.inria.powerapi.core.Process
 import fr.inria.powerapi.formula.cpu.general.CpuFormula
 import fr.inria.powerapi.library.PowerAPI
 import fr.inria.powerapi.sensor.cpu.proc.CpuSensor
+import java.lang.management.ManagementFactory
+import org.junit.{Test, Ignore, Before, After}
+import org.scalatest.junit.{ShouldMatchersForJUnit, JUnitSuite}
 import scalax.io.Resource
+
 
 class CpuListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
   @Before
@@ -49,11 +48,12 @@ class CpuListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
   @Test
   def testAllPids() {
     val PSFormat = """^\s*(\d+).*""".r
-    val pids = Resource.fromInputStream(Runtime.getRuntime.exec(Array("ps", "-A")).getInputStream).lines().toList.map({ pid =>
-      pid match {
-        case PSFormat(id) => id.toInt
-        case _ => 1
-      }
+    val pids = Resource.fromInputStream(Runtime.getRuntime.exec(Array("ps", "-A")).getInputStream).lines().toList.map({
+      pid =>
+        pid match {
+          case PSFormat(id) => id.toInt
+          case _ => 1
+        }
     })
     PowerAPI.startMonitoring(listenerType = classOf[CpuListener])
     pids.foreach(pid => PowerAPI.startMonitoring(process = Process(pid), duration = 500 milliseconds))

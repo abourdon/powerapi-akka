@@ -19,14 +19,14 @@
  */
 package fr.inria.powerapi.sensor.cpu.api
 
-import akka.actor.{ Props, ActorSystem }
+import akka.actor.{Props, ActorSystem}
 import akka.dispatch.Await
 import akka.pattern.ask
 import akka.util.Timeout
 import akka.util.duration._
-import fr.inria.powerapi.core.{ Tick, Message, MessagesToListen }
+import fr.inria.powerapi.core.{Tick, Message, MessagesToListen}
 import org.junit.Test
-import org.scalatest.junit.{ ShouldMatchersForJUnit, JUnitSuite }
+import org.scalatest.junit.{ShouldMatchersForJUnit, JUnitSuite}
 
 class CpuSensorMock extends CpuSensor {
   def process(tick: Tick) {}

@@ -1,23 +1,24 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<groupId>fr.inria.powerapi.sensor</groupId>
-	<artifactId>sensor-cpu-api</artifactId>
-	<name>${project.artifactId}</name>
-	<description>Base types for each CPU Sensor module implementations.</description>
-	<inceptionYear>2012</inceptionYear>
+    <groupId>fr.inria.powerapi.sensor</groupId>
+    <artifactId>sensor-cpu-api</artifactId>
+    <name>${project.artifactId}</name>
+    <description>Base types for each CPU Sensor module implementations.</description>
+    <inceptionYear>2012</inceptionYear>
 
-	<parent>
-		<groupId>fr.inria.powerapi</groupId>
-		<artifactId>sensors</artifactId>
-		<version>1.2-SNAPSHOT</version>
-	</parent>
+    <parent>
+        <groupId>fr.inria.powerapi</groupId>
+        <artifactId>sensors</artifactId>
+        <version>1.2-SNAPSHOT</version>
+    </parent>
 
-	<dependencies>
-		<dependency>
-			<groupId>fr.inria.powerapi</groupId>
-			<artifactId>core</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-	</dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>fr.inria.powerapi</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

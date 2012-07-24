@@ -1,16 +1,20 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<artifactId>core</artifactId>
-	<name>${project.artifactId}</name>
-	<description>As its name indicates, Core module gather all "kernel" functionalities that will be use by other modules. More precisely, this module defines the whole types used by PowerAPI to define its architecture.
+    <artifactId>core</artifactId>
+    <name>${project.artifactId}</name>
+    <description>As its name indicates, Core module gather all "kernel" functionalities that will be use by other
+        modules. More precisely, this module defines the whole types used by PowerAPI to define its architecture.
 
-This module also defines the essential Clock class, responsible of the periodically sending of the Tick message, itself responsible of the process of the PowerAPI business part.</description>
-	<inceptionYear>2012</inceptionYear>
+        This module also defines the essential Clock class, responsible of the periodically sending of the Tick message,
+        itself responsible of the process of the PowerAPI business part.
+    </description>
+    <inceptionYear>2012</inceptionYear>
 
-	<parent>
-		<groupId>fr.inria.powerapi</groupId>
-		<artifactId>powerapi</artifactId>
-		<version>1.2-SNAPSHOT</version>
-	</parent>
+    <parent>
+        <groupId>fr.inria.powerapi</groupId>
+        <artifactId>powerapi</artifactId>
+        <version>1.2-SNAPSHOT</version>
+    </parent>
 </project>

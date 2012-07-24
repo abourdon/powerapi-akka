@@ -21,10 +21,10 @@ package fr.inria.powerapi.listener.cpu.jfreechart
 
 import fr.inria.powerapi.core.Process
 import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
-import java.awt.{ Toolkit, Dimension }
-import org.jfree.chart.{ ChartPanel, ChartFactory }
-import org.jfree.data.time.{ TimeSeriesDataItem, TimeSeriesCollection, TimeSeries, FixedMillisecond }
-import org.jfree.ui.{ RefineryUtilities, ApplicationFrame }
+import java.awt.{Toolkit, Dimension}
+import org.jfree.chart.{ChartPanel, ChartFactory}
+import org.jfree.data.time.{TimeSeriesDataItem, TimeSeriesCollection, TimeSeries, FixedMillisecond}
+import org.jfree.ui.{RefineryUtilities, ApplicationFrame}
 
 
 /**

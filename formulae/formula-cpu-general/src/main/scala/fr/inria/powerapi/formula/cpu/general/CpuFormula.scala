@@ -20,9 +20,9 @@
 package fr.inria.powerapi.formula.cpu.general
 
 import com.typesafe.config.Config
-import fr.inria.powerapi.core.{ TickSubscription, Energy }
+import fr.inria.powerapi.core.{TickSubscription, Energy}
 import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
-import fr.inria.powerapi.sensor.cpu.api.{ TimeInStates, ProcessElapsedTime, GlobalElapsedTime, CpuSensorValues }
+import fr.inria.powerapi.sensor.cpu.api.{TimeInStates, ProcessElapsedTime, GlobalElapsedTime, CpuSensorValues}
 import scala.collection.JavaConversions
 
 /**
@@ -31,9 +31,12 @@ import scala.collection.JavaConversions
  * @author abourdon
  */
 trait Configuration extends fr.inria.powerapi.core.Configuration {
-  lazy val tdp = load { _.getDouble("powerapi.cpu.tdp") }(0)
-  lazy val frequencies = load { conf =>
-    (for (item <- JavaConversions.asScalaBuffer(conf.getConfigList("powerapi.cpu.frequencies")))
+  lazy val tdp = load {
+    _.getDouble("powerapi.cpu.tdp")
+  }(0)
+  lazy val frequencies = load {
+    conf =>
+      (for (item <- JavaConversions.asScalaBuffer(conf.getConfigList("powerapi.cpu.frequencies")))
       yield (item.asInstanceOf[Config].getInt("value"), item.asInstanceOf[Config].getDouble("voltage"))).toMap
   }(Map[Int, Double]())
 }
@@ -86,8 +89,12 @@ class CpuFormula extends fr.inria.powerapi.formula.cpu.api.CpuFormula with Confi
 
   def power(old: CpuSensorValues, now: CpuSensorValues) = {
     val timeInStates = now.timeInStates - old.timeInStates
-    val totalPower = powers.foldLeft(0: Double) { (acc, power) => acc + (power._2 * timeInStates.times.getOrElse(power._1, 0: Long)) }
-    val time = timeInStates.times.foldLeft(0: Long) { (acc, time) => acc + time._2 }
+    val totalPower = powers.foldLeft(0: Double) {
+      (acc, power) => acc + (power._2 * timeInStates.times.getOrElse(power._1, 0: Long))
+    }
+    val time = timeInStates.times.foldLeft(0: Long) {
+      (acc, time) => acc + time._2
+    }
     if (time == 0) {
       0.0
     } else {
@@ -97,7 +104,7 @@ class CpuFormula extends fr.inria.powerapi.formula.cpu.api.CpuFormula with Confi
   }
 
   def compute(now: CpuSensorValues): CpuFormulaValues = {
-    val old = cache getOrElse (now.tick.subscription, defaultSensorValue)
+    val old = cache getOrElse(now.tick.subscription, defaultSensorValue)
     CpuFormulaValues(Energy.fromPower(power(old, now) * usage(old, now)), now.tick)
   }
 

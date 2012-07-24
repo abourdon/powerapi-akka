@@ -19,16 +19,17 @@
  */
 package fr.inria.powerapi.core
 
-import akka.actor.{ Props, ActorSystem }
+import akka.actor.{Props, ActorSystem}
 import akka.dispatch.Await
 import akka.pattern.ask
 import akka.util.Timeout
 import akka.util.duration._
 import org.junit.Test
-import org.scalatest.junit.{ ShouldMatchersForJUnit, JUnitSuite }
+import org.scalatest.junit.{ShouldMatchersForJUnit, JUnitSuite}
 
 
 case class FooMessage() extends Message
+
 case class BarMessage() extends Message
 
 class SimpleActor extends Component {

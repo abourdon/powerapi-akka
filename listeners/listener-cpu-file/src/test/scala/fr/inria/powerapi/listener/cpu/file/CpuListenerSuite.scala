@@ -25,8 +25,8 @@ import fr.inria.powerapi.formula.cpu.general.CpuFormula
 import fr.inria.powerapi.library.PowerAPI
 import fr.inria.powerapi.sensor.cpu.proc.CpuSensor
 import java.lang.management.ManagementFactory
-import org.junit.{ Test, Before, After }
-import org.scalatest.junit.{ ShouldMatchersForJUnit, JUnitSuite }
+import org.junit.{Test, Before, After}
+import org.scalatest.junit.{ShouldMatchersForJUnit, JUnitSuite}
 import scalax.file.Path
 
 trait ConfigurationMock extends Configuration {
@@ -34,6 +34,7 @@ trait ConfigurationMock extends Configuration {
     prefix = "powerapi.listener-cpu-file",
     deleteOnExit = false).path
 }
+
 class CpuListenerMock extends CpuListener with ConfigurationMock
 
 class CpuListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {

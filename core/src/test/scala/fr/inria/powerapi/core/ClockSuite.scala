@@ -19,23 +19,24 @@
  */
 package fr.inria.powerapi.core
 
-import akka.actor.{ ActorSystem, ActorLogging }
+import akka.actor.{ActorSystem, ActorLogging}
 import akka.dispatch.Await
 import akka.pattern.ask
 import akka.testkit.TestActorRef
 import akka.util.Timeout
 import akka.util.duration._
-import org.junit.{ Test, Ignore }
-import org.scalatest.junit.{ ShouldMatchersForJUnit, JUnitSuite }
-import scala.collection.mutable.{ SynchronizedMap, HashMap }
+import org.junit.{Test, Ignore}
+import org.scalatest.junit.{ShouldMatchersForJUnit, JUnitSuite}
+import scala.collection.mutable.{SynchronizedMap, HashMap}
 
 
 case object Result
+
 class ByProcessTickReceiver extends akka.actor.Actor with ActorLogging {
   val receivedTicks = new HashMap[TickSubscription, Int] with SynchronizedMap[TickSubscription, Int]
 
   private def increment(tickSubscription: TickSubscription) {
-    val currentTick = receivedTicks getOrElse (tickSubscription, 0)
+    val currentTick = receivedTicks getOrElse(tickSubscription, 0)
     receivedTicks += (tickSubscription -> (currentTick + 1))
   }
 
@@ -86,9 +87,15 @@ class ClockSuite extends JUnitSuite with ShouldMatchersForJUnit {
     clock ! UnTickIt(TickSubscription(Process(125), 1500 milliseconds))
 
     val receivedTicks = tickReceiver.underlyingActor.receivedTicks
-    receivedTicks getOrElse (TickSubscription(Process(123), 500 milliseconds), 0) should { equal(7) or equal(7 + 1) }
-    receivedTicks getOrElse (TickSubscription(Process(124), 1000 milliseconds), 0) should { equal(5) or equal(5 + 1) }
-    receivedTicks getOrElse (TickSubscription(Process(125), 1500 milliseconds), 0) should { equal(4) or equal(4 + 1) }
+    receivedTicks getOrElse(TickSubscription(Process(123), 500 milliseconds), 0) should {
+      equal(7) or equal(7 + 1)
+    }
+    receivedTicks getOrElse(TickSubscription(Process(124), 1000 milliseconds), 0) should {
+      equal(5) or equal(5 + 1)
+    }
+    receivedTicks getOrElse(TickSubscription(Process(125), 1500 milliseconds), 0) should {
+      equal(4) or equal(4 + 1)
+    }
   }
 
   @Ignore

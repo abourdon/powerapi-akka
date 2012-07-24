@@ -19,14 +19,14 @@
  */
 package fr.inria.powerapi.library
 
-import akka.actor.{ Props, ActorSystem, ActorPath }
+import akka.actor.{Props, ActorSystem, ActorPath}
 import akka.dispatch.Await
 import akka.pattern.ask
 import akka.util.duration._
-import akka.util.{ Timeout, Duration }
+import akka.util.{Timeout, Duration}
 import fr.inria.powerapi.core.Clock
 import fr.inria.powerapi.core.EnergyModule
-import fr.inria.powerapi.core.{ Message, MessagesToListen, Listener, Component, TickIt, UnTickIt, TickSubscription, Process }
+import fr.inria.powerapi.core.{Message, MessagesToListen, Listener, Component, TickIt, UnTickIt, TickSubscription, Process}
 
 /**
  * PowerAPI's messages definition
@@ -34,15 +34,18 @@ import fr.inria.powerapi.core.{ Message, MessagesToListen, Listener, Component, 
  * @author abourdon
  */
 case class StartComponent(componentType: Class[_ <: Component]) extends Message
+
 case class StopComponent(componentType: Class[_ <: Component]) extends Message
+
 case class StartMonitoring(
-  process: Process = Process(-1),
-  duration: Duration = Duration.Zero,
-  listenerType: Class[_ <: Listener] = null) extends Message
+                            process: Process = Process(-1),
+                            duration: Duration = Duration.Zero,
+                            listenerType: Class[_ <: Listener] = null) extends Message
+
 case class StopMonitoring(
-  process: Process = Process(-1),
-  duration: Duration = Duration.Zero,
-  listenerType: Class[_ <: Listener] = null) extends Message
+                           process: Process = Process(-1),
+                           duration: Duration = Duration.Zero,
+                           listenerType: Class[_ <: Listener] = null) extends Message
 
 /**
  * PowerAPI engine which start/stop every PowerAPI components such as Listener or Energy Module.
