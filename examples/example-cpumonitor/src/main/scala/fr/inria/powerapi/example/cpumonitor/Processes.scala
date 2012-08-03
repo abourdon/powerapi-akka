@@ -24,7 +24,6 @@ import com.typesafe.config.ConfigFactory
 import fr.inria.powerapi.core.Process
 import fr.inria.powerapi.library.PowerAPI
 import fr.inria.powerapi.listener.cpu.jfreechart.CpuListener
-import java.lang.management.ManagementFactory
 import scala.collection.JavaConversions
 import scalax.io.Resource
 
@@ -36,11 +35,12 @@ import scalax.io.Resource
 object Processes {
   lazy val conf = ConfigFactory.load
 
+  lazy val pids = JavaConversions.asScalaBuffer(conf.getIntList("powerapi.pids")).toList
+
   /**
    * Process CPU monitoring using information given by the configuration file.
    */
   def fromConf() {
-    val pids = JavaConversions.asScalaBuffer(conf.getIntList("powerapi.pids")).toList
     pids.foreach(pid => PowerAPI.startMonitoring(Process(pid), 500 milliseconds, classOf[CpuListener]))
     Thread.sleep((5 minutes).toMillis)
     pids.foreach(pid => PowerAPI.stopMonitoring(Process(pid), 500 milliseconds, classOf[CpuListener]))
@@ -59,16 +59,16 @@ object Processes {
    * CPU monitoring wich hardly specifying the monitored process and write results into a file.
    */
   def persoFile() {
-    PowerAPI.startMonitoring(Process(5247), 500 milliseconds, classOf[fr.inria.powerapi.listener.cpu.file.CpuListener])
+    pids.foreach(pid => PowerAPI.startMonitoring(Process(pid), 500 milliseconds, classOf[fr.inria.powerapi.listener.cpu.file.CpuListener]))
     Thread.sleep((5 minutes).toMillis)
-    PowerAPI.stopMonitoring(Process(5247), 500 milliseconds, classOf[fr.inria.powerapi.listener.cpu.file.CpuListener])
+    pids.foreach(pid => PowerAPI.stopMonitoring(Process(pid), 500 milliseconds, classOf[fr.inria.powerapi.listener.cpu.file.CpuListener]))
   }
 
   /**
    * Current process CPU monitoring.
    */
   def current() {
-    val currentPid = ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
+    val currentPid = java.lang.management.ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
     PowerAPI.startMonitoring(Process(currentPid), 500 milliseconds, classOf[CpuListener])
     Thread.sleep((5 minutes).toMillis)
     PowerAPI.stopMonitoring(Process(currentPid), 500 milliseconds, classOf[CpuListener])
