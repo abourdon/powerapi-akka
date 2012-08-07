@@ -130,7 +130,7 @@ class Clock extends Component with ClockConfiguration {
 
   def messagesToListen = Array(classOf[TickIt], classOf[UnTickIt])
 
-  def process = {
+  def acquire = {
     case subscribe: TickIt => makeItTick(subscribe)
     case unsubscribe: UnTickIt => unmakeItTick(unsubscribe)
     case unknown => throw new UnsupportedOperationException("unable to process message " + unknown)

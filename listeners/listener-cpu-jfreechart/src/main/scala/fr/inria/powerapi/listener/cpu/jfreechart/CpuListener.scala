@@ -47,7 +47,7 @@ class CpuListener extends Listener {
     Chart.process(cpuFormulaValues)
   }
 
-  def process = {
+  def acquire = {
     case cpuFormulaValues: CpuFormulaValues => process(cpuFormulaValues)
   }
 }

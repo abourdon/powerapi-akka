@@ -31,7 +31,7 @@ import fr.inria.powerapi.listener.cpu.jfreechart.{CpuListener, Chart}
 class FilteredChart extends CpuListener {
   val powers = collection.mutable.HashMap[Process, Double]()
 
-  override def process = {
+  override def acquire = {
     case cpuFormulaValues: CpuFormulaValues => {
       val process = cpuFormulaValues.tick.subscription.process
       val old = powers getOrElse(process, Double.PositiveInfinity)

@@ -61,7 +61,7 @@ class PowerAPI extends Component {
 
   def messagesToListen = Array(classOf[StartComponent], classOf[StopComponent], classOf[StartMonitoring], classOf[StopMonitoring])
 
-  def process = {
+  def acquire = {
     case startComponent: StartComponent => process(startComponent)
     case stopComponent: StopComponent => process(stopComponent)
     case startMonitoring: StartMonitoring => process(startMonitoring)

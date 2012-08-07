@@ -31,7 +31,7 @@ import org.scalatest.junit.{ShouldMatchersForJUnit, JUnitSuite}
 
 
 class SimpleCpuListener extends Listener with ActorLogging {
-  def process = {
+  def acquire = {
     case values: CpuFormulaValues => println(values)
   }
 

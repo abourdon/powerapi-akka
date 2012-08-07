@@ -53,7 +53,7 @@ trait CpuSensor extends Sensor {
 
   def process(tick: Tick)
 
-  def process = {
+  def acquire = {
     case tick: Tick => process(tick)
   }
 }

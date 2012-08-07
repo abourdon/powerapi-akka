@@ -58,7 +58,7 @@ class ConfigurationMock extends Configuration {
 
   def messagesToListen = Array()
 
-  def process = {
+  def acquire = {
     case _ => ()
   }
 }

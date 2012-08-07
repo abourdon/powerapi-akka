@@ -35,7 +35,7 @@ import akka.util.duration.intToDurationInt
 case class Energy private (power: Double) {
   def +(that: Energy) = new Energy(power + that.power)
 
-  def mkString = power.toString()
+  def mkString = power.toString
 }
 
 /**

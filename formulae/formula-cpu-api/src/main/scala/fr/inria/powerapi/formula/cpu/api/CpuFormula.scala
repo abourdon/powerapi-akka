@@ -41,7 +41,7 @@ trait CpuFormula extends Formula {
 
   def process(cpuSensorValues: CpuSensorValues)
 
-  def process = {
+  def acquire = {
     case cpuSensorValues: CpuSensorValues => process(cpuSensorValues)
   }
 }

@@ -64,7 +64,7 @@ class CpuListener extends Listener with Configuration {
     }
   }
 
-  def process = {
+  def acquire = {
     case cpuFormulaValues: CpuFormulaValues => process(cpuFormulaValues)
   }
 

@@ -26,23 +26,23 @@ import org.scalatest.junit.{ShouldMatchersForJUnit, JUnitSuite}
 
 class EnergySuite extends JUnitSuite with ShouldMatchersForJUnit {
   @Test
-  def testFromPower {
+  def testFromPower() {
     Energy.fromPower(3).power should equal(3)
   }
 
   @Test
-  def testFromJoule {
+  def testFromJoule() {
     Energy.fromJoule(15).power should equal(15)
     Energy.fromJoule(15, 3 seconds).power should equal(5)
   }
 
   @Test
-  def testAddition {
+  def testAddition() {
     (Energy.fromPower(3) + Energy.fromPower(7)) should equal(Energy.fromPower(10))
   }
 
   @Test
-  def testMkString {
+  def testMkString() {
     Energy.fromPower(3).mkString should equal((3.0).toString)
   }
 }

@@ -35,7 +35,7 @@ case class BarMessage() extends Message
 class SimpleActor extends Component {
   def messagesToListen = Array(classOf[FooMessage], classOf[BarMessage])
 
-  def process = {
+  def acquire = {
     case str: String => sender ! str
   }
 }

@@ -53,7 +53,7 @@ trait Component extends akka.actor.Actor with akka.actor.ActorLogging {
    *
    * @see http://doc.akka.io/docs/akka/snapshot/scala/actors.html
    */
-  def process: Receive
+  def acquire: Receive
 
   /**
    * Defines what kind of Message this component wants to be aware
@@ -68,7 +68,7 @@ trait Component extends akka.actor.Actor with akka.actor.ActorLogging {
   }
 
   def receive = LoggingReceive {
-    listenToMessages orElse process
+    listenToMessages orElse acquire
   }
 
   /**
