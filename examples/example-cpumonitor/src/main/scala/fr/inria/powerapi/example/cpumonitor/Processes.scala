@@ -34,7 +34,6 @@ import scalax.io.Resource
  */
 object Processes {
   lazy val conf = ConfigFactory.load
-
   lazy val pids = JavaConversions.asScalaBuffer(conf.getIntList("powerapi.pids")).toList
 
   /**
@@ -90,16 +89,16 @@ object Processes {
     }
 
     val pids = scala.collection.mutable.Set[Int]()
-    val duration = 500 milliseconds
+    val dur = 500 milliseconds
     def udpateMonitoredPids() {
       val currentPids = scala.collection.mutable.Set[Int](getPids: _*)
 
       val oldPids = pids -- currentPids
-      oldPids.foreach(pid => PowerAPI.stopMonitoring(process = Process(pid), duration = duration))
+      oldPids.foreach(pid => PowerAPI.stopMonitoring(process = Process(pid), duration = dur))
       pids --= oldPids
 
       val newPids = currentPids -- pids
-      newPids.foreach(pid => PowerAPI.startMonitoring(process = Process(pid), duration = duration))
+      newPids.foreach(pid => PowerAPI.startMonitoring(process = Process(pid), duration = dur))
       pids ++= newPids
     }
 
