@@ -68,8 +68,8 @@
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
         <encoding>UTF-8</encoding>
-        <scala.version>2.9.1</scala.version>
-        <akka.version>2.0.1</akka.version>
+        <scala.version>2.9.2</scala.version>
+        <akka.version>2.0.2</akka.version>
         <firstAuthor.name>Aurelien Bourdon</firstAuthor.name>
         <firstAuthor.email>aurelien.bourdon@inria.fr</firstAuthor.email>
     </properties>
