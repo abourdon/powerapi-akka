@@ -1,0 +1,86 @@
+/**
+ * Copyright (C) 2012 Inria, University Lille 1
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
+ *
+ * Contact: powerapi-user-list@googlegroups.com
+ */
+package fr.inria.powerapi.sensor.disk.proc
+import java.net.URL
+
+import scala.util.Properties
+
+import org.junit.Test
+import org.scalatest.junit.JUnitSuite
+import org.scalatest.junit.ShouldMatchersForJUnit
+
+import akka.actor.actorRef2Scala
+import akka.actor.Actor
+import akka.actor.ActorSystem
+import akka.actor.Props
+import akka.testkit.TestActorRef
+import akka.util.duration.intToDurationInt
+import fr.inria.powerapi.core.Clock
+import fr.inria.powerapi.core.Process
+import fr.inria.powerapi.core.Tick
+import fr.inria.powerapi.core.TickIt
+import fr.inria.powerapi.core.TickSubscription
+import fr.inria.powerapi.core.UnTickIt
+import fr.inria.powerapi.sensor.disk.api.DiskSensorValues
+
+class DiskReceiverMock extends Actor {
+  var receivedValues: Option[DiskSensorValues] = None
+
+  def receive = {
+    case diskSensorValues: DiskSensorValues => receivedValues = Some(diskSensorValues)
+  }
+}
+
+class DiskSensorSuite extends JUnitSuite with ShouldMatchersForJUnit {
+  trait ConfigurationMock extends Configuration {
+    lazy val basedir = new URL("file", Properties.propOrEmpty("basedir"), "")
+    override lazy val iofile = new URL(basedir, "/src/test/resources/proc/%?/io").toString
+  }
+
+  implicit val system = ActorSystem("DiskSensorSuite")
+  implicit val tick = Tick(TickSubscription(Process(123), 1 second))
+  val diskSensor = TestActorRef(new DiskSensor with ConfigurationMock)
+
+  @Test
+  def testReadAndWrite() {
+    testReadAndWrite(diskSensor.underlyingActor.readAndwrite(tick.subscription.process))
+  }
+
+  private def testReadAndWrite(readAndWrite: (Long, Long)) {
+    readAndWrite should equal((3309568, 567 - 36))
+  }
+
+  @Test
+  def testTick() {
+    val diskReceiver = TestActorRef[DiskReceiverMock]
+    val clock = system.actorOf(Props[Clock])
+    system.eventStream.subscribe(diskSensor, classOf[Tick])
+    system.eventStream.subscribe(diskReceiver, classOf[DiskSensorValues])
+
+    clock ! TickIt(TickSubscription(Process(123), 10 seconds))
+    Thread.sleep(1000)
+    clock ! UnTickIt(TickSubscription(Process(123), 10 seconds))
+
+    diskReceiver.underlyingActor.receivedValues match {
+      case None => fail()
+      case Some(diskSensorValues) => testReadAndWrite(diskSensorValues.rw("n/a"))
+    }
+  }
+}

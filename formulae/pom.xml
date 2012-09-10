@@ -17,6 +17,8 @@
     <modules>
         <module>formula-cpu-api</module>
         <module>formula-cpu-general</module>
+        <module>formula-disk-api</module>
+        <module>formula-disk-single</module>
     </modules>
 
 </project>

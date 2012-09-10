@@ -2,23 +2,23 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>listeners</artifactId>
-    <packaging>pom</packaging>
+    <groupId>fr.inria.powerapi.sensor</groupId>
+    <artifactId>sensor-disk-api</artifactId>
     <name>${project.artifactId}</name>
-    <description>PowerAPI's listeners.</description>
+    <description>Base types for each CPU Sensor module implementations.</description>
     <inceptionYear>2012</inceptionYear>
 
     <parent>
         <groupId>fr.inria.powerapi</groupId>
-        <artifactId>powerapi</artifactId>
+        <artifactId>sensors</artifactId>
         <version>1.2-SNAPSHOT</version>
     </parent>
 
-    <modules>
-        <module>listener-cpu-console</module>
-        <module>listener-cpu-file</module>
-        <module>listener-cpu-jfreechart</module>
-        <module>listener-disk-console</module>
-    </modules>
-
+    <dependencies>
+        <dependency>
+            <groupId>fr.inria.powerapi</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>
