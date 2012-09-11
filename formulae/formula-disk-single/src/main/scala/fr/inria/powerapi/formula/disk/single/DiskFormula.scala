@@ -27,13 +27,16 @@ trait Configuration extends fr.inria.powerapi.core.Configuration {
   implicit def toRate(str: String) = new Rate(str)
 
   class Rate(str: String) {
-    lazy val RateFormat = """([\d,.]+)([MG])b/s""".r
+    lazy val RateFormat = """([\d\,.]+)([mMgG])([bB])/s""".r
 
     def fromRateToDouble = str match {
-      case RateFormat(number, unit) => try {
-        number.toDouble * (unit match {
-          case "M" => 1000000
-          case "G" => 1000000000
+      case RateFormat(number, multiplier, unit) => try {
+        number.replace(',', '.').toDouble * (multiplier match {
+          case "m" | "M" => 1000000
+          case "g" | "G" => 1000000000
+        }) * (unit match {
+          case "b" => 1.0 / 8
+          case "B" => 1
         })
       } catch {
         case nfe: NumberFormatException => {

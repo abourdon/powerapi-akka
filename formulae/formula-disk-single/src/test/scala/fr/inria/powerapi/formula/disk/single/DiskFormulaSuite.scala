@@ -35,6 +35,9 @@ class DiskFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
   implicit val system = ActorSystem("DiskFormulaSuiteSystem")
   val diskFormula = TestActorRef[DiskFormula].underlyingActor
 
+  val giga = 1000000000.0
+  val byte = 8.0
+  
   @Test
   def testReadPower() {
     diskFormula.readPower should equal(2.1)
@@ -47,7 +50,7 @@ class DiskFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
   @Test
   def testMaxRate() {
-    diskFormula.maxRate should equal(3 * (1000000000.0))
+    diskFormula.maxRate should equal(3 * giga / byte)
   }
 
   @Test
@@ -59,12 +62,12 @@ class DiskFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
   @Test
   def testReadPowerByByte() {
-    diskFormula.readPowerByByte should equal(2.1 / 3000000000.0)
+    diskFormula.readPowerByByte should equal(2.1 / (3 * giga / byte))
   }
 
   @Test
   def testWritePowerByByte() {
-    diskFormula.writePowerByByte should equal(2.2 / 3000000000.0)
+    diskFormula.writePowerByByte should equal(2.2 / (3 * giga / byte))
   }
 
   @Test
