@@ -21,8 +21,7 @@ package fr.inria.powerapi.core
 
 import akka.util.duration.intToDurationInt
 import org.junit.Test
-import org.scalatest.junit.{ShouldMatchersForJUnit, JUnitSuite}
-
+import org.scalatest.junit.{ ShouldMatchersForJUnit, JUnitSuite }
 
 class EnergySuite extends JUnitSuite with ShouldMatchersForJUnit {
   @Test
@@ -44,5 +43,10 @@ class EnergySuite extends JUnitSuite with ShouldMatchersForJUnit {
   @Test
   def testMkString() {
     Energy.fromPower(3).mkString should equal((3.0).toString)
+  }
+
+  @Test
+  def testEquals() {
+    Energy.fromPower(6) should equal(Energy.fromJoule(3, 500 milliseconds))
   }
 }

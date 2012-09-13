@@ -27,16 +27,12 @@ trait Configuration extends fr.inria.powerapi.core.Configuration {
   implicit def toRate(str: String) = new Rate(str)
 
   class Rate(str: String) {
-    lazy val RateFormat = """([\d\,.]+)([mMgG])([bB])/s""".r
-
+    lazy val RateFormat = """([\d\,.]+)([MG])B/s""".r
     def fromRateToDouble = str match {
-      case RateFormat(number, multiplier, unit) => try {
+      case RateFormat(number, multiplier) => try {
         number.replace(',', '.').toDouble * (multiplier match {
-          case "m" | "M" => 1000000
-          case "g" | "G" => 1000000000
-        }) * (unit match {
-          case "b" => 1.0 / 8
-          case "B" => 1
+          case "M" => 1048576.0 // 1 << 20, 2^20
+          case "G" => 1073741824.0 // 1 << 30, 2^30
         })
       } catch {
         case nfe: NumberFormatException => {
@@ -51,30 +47,33 @@ trait Configuration extends fr.inria.powerapi.core.Configuration {
   }
 
   lazy val readPower = load(_.getDouble("powerapi.disk.read-power"))(0)
+  lazy val readRate = load(_.getString("powerapi.disk.read-rate").fromRateToDouble)(0)
   lazy val writePower = load(_.getDouble("powerapi.disk.write-power"))(0)
-  lazy val maxRate = load(_.getString("powerapi.disk.max-rate").fromRateToDouble)(0)
+  lazy val writeRate = load(_.getString("powerapi.disk.write-rate").fromRateToDouble)(0)
 }
 
 class DiskFormula extends fr.inria.powerapi.formula.disk.api.DiskFormula with Configuration {
-  lazy val readPowerByByte = readPower / maxRate
-  lazy val writePowerByByte = writePower / maxRate
+  lazy val readEnergyByByte = readPower / readRate
+  lazy val writeEnergyByByte = writePower / writeRate
 
   lazy val cache = collection.mutable.Map[TickSubscription, DiskSensorValues]()
   lazy val defaultSensorValue = DiskSensorValues(Map("n/a" -> (0: Long, 0: Long)), null)
 
   def power(now: DiskSensorValues, old: DiskSensorValues) = try {
-    (now.rw("n/a")._1 - old.rw("n/a")._1) * readPowerByByte +
-      (now.rw("n/a")._2 - old.rw("n/a")._2) * writePowerByByte
+    Energy.fromJoule(
+      (now.rw("n/a")._1 - old.rw("n/a")._1) * readEnergyByByte +
+        (now.rw("n/a")._2 - old.rw("n/a")._2) * writeEnergyByByte,
+      now.tick.subscription.duration)
   } catch {
     case nsee: NoSuchElementException => {
       log.warning("no such element exception: " + nsee.getMessage)
-      0: Double
+      Energy.fromPower(0)
     }
   }
 
   def compute(now: DiskSensorValues): DiskFormulaValues = {
     val old = cache getOrElse (now.tick.subscription, defaultSensorValue)
-    DiskFormulaValues(Energy.fromPower(power(now, old)), now.tick)
+    DiskFormulaValues(power(now, old), now.tick)
   }
 
   def refreshCache(now: DiskSensorValues) {

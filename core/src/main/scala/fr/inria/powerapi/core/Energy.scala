@@ -19,8 +19,8 @@
  */
 package fr.inria.powerapi.core
 
-import akka.util.Duration
 import akka.util.duration.intToDurationInt
+import akka.util.Duration
 
 /**
  * Energy information wrapper.
@@ -32,10 +32,15 @@ import akka.util.duration.intToDurationInt
  *
  * @author abourdon
  */
-case class Energy private (power: Double) {
+case class Energy private (val power: Double) {
   def +(that: Energy) = new Energy(power + that.power)
 
   def mkString = power.toString
+
+  override def equals(other: Any) = other match {
+    case that: Energy => math.abs(power - that.power) <= 0.0001
+    case _ => false
+  }
 }
 
 /**
@@ -47,5 +52,5 @@ case class Energy private (power: Double) {
 object Energy {
   def fromPower(power: Double) = new Energy(power)
 
-  def fromJoule(joule: Double, duration: Duration = 1 second) = new Energy(joule / duration.toSeconds)
+  def fromJoule(joule: Double, duration: Duration = 1 second) = new Energy(joule / (duration.toMillis / 1000.0))
 }

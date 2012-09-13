@@ -43,13 +43,19 @@ class DiskListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
     Array(classOf[DiskSensor], classOf[DiskFormula]).foreach(PowerAPI.stopEnergyModule(_))
   }
 
+  @Ignore
+  @Test
+  def testPid {
+    PowerAPI.startMonitoring(Process(31658), 5 seconds, classOf[DiskListener])
+    Thread.sleep((10 minutes).toMillis)
+    PowerAPI.stopMonitoring(Process(31658), 5 seconds, classOf[DiskListener])
+  }
+
   @Test
   def testCurrentPid {
     val currentPid = java.lang.management.ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
     PowerAPI.startMonitoring(Process(currentPid), 500 milliseconds, classOf[DiskListener])
-
-    Thread.sleep((5 seconds).toMillis)
-
+    Thread.sleep((10 seconds).toMillis)
     PowerAPI.stopMonitoring(Process(currentPid), 500 milliseconds, classOf[DiskListener])
   }
 

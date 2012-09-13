@@ -35,9 +35,8 @@ class DiskFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
   implicit val system = ActorSystem("DiskFormulaSuiteSystem")
   val diskFormula = TestActorRef[DiskFormula].underlyingActor
 
-  val giga = 1000000000.0
-  val byte = 8.0
-  
+  val megaByte = 1048576.0
+
   @Test
   def testReadPower() {
     diskFormula.readPower should equal(2.1)
@@ -49,8 +48,13 @@ class DiskFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
   }
 
   @Test
-  def testMaxRate() {
-    diskFormula.maxRate should equal(3 * giga / byte)
+  def testReadRate() {
+    diskFormula.readRate should equal(100 * megaByte)
+  }
+
+  @Test
+  def testWriteRate() {
+    diskFormula.writeRate should equal(90 * megaByte)
   }
 
   @Test
@@ -61,30 +65,32 @@ class DiskFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
   }
 
   @Test
-  def testReadPowerByByte() {
-    diskFormula.readPowerByByte should equal(2.1 / (3 * giga / byte))
+  def testReadEnergyByByte() {
+    diskFormula.readEnergyByByte should equal(2.1 / (100 * megaByte))
   }
 
   @Test
-  def testWritePowerByByte() {
-    diskFormula.writePowerByByte should equal(2.2 / (3 * giga / byte))
+  def testWriteEnergyByByte() {
+    diskFormula.writeEnergyByByte should equal(2.2 / (90 * megaByte))
   }
 
   @Test
   def testPower() {
-    val old = DiskSensorValues(rw = Map("n/a" -> (100: Long, 200: Long)), Tick(TickSubscription(Process(123), 500 milliseconds)))
-    val now = DiskSensorValues(rw = Map("n/a" -> (500: Long, 400: Long)), Tick(TickSubscription(Process(123), 500 milliseconds)))
-    diskFormula.power(now, old) should equal((500 - 100) * diskFormula.readPowerByByte + (400 - 200) * diskFormula.writePowerByByte)
+    val duration = 500 milliseconds
+    val old = DiskSensorValues(rw = Map("n/a" -> (100: Long, 200: Long)), Tick(TickSubscription(Process(123), duration)))
+    val now = DiskSensorValues(rw = Map("n/a" -> (500: Long, 400: Long)), Tick(TickSubscription(Process(123), duration)))
+    diskFormula.power(now, old) should equal(Energy.fromJoule((500 - 100) * diskFormula.readEnergyByByte + (400 - 200) * diskFormula.writeEnergyByByte, duration))
   }
 
   @Test
   def testCompute() {
-    val tick = Tick(TickSubscription(Process(123), 500 milliseconds))
+    val duration = 500 milliseconds
+    val tick = Tick(TickSubscription(Process(123), duration))
 
     val old = DiskSensorValues(rw = Map("n/a" -> (100: Long, 200: Long)), tick)
     diskFormula.refreshCache(old)
 
     val now = DiskSensorValues(rw = Map("n/a" -> (500: Long, 400: Long)), tick)
-    diskFormula.compute(now) should equal(DiskFormulaValues(Energy.fromPower((500 - 100) * diskFormula.readPowerByByte + (400 - 200) * diskFormula.writePowerByByte), tick))
+    diskFormula.compute(now) should equal(DiskFormulaValues(Energy.fromJoule((500 - 100) * diskFormula.readEnergyByByte + (400 - 200) * diskFormula.writeEnergyByByte, duration), tick))
   }
 }
