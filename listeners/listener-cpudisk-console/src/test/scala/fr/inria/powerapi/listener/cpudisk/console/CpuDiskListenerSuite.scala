@@ -52,27 +52,43 @@ class CpuDiskListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
   @Test
   def testCache() {
+    Array(
+      classOf[fr.inria.powerapi.sensor.cpu.proc.CpuSensor],
+      classOf[fr.inria.powerapi.formula.cpu.general.CpuFormula],
+      classOf[fr.inria.powerapi.sensor.disk.proc.DiskSensor],
+      classOf[fr.inria.powerapi.formula.disk.single.DiskFormula]).foreach(PowerAPI.stopEnergyModule(_))
+
     implicit val system = ActorSystem("CpuDiskListenerSuite")
     val cpuDiskListener = TestActorRef[CpuDiskListener].underlyingActor
 
     val timestamp = 0L
-    cpuDiskListener.cache.get(timestamp) should be(null)
+    cpuDiskListener.cache should have size 0
 
     val cpuFormulaValues = CpuFormulaValues(Energy.fromPower(1), Tick(TickSubscription(Process(123), 1 second), timestamp))
     cpuDiskListener.process(cpuFormulaValues)
-    cpuDiskListener.cache.get(timestamp) should equal(CpuDiskValues(Some(cpuFormulaValues), None))
+    cpuDiskListener.cache should contain key timestamp
+    cpuDiskListener.cache(timestamp) should equal(Map(Process(123) -> Map("cpu" -> 1.0)))
 
     val diskFormulaValues = DiskFormulaValues(Energy.fromPower(2), Tick(TickSubscription(Process(123), 1 second), timestamp))
     cpuDiskListener.process(diskFormulaValues)
-    cpuDiskListener.cache.get(timestamp) should be(null)
+    cpuDiskListener.cache(timestamp) should equal(Map(Process(123) -> Map("cpu" -> 1.0, "disk" -> 2.0)))
+
+    val anotherTimestamp = 1L
+    cpuDiskListener.process(CpuFormulaValues(Energy.fromPower(3), Tick(TickSubscription(Process(123), 1 second), anotherTimestamp)))
+    cpuDiskListener.cache(timestamp) should equal(Map(Process(123) -> Map("cpu" -> 1.0, "disk" -> 2.0)))
+    cpuDiskListener.cache(anotherTimestamp) should equal(Map(Process(123) -> Map("cpu" -> 3.0)))
+
+    cpuDiskListener.process(DiskFormulaValues(Energy.fromPower(4), Tick(TickSubscription(Process(123), 1 second), anotherTimestamp)))
+    cpuDiskListener.cache should have size 1
+    cpuDiskListener.cache(anotherTimestamp) should equal(Map(Process(123) -> Map("cpu" -> 3.0, "disk" -> 4.0)))
   }
 
   @Ignore
   @Test
   def testPid() {
-    PowerAPI.startMonitoring(Process(20106), 1 second, classOf[CpuDiskListener])
-    Thread.sleep((30 seconds).toMillis)
-    PowerAPI.stopMonitoring(Process(20106), 1 second, classOf[CpuDiskListener])
+    PowerAPI.startMonitoring(Process(27623), 1 second, classOf[CpuDiskListener])
+    Thread.sleep((1 minute).toMillis)
+    PowerAPI.stopMonitoring(Process(27623), 1 second, classOf[CpuDiskListener])
   }
 
   @Test

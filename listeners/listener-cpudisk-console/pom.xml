@@ -1,72 +1,77 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-    <groupId>fr.inria.powerapi.listener</groupId>
-    <artifactId>listener-cpudisk-console</artifactId>
-    <name>${project.artifactId}</name>
-    <description>Listen to CPU and disk Formulae results and display an aggregated view into the console.</description>
-    <inceptionYear>2012</inceptionYear>
+	<groupId>fr.inria.powerapi.listener</groupId>
+	<artifactId>listener-cpudisk-console</artifactId>
+	<name>${project.artifactId}</name>
+	<description>Listen to CPU and disk Formulae results and display an aggregated view into the console.</description>
+	<inceptionYear>2012</inceptionYear>
 
-    <parent>
-        <groupId>fr.inria.powerapi</groupId>
-        <artifactId>listeners</artifactId>
-        <version>1.2-SNAPSHOT</version>
-    </parent>
+	<parent>
+		<groupId>fr.inria.powerapi</groupId>
+		<artifactId>listeners</artifactId>
+		<version>1.2-SNAPSHOT</version>
+	</parent>
 
-    <dependencies>
-      <dependency>
-        <groupId>fr.inria.powerapi</groupId>
-        <artifactId>core</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>fr.inria.powerapi.formula</groupId>
-        <artifactId>formula-cpu-api</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>fr.inria.powerapi.formula</groupId>
-        <artifactId>formula-disk-api</artifactId>
-        <version>${project.version}</version>
-      </dependency>
+	<dependencies>
+		<dependency>
+			<groupId>fr.inria.powerapi</groupId>
+			<artifactId>core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>fr.inria.powerapi.formula</groupId>
+			<artifactId>formula-cpu-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>fr.inria.powerapi.formula</groupId>
+			<artifactId>formula-disk-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.scalaz</groupId>
+			<artifactId>scalaz-core_${scala.version}</artifactId>
+			<version>6.0.4</version>
+		</dependency>
 
-      <!-- Test scope -->
+		<!-- Test scope -->
 
-      <dependency>
-        <groupId>fr.inria.powerapi</groupId>
-        <artifactId>library</artifactId>
-        <version>${project.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>fr.inria.powerapi.sensor</groupId>
-        <artifactId>sensor-cpu-proc</artifactId>
-        <version>${project.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>fr.inria.powerapi.formula</groupId>
-        <artifactId>formula-cpu-general</artifactId>
-        <version>${project.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>fr.inria.powerapi.sensor</groupId>
-        <artifactId>sensor-disk-proc</artifactId>
-        <version>${project.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>fr.inria.powerapi.formula</groupId>
-        <artifactId>formula-disk-single</artifactId>
-        <version>${project.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.github.scala-incubator.io</groupId>
-        <artifactId>scala-io-core_${scala.version}</artifactId>
-        <scope>test</scope>
-      </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>fr.inria.powerapi</groupId>
+			<artifactId>library</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>fr.inria.powerapi.sensor</groupId>
+			<artifactId>sensor-cpu-proc</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>fr.inria.powerapi.formula</groupId>
+			<artifactId>formula-cpu-general</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>fr.inria.powerapi.sensor</groupId>
+			<artifactId>sensor-disk-proc</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>fr.inria.powerapi.formula</groupId>
+			<artifactId>formula-disk-single</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.github.scala-incubator.io</groupId>
+			<artifactId>scala-io-core_${scala.version}</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 </project>

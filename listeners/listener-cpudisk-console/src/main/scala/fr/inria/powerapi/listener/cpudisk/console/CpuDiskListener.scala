@@ -22,24 +22,14 @@ import fr.inria.powerapi.core.Listener
 import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
 import fr.inria.powerapi.formula.disk.api.DiskFormulaValues
 import fr.inria.powerapi.core.Message
-
-case class CpuDiskValues(
-  var cpuFormulaValues: Option[CpuFormulaValues],
-  var diskFormulaValues: Option[DiskFormulaValues]) {
-  def isDefined = cpuFormulaValues.isDefined && diskFormulaValues.isDefined
-  override def toString() = {
-    if (isDefined) {
-      "cpu = " + cpuFormulaValues.get.energy.power + "W, " +
-        "disk = " + diskFormulaValues.get.energy.power + "W, " +
-        "sum = " + (cpuFormulaValues.get.energy.power + diskFormulaValues.get.energy.power) + "W"
-    } else {
-      "values not correctly defined"
-    }
-  }
-}
+import fr.inria.powerapi.core.Energy
+import fr.inria.powerapi.core.Process
+import scalaz._
+import Scalaz._
 
 class CpuDiskListener extends Listener {
-  val cache = new java.util.TreeMap[Long, CpuDiskValues]()
+  // cache = Map(timestamp -> Map(process -> Map(device name -> power value)))
+  val cache = new collection.mutable.HashMap[Long, Map[Process, Map[String, Double]]]()
 
   def messagesToListen = Array(classOf[CpuFormulaValues], classOf[DiskFormulaValues])
 
@@ -49,40 +39,37 @@ class CpuDiskListener extends Listener {
   }
 
   def process(cpuFormulaValues: CpuFormulaValues) {
-    val timestamp = cpuFormulaValues.tick.timestamp
-    val cacheEntry = cache.get(timestamp)
-    if (cacheEntry == null) {
-      cache.put(timestamp, CpuDiskValues(Some(cpuFormulaValues), None))
-    } else {
-      cacheEntry.cpuFormulaValues = Some(cpuFormulaValues)
-      cache.put(timestamp, cacheEntry)
-      aggregate(timestamp)
-    }
+    addEntry(cpuFormulaValues.tick.timestamp, cpuFormulaValues.tick.subscription.process, "cpu", cpuFormulaValues.energy.power)
+    cleanup()
   }
 
   def process(diskFormulaValues: DiskFormulaValues) {
-    val timestamp = diskFormulaValues.tick.timestamp
-    val cacheEntry = cache.get(timestamp)
-    if (cacheEntry == null) {
-      cache.put(timestamp, CpuDiskValues(None, Some(diskFormulaValues)))
-    } else {
-      cacheEntry.diskFormulaValues = Some(diskFormulaValues)
-      cache.put(timestamp, cacheEntry)
-      aggregate(timestamp)
-    }
+    addEntry(diskFormulaValues.tick.timestamp, diskFormulaValues.tick.subscription.process, "disk", diskFormulaValues.energy.power)
+    cleanup()
   }
 
-  def aggregate(timestamp: Long) {
-    display(timestamp)
-    clearCacheEntry(timestamp)
+  def addEntry(timestamp: Long, process: Process, device: String, power: Double) {
+    val processes = cache.getOrElse(timestamp, Map[Process, Map[String, Double]]())
+    val devices = processes.getOrElse(process, Map[String, Double]())
+    cache += timestamp -> (processes + (process -> (devices + (device -> power))))
   }
 
   def display(timestamp: Long) {
-    val cacheEntry = cache.firstEntry()
-    println(cacheEntry.getValue())
+    val aggregate = cache.getOrElse(timestamp, Map[Process, Map[String, Double]]()).foldLeft(Map[String, Double]()) { (acc, process) => acc |+| process._2 }
+    aggregate.foreach(agg => print(agg._1 + " = " + agg._2 + "W, "))
+    println("sum = " + aggregate.foldLeft(0: Double) { (acc, agg) => acc + agg._2 } + "W.")
   }
 
-  def clearCacheEntry(timestamp: Long) {
-    cache.remove(timestamp)
+  def cleanup() {
+    if (cache.size > 1) {
+      val first = cache.minBy(_._1)
+      val second = (cache - first._1).minBy(_._1)
+      if (second._2.size >= first._2.size) {
+        if ((first._2.foldLeft(Set[(Process, Set[String])]()) { (acc, process) => acc + ((process._1, process._2.keySet)) } &~ second._2.foldLeft(Set[(Process, Set[String])]()) { (acc, process) => acc + ((process._1, process._2.keySet)) }).isEmpty) {
+          display(first._1)
+          cache -= first._1
+        }
+      }
+    }
   }
 }
