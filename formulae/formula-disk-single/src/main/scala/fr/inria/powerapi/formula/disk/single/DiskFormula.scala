@@ -31,8 +31,10 @@ trait Configuration extends fr.inria.powerapi.core.Configuration {
     def fromRateToDouble = str match {
       case RateFormat(number, multiplier) => try {
         number.replace(',', '.').toDouble * (multiplier match {
-          case "M" => 1048576.0 // 1 << 20, 2^20
-          case "G" => 1073741824.0 // 1 << 30, 2^30
+          //          case "M" => 1048576.0 // 1 << 20, 2^20
+          //          case "G" => 1073741824.0 // 1 << 30, 2^30
+          case "M" => 1000000.0 // As we talk in bytes, we can simply add the 10^6 multiplier
+          case "G" => 1000000000.0 // As we talk in bytes, we can simply add the 10^9 multiplier
         })
       } catch {
         case nfe: NumberFormatException => {
@@ -60,10 +62,8 @@ class DiskFormula extends fr.inria.powerapi.formula.disk.api.DiskFormula with Co
   lazy val defaultSensorValue = DiskSensorValues(Map("n/a" -> (0: Long, 0: Long)), null)
 
   def power(now: DiskSensorValues, old: DiskSensorValues) = try {
-    Energy.fromJoule(
-      (now.rw("n/a")._1 - old.rw("n/a")._1) * readEnergyByByte +
-        (now.rw("n/a")._2 - old.rw("n/a")._2) * writeEnergyByByte,
-      now.tick.subscription.duration)
+    val duration = now.tick.subscription.duration.toMillis / 1000.0
+    Energy.fromPower(((now.rw("n/a")._1 - old.rw("n/a")._1) * readEnergyByByte / duration + (now.rw("n/a")._2 - old.rw("n/a")._2) * writeEnergyByByte / duration) / 2.0)
   } catch {
     case nsee: NoSuchElementException => {
       log.warning("no such element exception: " + nsee.getMessage)

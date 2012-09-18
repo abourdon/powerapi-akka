@@ -25,8 +25,8 @@ import akka.actor.ActorSystem
 import akka.testkit.TestActorRef
 
 class RateSuiteWrapper extends Configuration with JUnitSuite with ShouldMatchersForJUnit {
-  val megaByte = 1048576.0
-  val gigaByte = 1073741824.0
+  val megaByte = 1000000.0
+  val gigaByte = 1000000000.0
 
   def messagesToListen = null
   def acquire = null

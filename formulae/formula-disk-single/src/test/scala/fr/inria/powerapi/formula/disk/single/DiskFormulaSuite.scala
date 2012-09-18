@@ -35,7 +35,7 @@ class DiskFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
   implicit val system = ActorSystem("DiskFormulaSuiteSystem")
   val diskFormula = TestActorRef[DiskFormula].underlyingActor
 
-  val megaByte = 1048576.0
+  val megaByte = 1000000.0
 
   @Test
   def testReadPower() {
@@ -79,7 +79,9 @@ class DiskFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
     val duration = 500 milliseconds
     val old = DiskSensorValues(rw = Map("n/a" -> (100: Long, 200: Long)), Tick(TickSubscription(Process(123), duration)))
     val now = DiskSensorValues(rw = Map("n/a" -> (500: Long, 400: Long)), Tick(TickSubscription(Process(123), duration)))
-    diskFormula.power(now, old) should equal(Energy.fromJoule((500 - 100) * diskFormula.readEnergyByByte + (400 - 200) * diskFormula.writeEnergyByByte, duration))
+
+    val durationToSeconds = duration.toMillis / 1000.0
+    diskFormula.power(now, old) should equal(Energy.fromPower(((500 - 100) * diskFormula.readEnergyByByte / durationToSeconds + (400 - 200) * diskFormula.writeEnergyByByte / durationToSeconds) / 2.0))
   }
 
   @Test
@@ -91,6 +93,7 @@ class DiskFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
     diskFormula.refreshCache(old)
 
     val now = DiskSensorValues(rw = Map("n/a" -> (500: Long, 400: Long)), tick)
-    diskFormula.compute(now) should equal(DiskFormulaValues(Energy.fromJoule((500 - 100) * diskFormula.readEnergyByByte + (400 - 200) * diskFormula.writeEnergyByByte, duration), tick))
+    val durationToSeconds = duration.toMillis / 1000.0
+    diskFormula.compute(now) should equal(DiskFormulaValues(Energy.fromPower(((500 - 100) * diskFormula.readEnergyByByte / durationToSeconds + (400 - 200) * diskFormula.writeEnergyByByte / durationToSeconds) / 2.0), tick))
   }
 }
