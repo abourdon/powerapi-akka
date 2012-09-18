@@ -26,12 +26,31 @@ import fr.inria.powerapi.core.Energy
 import fr.inria.powerapi.core.Process
 import scalaz._
 import Scalaz._
+import akka.util.duration._
+import akka.util.Duration
+import akka.actor.Cancellable
 
-class CpuDiskListener extends Listener {
+trait Configuration extends fr.inria.powerapi.core.Configuration {
+  lazy val refreshRate = load(conf => Duration.parse(conf.getString("powerapi/listener-cpudisk")))(1 second)
+}
+
+class CpuDiskListener extends Listener with Configuration {
   // cache = Map(timestamp -> Map(process -> Map(device name -> power value)))
-  val cache = new collection.mutable.HashMap[Long, Map[Process, Map[String, Double]]]()
+  val cache = new collection.mutable.HashMap[Long, Map[Process, Map[String, Double]]]() with collection.mutable.SynchronizedMap[Long, Map[Process, Map[String, Double]]]
+
+  var cleanupSchedule: Cancellable = _
 
   def messagesToListen = Array(classOf[CpuFormulaValues], classOf[DiskFormulaValues])
+
+  override def preStart() {
+    cleanupSchedule = context.system.scheduler.schedule(Duration.Zero, refreshRate) {
+      cleanupByMin()
+    }
+  }
+
+  override def postStop() {
+    cleanupSchedule.cancel()
+  }
 
   def acquire = {
     case cpuFormulaValues: CpuFormulaValues => process(cpuFormulaValues)
@@ -40,12 +59,10 @@ class CpuDiskListener extends Listener {
 
   def process(cpuFormulaValues: CpuFormulaValues) {
     addEntry(cpuFormulaValues.tick.timestamp, cpuFormulaValues.tick.subscription.process, "cpu", cpuFormulaValues.energy.power)
-    cleanup()
   }
 
   def process(diskFormulaValues: DiskFormulaValues) {
     addEntry(diskFormulaValues.tick.timestamp, diskFormulaValues.tick.subscription.process, "disk", diskFormulaValues.energy.power)
-    cleanup()
   }
 
   def addEntry(timestamp: Long, process: Process, device: String, power: Double) {
@@ -54,20 +71,40 @@ class CpuDiskListener extends Listener {
     cache += timestamp -> (processes + (process -> (devices + (device -> power))))
   }
 
-  def display(timestamp: Long) {
-    val aggregate = cache.getOrElse(timestamp, Map[Process, Map[String, Double]]()).foldLeft(Map[String, Double]()) { (acc, process) => acc |+| process._2 }
-    aggregate.foreach(agg => print(agg._1 + " = " + agg._2 + "W, "))
-    println("sum = " + aggregate.foldLeft(0: Double) { (acc, agg) => acc + agg._2 } + "W.")
+  def aggregate(timestamp: Long) = cache.getOrElse(timestamp, Map[Process, Map[String, Double]]()).foldLeft(Map[String, Double]()) { (acc, process) => acc |+| process._2 }
+
+  val alreadyProcessedTimestamps = collection.mutable.ListBuffer[Long]()
+  def clean(timestamp: Long) {
+    if (alreadyProcessedTimestamps.contains(timestamp)) {
+      log.warning("already processed timestamp " + timestamp)
+    } else {
+      alreadyProcessedTimestamps += timestamp
+    }
+    cache -= timestamp
   }
 
-  def cleanup() {
+  def display(timestamp: Long) {
+    val agg = aggregate(timestamp)
+    agg.foreach(device => print(device._1 + " = " + device._2 + "W, "))
+    println("sum = " + agg.foldLeft(0: Double) { (acc, device) => acc + device._2 } + "W.")
+  }
+
+  def cleanupByMin() {
+    if (cache.size > 1) {
+      val first = cache.minBy(_._1)
+      display(first._1)
+      clean(first._1)
+    }
+  }
+
+  def cleanupByTwoMin() {
     if (cache.size > 1) {
       val first = cache.minBy(_._1)
       val second = (cache - first._1).minBy(_._1)
       if (second._2.size >= first._2.size) {
         if ((first._2.foldLeft(Set[(Process, Set[String])]()) { (acc, process) => acc + ((process._1, process._2.keySet)) } &~ second._2.foldLeft(Set[(Process, Set[String])]()) { (acc, process) => acc + ((process._1, process._2.keySet)) }).isEmpty) {
           display(first._1)
-          cache -= first._1
+          clean(first._1)
         }
       }
     }

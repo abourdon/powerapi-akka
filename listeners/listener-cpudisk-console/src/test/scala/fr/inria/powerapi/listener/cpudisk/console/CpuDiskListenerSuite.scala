@@ -38,28 +38,82 @@ import akka.testkit.TestActorRef
 import fr.inria.powerapi.core.Energy
 import fr.inria.powerapi.core.Tick
 import fr.inria.powerapi.core.TickSubscription
+import akka.util.Duration
+
+trait ConfigurationMock extends Configuration {
+  override lazy val refreshRate = Duration.Inf
+}
+
+class CpuDiskListenerMock extends CpuDiskListener with ConfigurationMock
 
 class CpuDiskListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
-  @Before
-  def setUp() {
-    Array(
-      classOf[fr.inria.powerapi.sensor.cpu.proc.CpuSensor],
-      classOf[fr.inria.powerapi.formula.cpu.general.CpuFormula],
-      classOf[fr.inria.powerapi.sensor.disk.proc.DiskSensor],
-      classOf[fr.inria.powerapi.formula.disk.single.DiskFormula]).foreach(PowerAPI.startEnergyModule(_))
+  @Test
+  def testAggregate() {
+    implicit val system = ActorSystem("CpuDiskListenerSuite")
+    val cpuDiskListener = TestActorRef[CpuDiskListenerMock].underlyingActor
+
+    val timestamp = 0L
+    cpuDiskListener.cache should have size 0
+
+    cpuDiskListener.process(CpuFormulaValues(Energy.fromPower(1), Tick(TickSubscription(Process(123), 1 second), timestamp)))
+    cpuDiskListener.process(DiskFormulaValues(Energy.fromPower(10), Tick(TickSubscription(Process(123), 1 second), timestamp)))
+    cpuDiskListener.process(CpuFormulaValues(Energy.fromPower(2), Tick(TickSubscription(Process(456), 1 second), timestamp)))
+    cpuDiskListener.process(CpuFormulaValues(Energy.fromPower(3), Tick(TickSubscription(Process(789), 1 second), timestamp)))
+    cpuDiskListener.process(DiskFormulaValues(Energy.fromPower(20), Tick(TickSubscription(Process(456), 1 second), timestamp)))
+    cpuDiskListener.process(DiskFormulaValues(Energy.fromPower(30), Tick(TickSubscription(Process(789), 1 second), timestamp)))
+
+    cpuDiskListener.cache should equal(Map(
+      timestamp -> Map(
+        Process(123) -> Map[String, Double]("cpu" -> 1, "disk" -> 10),
+        Process(456) -> Map[String, Double]("cpu" -> 2, "disk" -> 20),
+        Process(789) -> Map[String, Double]("cpu" -> 3, "disk" -> 30))))
+
+    cpuDiskListener.aggregate(timestamp) should equal(Map[String, Double]("cpu" -> (1 + 2 + 3), "disk" -> (10 + 20 + 30)))
   }
 
   @Test
-  def testCache() {
-    Array(
-      classOf[fr.inria.powerapi.sensor.cpu.proc.CpuSensor],
-      classOf[fr.inria.powerapi.formula.cpu.general.CpuFormula],
-      classOf[fr.inria.powerapi.sensor.disk.proc.DiskSensor],
-      classOf[fr.inria.powerapi.formula.disk.single.DiskFormula]).foreach(PowerAPI.stopEnergyModule(_))
-
+  def testClean() {
     implicit val system = ActorSystem("CpuDiskListenerSuite")
-    val cpuDiskListener = TestActorRef[CpuDiskListener].underlyingActor
+    val cpuDiskListener = TestActorRef[CpuDiskListenerMock].underlyingActor
+
+    val timestamp = 0L
+    cpuDiskListener.cache should have size 0
+
+    cpuDiskListener.process(CpuFormulaValues(Energy.fromPower(1), Tick(TickSubscription(Process(123), 1 second), timestamp)))
+    cpuDiskListener.process(DiskFormulaValues(Energy.fromPower(10), Tick(TickSubscription(Process(123), 1 second), timestamp)))
+    cpuDiskListener.process(CpuFormulaValues(Energy.fromPower(2), Tick(TickSubscription(Process(456), 1 second), timestamp)))
+    cpuDiskListener.process(CpuFormulaValues(Energy.fromPower(3), Tick(TickSubscription(Process(789), 1 second), timestamp)))
+    cpuDiskListener.process(DiskFormulaValues(Energy.fromPower(20), Tick(TickSubscription(Process(456), 1 second), timestamp)))
+    cpuDiskListener.process(DiskFormulaValues(Energy.fromPower(30), Tick(TickSubscription(Process(789), 1 second), timestamp)))
+
+    val anotherTimestamp = 1L
+    cpuDiskListener.process(CpuFormulaValues(Energy.fromPower(1), Tick(TickSubscription(Process(123), 1 second), anotherTimestamp)))
+    cpuDiskListener.process(DiskFormulaValues(Energy.fromPower(10), Tick(TickSubscription(Process(123), 1 second), anotherTimestamp)))
+    cpuDiskListener.process(CpuFormulaValues(Energy.fromPower(2), Tick(TickSubscription(Process(456), 1 second), anotherTimestamp)))
+
+    cpuDiskListener.cache should equal(Map(
+      timestamp -> Map(
+        Process(123) -> Map[String, Double]("cpu" -> 1, "disk" -> 10),
+        Process(456) -> Map[String, Double]("cpu" -> 2, "disk" -> 20),
+        Process(789) -> Map[String, Double]("cpu" -> 3, "disk" -> 30)),
+      anotherTimestamp -> Map(
+        Process(123) -> Map[String, Double]("cpu" -> 1, "disk" -> 10),
+        Process(456) -> Map[String, Double]("cpu" -> 2))))
+
+    cpuDiskListener.clean(timestamp)
+
+    cpuDiskListener.cache should equal(Map(
+      anotherTimestamp -> Map(
+        Process(123) -> Map[String, Double]("cpu" -> 1, "disk" -> 10),
+        Process(456) -> Map[String, Double]("cpu" -> 2))))
+  }
+
+  @Ignore
+  @Test
+  def testCacheWhenCacheIsCleanedByTwoMin() {
+    implicit val system = ActorSystem("CpuDiskListenerSuite")
+    val cpuDiskListener = TestActorRef[CpuDiskListenerMock].underlyingActor
 
     val timestamp = 0L
     cpuDiskListener.cache should have size 0
@@ -86,22 +140,52 @@ class CpuDiskListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
   @Ignore
   @Test
   def testPid() {
+    Array(
+      classOf[fr.inria.powerapi.sensor.cpu.proc.CpuSensor],
+      classOf[fr.inria.powerapi.formula.cpu.general.CpuFormula],
+      classOf[fr.inria.powerapi.sensor.disk.proc.DiskSensor],
+      classOf[fr.inria.powerapi.formula.disk.single.DiskFormula]).foreach(PowerAPI.startEnergyModule(_))
+
     PowerAPI.startMonitoring(Process(27623), 1 second, classOf[CpuDiskListener])
     Thread.sleep((1 minute).toMillis)
     PowerAPI.stopMonitoring(Process(27623), 1 second, classOf[CpuDiskListener])
-  }
 
-  @Test
-  def testCurrentPid() {
-    val currentPid = ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
-    PowerAPI.startMonitoring(Process(currentPid), 500 milliseconds, classOf[CpuDiskListener])
-    Thread.sleep((10 seconds).toMillis)
-    PowerAPI.stopMonitoring(Process(currentPid), 500 milliseconds, classOf[CpuDiskListener])
+    Array(
+      classOf[fr.inria.powerapi.sensor.cpu.proc.CpuSensor],
+      classOf[fr.inria.powerapi.formula.cpu.general.CpuFormula],
+      classOf[fr.inria.powerapi.sensor.disk.proc.DiskSensor],
+      classOf[fr.inria.powerapi.formula.disk.single.DiskFormula]).foreach(PowerAPI.stopEnergyModule(_))
   }
 
   @Ignore
   @Test
+  def testCurrentPid() {
+    Array(
+      classOf[fr.inria.powerapi.sensor.cpu.proc.CpuSensor],
+      classOf[fr.inria.powerapi.formula.cpu.general.CpuFormula],
+      classOf[fr.inria.powerapi.sensor.disk.proc.DiskSensor],
+      classOf[fr.inria.powerapi.formula.disk.single.DiskFormula]).foreach(PowerAPI.startEnergyModule(_))
+
+    val currentPid = ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
+    PowerAPI.startMonitoring(Process(currentPid), 500 milliseconds, classOf[CpuDiskListener])
+    Thread.sleep((10 seconds).toMillis)
+    PowerAPI.stopMonitoring(Process(currentPid), 500 milliseconds, classOf[CpuDiskListener])
+
+    Array(
+      classOf[fr.inria.powerapi.sensor.cpu.proc.CpuSensor],
+      classOf[fr.inria.powerapi.formula.cpu.general.CpuFormula],
+      classOf[fr.inria.powerapi.sensor.disk.proc.DiskSensor],
+      classOf[fr.inria.powerapi.formula.disk.single.DiskFormula]).foreach(PowerAPI.stopEnergyModule(_))
+  }
+
+  @Test
   def testAllPids() {
+    Array(
+      classOf[fr.inria.powerapi.sensor.cpu.proc.CpuSensor],
+      classOf[fr.inria.powerapi.formula.cpu.general.CpuFormula],
+      classOf[fr.inria.powerapi.sensor.disk.proc.DiskSensor],
+      classOf[fr.inria.powerapi.formula.disk.single.DiskFormula]).foreach(PowerAPI.startEnergyModule(_))
+
     val PSFormat = """^\s*(\d+).*""".r
     val pids = Resource.fromInputStream(Runtime.getRuntime.exec(Array("ps", "-A")).getInputStream).lines().toList.map({
       pid =>
@@ -112,16 +196,13 @@ class CpuDiskListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
     })
 
     PowerAPI.startMonitoring(listenerType = classOf[CpuDiskListener])
-    pids.foreach(pid => PowerAPI.startMonitoring(process = Process(pid), duration = 500 milliseconds))
+    pids.foreach(pid => PowerAPI.startMonitoring(process = Process(pid), duration = 1 second))
 
     Thread.sleep((10 seconds).toMillis)
 
     PowerAPI.stopMonitoring(listenerType = classOf[CpuDiskListener])
-    pids.foreach(pid => PowerAPI.stopMonitoring(Process(pid), 500 milliseconds, classOf[CpuDiskListener]))
-  }
+    pids.foreach(pid => PowerAPI.stopMonitoring(Process(pid), 1 second, classOf[CpuDiskListener]))
 
-  @After
-  def tearDown() {
     Array(
       classOf[fr.inria.powerapi.sensor.cpu.proc.CpuSensor],
       classOf[fr.inria.powerapi.formula.cpu.general.CpuFormula],
