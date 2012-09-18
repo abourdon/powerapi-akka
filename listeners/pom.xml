@@ -20,6 +20,7 @@
         <module>listener-cpu-jfreechart</module>
         <module>listener-disk-console</module>
         <module>listener-cpudisk-console</module>
+        <module>listener-cpudisk-jfreechart</module>
   </modules>
 
 </project>
