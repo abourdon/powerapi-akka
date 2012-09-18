@@ -80,8 +80,7 @@ class DiskFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
     val old = DiskSensorValues(rw = Map("n/a" -> (100: Long, 200: Long)), Tick(TickSubscription(Process(123), duration)))
     val now = DiskSensorValues(rw = Map("n/a" -> (500: Long, 400: Long)), Tick(TickSubscription(Process(123), duration)))
 
-    val durationToSeconds = duration.toMillis / 1000.0
-    diskFormula.power(now, old) should equal(Energy.fromPower(((500 - 100) * diskFormula.readEnergyByByte / durationToSeconds + (400 - 200) * diskFormula.writeEnergyByByte / durationToSeconds) / 2.0))
+    diskFormula.power(now, old) should equal(Energy.fromJoule(((500 - 100) * diskFormula.readEnergyByByte + (400 - 200) * diskFormula.writeEnergyByByte), duration))
   }
 
   @Test
@@ -93,7 +92,6 @@ class DiskFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
     diskFormula.refreshCache(old)
 
     val now = DiskSensorValues(rw = Map("n/a" -> (500: Long, 400: Long)), tick)
-    val durationToSeconds = duration.toMillis / 1000.0
-    diskFormula.compute(now) should equal(DiskFormulaValues(Energy.fromPower(((500 - 100) * diskFormula.readEnergyByByte / durationToSeconds + (400 - 200) * diskFormula.writeEnergyByByte / durationToSeconds) / 2.0), tick))
+    diskFormula.compute(now) should equal(DiskFormulaValues(Energy.fromJoule(((500 - 100) * diskFormula.readEnergyByByte + (400 - 200) * diskFormula.writeEnergyByByte), duration), tick))
   }
 }

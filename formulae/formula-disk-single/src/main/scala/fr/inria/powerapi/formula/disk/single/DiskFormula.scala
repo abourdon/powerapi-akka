@@ -63,7 +63,7 @@ class DiskFormula extends fr.inria.powerapi.formula.disk.api.DiskFormula with Co
 
   def power(now: DiskSensorValues, old: DiskSensorValues) = try {
     val duration = now.tick.subscription.duration.toMillis / 1000.0
-    Energy.fromPower(((now.rw("n/a")._1 - old.rw("n/a")._1) * readEnergyByByte / duration + (now.rw("n/a")._2 - old.rw("n/a")._2) * writeEnergyByByte / duration) / 2.0)
+    Energy.fromJoule(((now.rw("n/a")._1 - old.rw("n/a")._1) * readEnergyByByte + (now.rw("n/a")._2 - old.rw("n/a")._2) * writeEnergyByByte), now.tick.subscription.duration)
   } catch {
     case nsee: NoSuchElementException => {
       log.warning("no such element exception: " + nsee.getMessage)
