@@ -31,7 +31,7 @@ import akka.util.Duration
 import akka.actor.Cancellable
 
 trait Configuration extends fr.inria.powerapi.core.Configuration {
-  lazy val refreshRate = load(conf => Duration.parse(conf.getString("powerapi.listener-cpudisk.refresh-rate")))(1 second)
+  lazy val refreshRate = load(conf => Duration.parse(conf.getString("powerapi.listener-cpudisk-console.refresh-rate")))(1 second)
 }
 
 class CpuDiskListener extends Listener with Configuration {

@@ -16,4 +16,11 @@ Display energy information into the console.
 
 ## Configuration part
 
-There is no specific configuration for this module.
+As this module aggregates information from CPU and disk formulae, it has to known the frequency of result displays. This property can be configured as follow :
+```
+powerapi {
+	listener-cpudisk-console {
+	    refresh-rate = 1s
+	}
+}
+```
