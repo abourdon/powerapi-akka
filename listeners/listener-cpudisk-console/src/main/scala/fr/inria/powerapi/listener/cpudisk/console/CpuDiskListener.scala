@@ -36,7 +36,7 @@ trait Configuration extends fr.inria.powerapi.core.Configuration {
 
 class CpuDiskListener extends Listener with Configuration {
   // cache = Map(timestamp -> Map(process -> Map(device name -> power value)))
-  val cache = new collection.mutable.HashMap[Long, Map[Process, Map[String, Double]]]() with collection.mutable.SynchronizedMap[Long, Map[Process, Map[String, Double]]]
+  lazy val cache = new collection.mutable.HashMap[Long, Map[Process, Map[String, Double]]]() with collection.mutable.SynchronizedMap[Long, Map[Process, Map[String, Double]]]
 
   var cleanupSchedule: Cancellable = _
 

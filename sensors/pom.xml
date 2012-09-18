@@ -18,8 +18,9 @@
 	<modules>
 		<module>sensor-cpu-api</module>
 		<module>sensor-cpu-proc</module>
-    <!-- <module>sensor-cpu-sigar</module> -->
+		<!-- <module>sensor-cpu-sigar</module> -->
 		<module>sensor-disk-api</module>
 		<module>sensor-disk-proc</module>
+		<module>sensor-disk-atop</module>
 	</modules>
 </project>

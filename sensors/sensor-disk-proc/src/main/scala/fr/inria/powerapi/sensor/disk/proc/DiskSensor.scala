@@ -39,7 +39,7 @@ class DiskSensor extends fr.inria.powerapi.sensor.disk.api.DiskSensor with Confi
       // FIXME: Due to Java JDK bug #7132461, there is no way to apply buffer to procfs files and thus, directly open stream from the given URL.
       // Then, we simply read these files thanks to a FileInputStream in getting those local path
       val lines = Resource.fromInputStream(new FileInputStream(new URL(iofile replace ("%?", process.pid.toString)).getPath)).lines().toIndexedSeq
-      (read(lines(4)), write(lines(5)) - cancelledWrite(lines(6)))
+      (read(lines(4)), scala.math.max(0, write(lines(5)) - cancelledWrite(lines(6))))
     } catch {
       case ioe: IOException => {
         log.warning("i/o exception: " + ioe.getMessage)
