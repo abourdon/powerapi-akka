@@ -186,22 +186,40 @@ class CpuDiskListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
       classOf[fr.inria.powerapi.sensor.disk.proc.DiskSensor],
       classOf[fr.inria.powerapi.formula.disk.single.DiskFormula]).foreach(PowerAPI.startEnergyModule(_))
 
-    val PSFormat = """^\s*(\d+).*""".r
-    val pids = Resource.fromInputStream(Runtime.getRuntime.exec(Array("ps", "-A")).getInputStream).lines().toList.map({
-      pid =>
-        pid match {
-          case PSFormat(id) => id.toInt
-          case _ => 1
-        }
-    })
+    def getPids = {
+      val PSFormat = """^\s*(\d+).*""".r
+      Resource.fromInputStream(Runtime.getRuntime.exec(Array("ps", "-A")).getInputStream).lines().toList.map({
+        pid =>
+          pid match {
+            case PSFormat(id) => id.toInt
+            case _ => 1
+          }
+      })
+    }
+
+    val pids = scala.collection.mutable.Set[Int]()
+    val dur = 1 second
+    def udpateMonitoredPids() {
+      val currentPids = scala.collection.mutable.Set[Int](getPids: _*)
+
+      val oldPids = pids -- currentPids
+      oldPids.foreach(pid => PowerAPI.stopMonitoring(process = Process(pid), duration = dur))
+      pids --= oldPids
+
+      val newPids = currentPids -- pids
+      newPids.foreach(pid => PowerAPI.startMonitoring(process = Process(pid), duration = dur))
+      pids ++= newPids
+    }
 
     PowerAPI.startMonitoring(listenerType = classOf[CpuDiskListener])
-    pids.foreach(pid => PowerAPI.startMonitoring(process = Process(pid), duration = 1 second))
 
-    Thread.sleep((10 seconds).toMillis)
+    val startingTime = System.currentTimeMillis
+    while (System.currentTimeMillis - startingTime < (10 seconds).toMillis) {
+      udpateMonitoredPids()
+      Thread.sleep((250 milliseconds).toMillis)
+    }
 
     PowerAPI.stopMonitoring(listenerType = classOf[CpuDiskListener])
-    pids.foreach(pid => PowerAPI.stopMonitoring(Process(pid), 1 second, classOf[CpuDiskListener]))
 
     Array(
       classOf[fr.inria.powerapi.sensor.cpu.proc.CpuSensor],

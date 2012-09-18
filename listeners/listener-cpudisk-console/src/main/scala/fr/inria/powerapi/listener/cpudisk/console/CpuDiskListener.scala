@@ -73,13 +73,7 @@ class CpuDiskListener extends Listener with Configuration {
 
   def aggregate(timestamp: Long) = cache.getOrElse(timestamp, Map[Process, Map[String, Double]]()).foldLeft(Map[String, Double]()) { (acc, process) => acc |+| process._2 }
 
-  val alreadyProcessedTimestamps = collection.mutable.ListBuffer[Long]()
   def clean(timestamp: Long) {
-    if (alreadyProcessedTimestamps.contains(timestamp)) {
-      log.warning("already processed timestamp " + timestamp)
-    } else {
-      alreadyProcessedTimestamps += timestamp
-    }
     cache -= timestamp
   }
 
@@ -89,11 +83,19 @@ class CpuDiskListener extends Listener with Configuration {
     println("sum = " + agg.foldLeft(0: Double) { (acc, device) => acc + device._2 } + "W.")
   }
 
+  val processedTimestamps = collection.mutable.ListBuffer[Long]()
   def cleanupByMin() {
     if (cache.size > 1) {
       val first = cache.minBy(_._1)
-      display(first._1)
-      clean(first._1)
+      if (processedTimestamps.contains(first._1)) {
+        log.error("already processed timestamp " + first._1)
+        clean(first._1)
+        cleanupByMin()
+      } else {
+        display(first._1)
+        clean(first._1)
+        processedTimestamps += first._1
+      }
     }
   }
 
