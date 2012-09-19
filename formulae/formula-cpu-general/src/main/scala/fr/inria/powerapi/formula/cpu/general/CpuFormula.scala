@@ -101,7 +101,7 @@ class CpuFormula extends fr.inria.powerapi.formula.cpu.api.CpuFormula with Confi
     if (time == 0) {
       0.0
     } else {
-      totalPower / time / cores
+      totalPower / time
     }
 
   }
