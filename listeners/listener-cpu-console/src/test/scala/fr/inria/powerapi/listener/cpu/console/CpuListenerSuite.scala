@@ -25,8 +25,8 @@ import fr.inria.powerapi.formula.cpu.general.CpuFormula
 import fr.inria.powerapi.library.PowerAPI
 import fr.inria.powerapi.sensor.cpu.proc.CpuSensor
 import java.lang.management.ManagementFactory
-import org.junit.{Test, Ignore, Before, After}
-import org.scalatest.junit.{ShouldMatchersForJUnit, JUnitSuite}
+import org.junit.{ Test, Ignore, Before, After }
+import org.scalatest.junit.{ ShouldMatchersForJUnit, JUnitSuite }
 import scalax.io.Resource
 
 class CpuListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
@@ -37,6 +37,8 @@ class CpuListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
   @Test
   def testAllPids() {
+    Runtime.getRuntime.exec(Array("stress", "-c", "1", "-t", "10"))
+
     val PSFormat = """^\s*(\d+).*""".r
     val pids = Resource.fromInputStream(Runtime.getRuntime.exec(Array("ps", "-e", "rho", "pid")).getInputStream).lines().toList.map({
       pid =>
