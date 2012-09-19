@@ -104,7 +104,7 @@ class CpuFormula extends fr.inria.powerapi.formula.cpu.api.CpuFormula with Confi
   }
 
   def compute(now: CpuSensorValues): CpuFormulaValues = {
-    val old = cache getOrElse(now.tick.subscription, defaultSensorValue)
+    val old = cache getOrElse(now.tick.subscription, now)
     CpuFormulaValues(Energy.fromPower(power(old, now) * usage(old, now)), now.tick)
   }
 

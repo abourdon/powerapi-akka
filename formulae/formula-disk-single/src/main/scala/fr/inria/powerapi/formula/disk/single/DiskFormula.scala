@@ -72,7 +72,7 @@ class DiskFormula extends fr.inria.powerapi.formula.disk.api.DiskFormula with Co
   }
 
   def compute(now: DiskSensorValues): DiskFormulaValues = {
-    val old = cache getOrElse (now.tick.subscription, defaultSensorValue)
+    val old = cache getOrElse (now.tick.subscription, now)
     DiskFormulaValues(power(now, old), now.tick)
   }
 
