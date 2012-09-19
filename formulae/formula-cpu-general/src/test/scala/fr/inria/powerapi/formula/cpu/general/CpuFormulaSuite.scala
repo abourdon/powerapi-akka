@@ -137,7 +137,7 @@ class CpuFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
       (acc, time) => acc + time._2
     }
 
-    cpuformula.underlyingActor.power(old, now) should equal(totalPowers / totalTimes)
+    cpuformula.underlyingActor.power(old, now) should equal(totalPowers / totalTimes / cpuformula.underlyingActor.cores)
   }
 
   @Test
@@ -166,7 +166,7 @@ class CpuFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
       (acc, time) => acc + time._2
     }
 
-    val power = totalPowers / totalTimes
+    val power = totalPowers / totalTimes / cpuformula.underlyingActor.cores
     val usage = (80.toDouble - 50) / (300 - 100)
 
     cpuformula.underlyingActor.compute(now).energy.power should equal(power * usage)

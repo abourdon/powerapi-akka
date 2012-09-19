@@ -20,9 +20,9 @@
 package fr.inria.powerapi.formula.cpu.general
 
 import com.typesafe.config.Config
-import fr.inria.powerapi.core.{TickSubscription, Energy}
+import fr.inria.powerapi.core.{ TickSubscription, Energy }
 import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
-import fr.inria.powerapi.sensor.cpu.api.{TimeInStates, ProcessElapsedTime, GlobalElapsedTime, CpuSensorValues}
+import fr.inria.powerapi.sensor.cpu.api.{ TimeInStates, ProcessElapsedTime, GlobalElapsedTime, CpuSensorValues }
 import scala.collection.JavaConversions
 
 /**
@@ -34,10 +34,13 @@ trait Configuration extends fr.inria.powerapi.core.Configuration {
   lazy val tdp = load {
     _.getDouble("powerapi.cpu.tdp")
   }(0)
+  lazy val cores = load {
+    _.getDouble("powerapi.cpu.cores")
+  }(1)
   lazy val frequencies = load {
     conf =>
       (for (item <- JavaConversions.asScalaBuffer(conf.getConfigList("powerapi.cpu.frequencies")))
-      yield (item.asInstanceOf[Config].getInt("value"), item.asInstanceOf[Config].getDouble("voltage"))).toMap
+        yield (item.asInstanceOf[Config].getInt("value"), item.asInstanceOf[Config].getDouble("voltage"))).toMap
   }(Map[Int, Double]())
 }
 
@@ -98,13 +101,13 @@ class CpuFormula extends fr.inria.powerapi.formula.cpu.api.CpuFormula with Confi
     if (time == 0) {
       0.0
     } else {
-      totalPower / time
+      totalPower / time / cores
     }
 
   }
 
   def compute(now: CpuSensorValues): CpuFormulaValues = {
-    val old = cache getOrElse(now.tick.subscription, now)
+    val old = cache getOrElse (now.tick.subscription, now)
     CpuFormulaValues(Energy.fromPower(power(old, now) * usage(old, now)), now.tick)
   }
 
