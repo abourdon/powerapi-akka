@@ -36,7 +36,7 @@ trait Configuration extends fr.inria.powerapi.core.Configuration {
 
 class CpuDiskListener extends Listener with Configuration {
   // cache = Map(timestamp -> Map(process -> Map(device name -> power value)))
-  lazy val cache = new collection.mutable.HashMap[Long, Map[Process, Map[String, Double]]]() with collection.mutable.SynchronizedMap[Long, Map[Process, Map[String, Double]]]
+  lazy val cache = new collection.mutable.HashMap[Long, Map[Process, Map[String, Double]]]()
 
   var cleanupSchedule: Cancellable = _
 
@@ -65,7 +65,7 @@ class CpuDiskListener extends Listener with Configuration {
     addEntry(diskFormulaValues.tick.timestamp, diskFormulaValues.tick.subscription.process, "disk", diskFormulaValues.energy.power)
   }
 
-  def addEntry(timestamp: Long, process: Process, device: String, power: Double) {
+  def addEntry(timestamp: Long, process: Process, device: String, power: Double) = synchronized {
     val processes = cache.getOrElse(timestamp, Map[Process, Map[String, Double]]())
     val devices = processes.getOrElse(process, Map[String, Double]())
     cache += timestamp -> (processes + (process -> (devices + (device -> power))))
@@ -84,7 +84,7 @@ class CpuDiskListener extends Listener with Configuration {
   }
 
   val processedTimestamps = collection.mutable.ListBuffer[Long]()
-  def cleanupByMin() {
+  def cleanupByMin(): Unit = synchronized {
     if (cache.size > 1) {
       val first = cache.minBy(_._1)
       if (processedTimestamps.contains(first._1)) {
@@ -99,7 +99,7 @@ class CpuDiskListener extends Listener with Configuration {
     }
   }
 
-  def cleanupByTwoMin() {
+  def cleanupByTwoMin() = synchronized {
     if (cache.size > 1) {
       val first = cache.minBy(_._1)
       val second = (cache - first._1).minBy(_._1)
