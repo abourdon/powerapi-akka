@@ -62,10 +62,8 @@ class DiskListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
   @Ignore
   @Test
   def testAllPids() {
-    Runtime.getRuntime.exec(Array("stress", "-c", "1", "-t", "10"))
-
     val PSFormat = """^\s*(\d+).*""".r
-    val pids = Resource.fromInputStream(Runtime.getRuntime.exec(Array("ps", "-e", "rho", "pid")).getInputStream).lines().toList.map({
+    val pids = Resource.fromInputStream(Runtime.getRuntime.exec(Array("ps", "-A")).getInputStream).lines().toList.map({
       pid =>
         pid match {
           case PSFormat(id) => id.toInt

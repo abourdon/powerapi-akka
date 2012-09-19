@@ -186,11 +186,9 @@ class CpuDiskListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
       classOf[fr.inria.powerapi.sensor.disk.proc.DiskSensor],
       classOf[fr.inria.powerapi.formula.disk.single.DiskFormula]).foreach(PowerAPI.startEnergyModule(_))
 
-    Runtime.getRuntime.exec(Array("stress", "-c", "1", "-t", "10"))
-
     def getPids = {
       val PSFormat = """^\s*(\d+).*""".r
-      val pids = Resource.fromInputStream(Runtime.getRuntime.exec(Array("ps", "-e", "rho", "pid")).getInputStream).lines().toList.map({
+      val pids = Resource.fromInputStream(Runtime.getRuntime.exec(Array("ps", "-A")).getInputStream).lines().toList.map({
         pid =>
           pid match {
             case PSFormat(id) => id.toInt

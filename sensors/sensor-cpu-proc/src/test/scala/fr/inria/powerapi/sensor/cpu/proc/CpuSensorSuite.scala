@@ -77,7 +77,7 @@ class CpuSensorSuite extends JUnitSuite with ShouldMatchersForJUnit {
   }
 
   private def testProcessElapsedTime(processElapsedTime: ProcessElapsedTime) {
-    processElapsedTime.time should equal(2 + 2 + 34)
+    processElapsedTime.time should equal(2 + 2)
   }
 
   @Test
