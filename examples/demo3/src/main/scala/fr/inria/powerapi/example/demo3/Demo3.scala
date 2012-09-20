@@ -28,20 +28,28 @@ import fr.inria.powerapi.listener.cpudisk.jfreechart.CpuDiskListener
 import fr.inria.powerapi.library.PowerAPI
 import fr.inria.powerapi.core.Process
 import akka.util.duration._
+import scalax.io.Resource
 
 object Demo3 extends App {
-  lazy val conf = ConfigFactory.load
-  lazy val pids = JavaConversions.asScalaBuffer(conf.getIntList("powerapi.pids")).toList
-
   Array(
     classOf[CpuSensor],
     classOf[CpuFormula],
     classOf[DiskSensor],
     classOf[DiskFormula]).foreach(PowerAPI.startEnergyModule(_))
 
-  pids.foreach(pid => PowerAPI.startMonitoring(Process(pid), 500 milliseconds, classOf[CpuDiskListener]))
+  val PSFormat = """^\s*(\d+).*""".r
+  Runtime.getRuntime.exec(Array("stress", "-d", "1"))
+  val pids = Resource.fromInputStream(Runtime.getRuntime.exec(Array("ps", "-C", "mplayer", "ho", "pid")).getInputStream).lines().toList.map({
+    pid =>
+      pid match {
+        case PSFormat(id) => id.toInt
+        case _ => 1
+      }
+  })
+
+  pids.foreach(pid => PowerAPI.startMonitoring(Process(pid), 1 second, classOf[CpuDiskListener]))
   Thread.sleep((2 hours).toMillis)
-  pids.foreach(pid => PowerAPI.stopMonitoring(Process(pid), 500 milliseconds, classOf[CpuDiskListener]))
+  pids.foreach(pid => PowerAPI.stopMonitoring(Process(pid), 1 second, classOf[CpuDiskListener]))
 
   Array(
     classOf[CpuSensor],
