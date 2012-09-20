@@ -92,9 +92,9 @@ object Demo2 extends App {
     classOf[DiskSensor],
     classOf[DiskFormula]).foreach(PowerAPI.startEnergyModule(_))
 
-  pids.foreach(pid => PowerAPI.startMonitoring(Process(pid), 500 milliseconds, classOf[Demo2Listener]))
+  pids.foreach(pid => PowerAPI.startMonitoring(Process(pid), 1 second, classOf[Demo2Listener]))
   Thread.sleep((2 hours).toMillis)
-  pids.foreach(pid => PowerAPI.stopMonitoring(Process(pid), 500 milliseconds, classOf[Demo2Listener]))
+  pids.foreach(pid => PowerAPI.stopMonitoring(Process(pid), 1 second, classOf[Demo2Listener]))
 
   Array(
     classOf[CpuSensor],
