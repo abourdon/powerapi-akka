@@ -1,0 +1,69 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>fr.inria.powerapi.example</groupId>
+	<artifactId>demo1</artifactId>
+	<name>${project.artifactId}</name>
+	<description>ADAM evaluation demonstration #1.</description>
+	<inceptionYear>2012</inceptionYear>
+
+	<parent>
+		<groupId>fr.inria.powerapi</groupId>
+		<artifactId>examples</artifactId>
+		<version>1.2-SNAPSHOT</version>
+	</parent>
+
+	<dependencies>
+		<dependency>
+			<groupId>fr.inria.powerapi</groupId>
+			<artifactId>core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>fr.inria.powerapi</groupId>
+			<artifactId>library</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>fr.inria.powerapi.sensor</groupId>
+			<artifactId>sensor-cpu-proc</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>fr.inria.powerapi.formula</groupId>
+			<artifactId>formula-cpu-general</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>fr.inria.powerapi.sensor</groupId>
+			<artifactId>sensor-disk-proc</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>fr.inria.powerapi.formula</groupId>
+			<artifactId>formula-disk-single</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>fr.inria.powerapi.listener</groupId>
+			<artifactId>listener-cpudisk-jfreechart</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.scala-incubator.io</groupId>
+			<artifactId>scala-io-core_${scala.version}</artifactId>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.scala-tools</groupId>
+				<artifactId>maven-scala-plugin</artifactId>
+				<configuration>
+					<mainClass>fr.inria.powerapi.example.demo1.Demo1</mainClass>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
