@@ -30,6 +30,17 @@ import fr.inria.powerapi.core.Process
 import akka.util.duration._
 import scalax.io.Resource
 
+class Demo3Listener extends CpuDiskListener {
+  override def display(timestamp: Long) {
+    val agg = aggregate(timestamp)
+    if (justTotal) {
+      Chart.process(Map("total" -> agg.foldLeft(0: Double)((acc, entry) => acc + entry._2)), timestamp)
+    } else {
+      Chart.process(agg, timestamp)
+    }
+  }
+}
+
 object Demo3 extends App {
   Array(
     classOf[CpuSensor],
@@ -47,9 +58,9 @@ object Demo3 extends App {
       }
   })
 
-  pids.foreach(pid => PowerAPI.startMonitoring(Process(pid), 1 second, classOf[CpuDiskListener]))
+  pids.foreach(pid => PowerAPI.startMonitoring(Process(pid), 1 second, classOf[Demo3Listener]))
   Thread.sleep((2 hours).toMillis)
-  pids.foreach(pid => PowerAPI.stopMonitoring(Process(pid), 1 second, classOf[CpuDiskListener]))
+  pids.foreach(pid => PowerAPI.stopMonitoring(Process(pid), 1 second, classOf[Demo3Listener]))
 
   Array(
     classOf[CpuSensor],

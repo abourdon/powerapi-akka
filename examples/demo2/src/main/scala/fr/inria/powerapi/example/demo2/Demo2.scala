@@ -18,29 +18,30 @@
  * Contact: powerapi-user-list@googlegroups.com
  */
 package fr.inria.powerapi.example.demo2
-import com.typesafe.config.ConfigFactory
 import scala.collection.JavaConversions
-import fr.inria.powerapi.sensor.cpu.proc.CpuSensor
-import fr.inria.powerapi.formula.cpu.general.CpuFormula
-import fr.inria.powerapi.sensor.disk.proc.DiskSensor
-import fr.inria.powerapi.formula.disk.single.DiskFormula
-import fr.inria.powerapi.listener.cpudisk.jfreechart.CpuDiskListener
-import fr.inria.powerapi.library.PowerAPI
-import fr.inria.powerapi.core.Process
+
+import com.typesafe.config.ConfigFactory
+
 import akka.util.duration._
-import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
-import fr.inria.powerapi.formula.disk.api.DiskFormulaValues
-import fr.inria.powerapi.sensor.cpu.api.CpuSensorValues
-import fr.inria.powerapi.listener.cpudisk.jfreechart.Chart
+import fr.inria.powerapi.core.Listener
+import fr.inria.powerapi.core.Process
 import fr.inria.powerapi.core.TickSubscription
-import scalax.io.Resource
+import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
+import fr.inria.powerapi.formula.cpu.general.CpuFormula
+import fr.inria.powerapi.formula.disk.api.DiskFormulaValues
+import fr.inria.powerapi.formula.disk.single.DiskFormula
+import fr.inria.powerapi.library.PowerAPI
+import fr.inria.powerapi.sensor.cpu.api.CpuSensorValues
+import fr.inria.powerapi.sensor.cpu.proc.CpuSensor
+import fr.inria.powerapi.sensor.disk.proc.DiskSensor
 
-class Demo2Listener extends CpuDiskListener {
+class Demo2Listener extends Listener {
   lazy val cpuUsageCache = collection.mutable.HashMap[TickSubscription, CpuSensorValues]()
+  lazy val cache = collection.mutable.HashMap[Long, Map[String, Double]]()
 
-  override def messagesToListen = Array(classOf[CpuSensorValues], classOf[CpuFormulaValues], classOf[DiskFormulaValues])
+  def messagesToListen = Array(classOf[CpuSensorValues], classOf[CpuFormulaValues], classOf[DiskFormulaValues])
 
-  override def acquire = {
+  def acquire = {
     case cpuSensorValues: CpuSensorValues => process(cpuSensorValues)
     case cpuFormulaValues: CpuFormulaValues => process(cpuFormulaValues)
     case diskFormulaValues: DiskFormulaValues => process(diskFormulaValues)
@@ -58,8 +59,26 @@ class Demo2Listener extends CpuDiskListener {
       }
     }
 
-    Chart.process(Map("cpu usage" -> usage(cpuUsageCache getOrElse (now.tick.subscription, now), now)), now.tick.timestamp)
+    val entry = cache getOrElse (now.tick.timestamp, Map[String, Double]())
+    cache += now.tick.timestamp -> (entry + ("cpu usage" -> usage(cpuUsageCache getOrElse (now.tick.subscription, now), now)))
     cpuUsageCache += (now.tick.subscription -> now)
+  }
+
+  def process(cpuFormulaValues: CpuFormulaValues) {
+    val entry = cache getOrElse (cpuFormulaValues.tick.timestamp, Map[String, Double]())
+    cache += cpuFormulaValues.tick.timestamp -> (entry + ("cpu" -> cpuFormulaValues.energy.power))
+  }
+
+  def process(diskFormulaValues: DiskFormulaValues) {
+    val entry = cache getOrElse (diskFormulaValues.tick.timestamp, Map[String, Double]())
+    cache += diskFormulaValues.tick.timestamp -> (entry + ("disk" -> diskFormulaValues.energy.power))
+  }
+
+  def display(timestamp: Long) {
+    val entry = cache getOrElse (timestamp, Map[String, Double]())
+    if (entry.size == 3) {
+      Chart.process(Map("cpu usage" -> entry("cpu usage"), "total" -> (entry("cpu") + entry("disk"))), timestamp)
+    }
   }
 }
 

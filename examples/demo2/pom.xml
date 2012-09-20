@@ -55,9 +55,9 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>fr.inria.powerapi.listener</groupId>
-			<artifactId>listener-cpudisk-jfreechart</artifactId>
-			<version>${project.version}</version>
+			<groupId>jfree</groupId>
+			<artifactId>jfreechart</artifactId>
+			<version>1.0.13</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.scala-incubator.io</groupId>
