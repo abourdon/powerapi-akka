@@ -32,12 +32,14 @@ import akka.actor.Cancellable
 import javax.swing.SwingUtilities
 
 trait Configuration extends fr.inria.powerapi.core.Configuration {
-  lazy val refreshRate = load(conf => Duration.parse(conf.getString("powerapi.listener-cpudisk-console.refresh-rate")))(1 second)
+  lazy val refreshRate = load(conf => Duration.parse(conf.getString("powerapi.listener-cpudisk-jfreechart.refresh-rate")))(1 second)
+  lazy val aggregateByDevice = load(_.getBoolean("powerapi.listener-cpudisk-jfreechart.aggregate-by-device"))(true)
+  lazy val justTotal = load(_.getBoolean("powerapi.listener-cpudisk-jfreechart.just-total"))(false)
 }
 
 class CpuDiskListener extends Listener with Configuration {
   // cache = Map(timestamp -> Map(process -> Map(device name -> power value)))
-  lazy val cache = new collection.mutable.HashMap[Long, Map[Process, Map[String, Double]]]() 
+  lazy val cache = new collection.mutable.HashMap[Long, Map[Process, Map[String, Double]]]()
 
   var cleanupSchedule: Cancellable = _
 
@@ -84,7 +86,12 @@ class CpuDiskListener extends Listener with Configuration {
   }
 
   def display(timestamp: Long) {
-    Chart.process(aggregate(timestamp), timestamp)
+    val agg = aggregate(timestamp)
+    if (justTotal) {
+      Chart.process(Map("total" -> agg.foldLeft(0: Double)((acc, entry) => acc + entry._2)), timestamp)
+    } else {
+      Chart.process(agg, timestamp)
+    }
   }
 
   val processedTimestamps = collection.mutable.ListBuffer[Long]()

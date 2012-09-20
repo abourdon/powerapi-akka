@@ -68,12 +68,6 @@ class CpuFormula extends fr.inria.powerapi.formula.cpu.api.CpuFormula with Confi
   lazy val powers = frequencies.map(frequency => (frequency._1, (constant * frequency._1 * math.pow(frequency._2, 2))))
 
   lazy val cache = mutable.HashMap[TickSubscription, CpuSensorValues]()
-  lazy val defaultSensorValue =
-    CpuSensorValues(
-      TimeInStates(frequencies.map(fv => (fv._1, 0: Long))),
-      GlobalElapsedTime(0),
-      ProcessElapsedTime(0),
-      null)
 
   def process(cpuSensorValues: CpuSensorValues) {
     publish(compute(cpuSensorValues))
