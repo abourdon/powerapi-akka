@@ -39,7 +39,7 @@ object Demo3 extends App {
 
   val PSFormat = """^\s*(\d+).*""".r
   Runtime.getRuntime.exec(Array("stress", "-d", "1"))
-  val pids = Resource.fromInputStream(Runtime.getRuntime.exec(Array("ps", "-C", "mplayer", "ho", "pid")).getInputStream).lines().toList.map({
+  val pids = Resource.fromInputStream(Runtime.getRuntime.exec(Array("ps", "-C", "stress", "ho", "pid")).getInputStream).lines().toList.map({
     pid =>
       pid match {
         case PSFormat(id) => id.toInt
