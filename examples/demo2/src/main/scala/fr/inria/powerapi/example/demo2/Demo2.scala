@@ -28,6 +28,40 @@ import fr.inria.powerapi.listener.cpudisk.jfreechart.CpuDiskListener
 import fr.inria.powerapi.library.PowerAPI
 import fr.inria.powerapi.core.Process
 import akka.util.duration._
+import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
+import fr.inria.powerapi.formula.disk.api.DiskFormulaValues
+import fr.inria.powerapi.sensor.cpu.api.CpuSensorValues
+import fr.inria.powerapi.listener.cpudisk.jfreechart.Chart
+import fr.inria.powerapi.core.TickSubscription
+import scalax.io.Resource
+
+class Demo2Listener extends CpuDiskListener {
+  lazy val cpuUsageCache = collection.mutable.HashMap[TickSubscription, CpuSensorValues]()
+
+  override def messagesToListen = Array(classOf[CpuSensorValues], classOf[CpuFormulaValues], classOf[DiskFormulaValues])
+
+  override def acquire = {
+    case cpuSensorValues: CpuSensorValues => process(cpuSensorValues)
+    case cpuFormulaValues: CpuFormulaValues => process(cpuFormulaValues)
+    case diskFormulaValues: DiskFormulaValues => process(diskFormulaValues)
+  }
+
+  def process(now: CpuSensorValues) {
+
+    def usage(old: CpuSensorValues, now: CpuSensorValues) = {
+      val processUsage = (now.processElapsedTime.time - old.processElapsedTime.time).toDouble
+      val globalUsage = (now.globalElapsedTime.time - old.globalElapsedTime.time).toDouble
+      if (globalUsage == 0) {
+        0.0
+      } else {
+        math.max(0.0, processUsage / globalUsage)
+      }
+    }
+
+    Chart.process(Map("cpu usage" -> usage(cpuUsageCache getOrElse (now.tick.subscription, now), now)), now.tick.timestamp)
+    cpuUsageCache += (now.tick.subscription -> now)
+  }
+}
 
 object Demo2 extends App {
   lazy val conf = ConfigFactory.load
@@ -39,9 +73,9 @@ object Demo2 extends App {
     classOf[DiskSensor],
     classOf[DiskFormula]).foreach(PowerAPI.startEnergyModule(_))
 
-  pids.foreach(pid => PowerAPI.startMonitoring(Process(pid), 500 milliseconds, classOf[CpuDiskListener]))
+  pids.foreach(pid => PowerAPI.startMonitoring(Process(pid), 500 milliseconds, classOf[Demo2Listener]))
   Thread.sleep((2 hours).toMillis)
-  pids.foreach(pid => PowerAPI.stopMonitoring(Process(pid), 500 milliseconds, classOf[CpuDiskListener]))
+  pids.foreach(pid => PowerAPI.stopMonitoring(Process(pid), 500 milliseconds, classOf[Demo2Listener]))
 
   Array(
     classOf[CpuSensor],
