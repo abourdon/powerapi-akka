@@ -69,16 +69,19 @@ class Demo2Listener extends Listener {
     val entry = cache getOrElse (now.tick.timestamp, Map[String, Double]())
     cache += now.tick.timestamp -> (entry + ("cpu usage" -> usage(cpuUsageCache getOrElse (now.tick.subscription, now), now)))
     cpuUsageCache += (now.tick.subscription -> now)
+    display(now.tick.timestamp)
   }
 
   def process(cpuFormulaValues: CpuFormulaValues) {
     val entry = cache getOrElse (cpuFormulaValues.tick.timestamp, Map[String, Double]())
     cache += cpuFormulaValues.tick.timestamp -> (entry + ("cpu" -> cpuFormulaValues.energy.power))
+    display(cpuFormulaValues.tick.timestamp)
   }
 
   def process(diskFormulaValues: DiskFormulaValues) {
     val entry = cache getOrElse (diskFormulaValues.tick.timestamp, Map[String, Double]())
     cache += diskFormulaValues.tick.timestamp -> (entry + ("disk" -> diskFormulaValues.energy.power))
+    display(diskFormulaValues.tick.timestamp)
   }
 
   def display(timestamp: Long) {
