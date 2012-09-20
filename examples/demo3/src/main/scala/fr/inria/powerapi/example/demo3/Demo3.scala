@@ -29,8 +29,25 @@ import fr.inria.powerapi.library.PowerAPI
 import fr.inria.powerapi.core.Process
 import akka.util.duration._
 import scalax.io.Resource
+import javax.swing.SwingUtilities
+import akka.util.Duration
 
 class Demo3Listener extends CpuDiskListener {
+  override def preStart() {
+    cleanupSchedule = context.system.scheduler.schedule(Duration.Zero, refreshRate) {
+      cleanupByMin()
+    }
+    SwingUtilities.invokeLater(new Runnable {
+      def run() {
+        Chart.run()
+      }
+    })
+  }
+
+  override def postStop() {
+    cleanupSchedule.cancel()
+  }
+
   override def display(timestamp: Long) {
     val agg = aggregate(timestamp)
     if (justTotal) {

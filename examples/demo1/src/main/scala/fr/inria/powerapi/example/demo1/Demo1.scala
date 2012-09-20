@@ -27,8 +27,27 @@ import fr.inria.powerapi.formula.disk.single.DiskFormula
 import fr.inria.powerapi.core.Process
 import scalax.io.Resource
 import akka.util.duration._
+import fr.inria.powerapi.core.Listener
+import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
+import javax.swing.SwingUtilities
+import akka.util.Duration
 
 class Demo1Listener extends CpuDiskListener {
+  override def preStart() {
+    cleanupSchedule = context.system.scheduler.schedule(Duration.Zero, refreshRate) {
+      cleanupByMin()
+    }
+    SwingUtilities.invokeLater(new Runnable {
+      def run() {
+        Chart.run()
+      }
+    })
+  }
+
+  override def postStop() {
+    cleanupSchedule.cancel()
+  }
+
   override def display(timestamp: Long) {
     val agg = aggregate(timestamp)
     if (justTotal) {

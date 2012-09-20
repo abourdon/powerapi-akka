@@ -19,9 +19,7 @@
  */
 package fr.inria.powerapi.example.demo2
 import scala.collection.JavaConversions
-
 import com.typesafe.config.ConfigFactory
-
 import akka.util.duration._
 import fr.inria.powerapi.core.Listener
 import fr.inria.powerapi.core.Process
@@ -34,10 +32,19 @@ import fr.inria.powerapi.library.PowerAPI
 import fr.inria.powerapi.sensor.cpu.api.CpuSensorValues
 import fr.inria.powerapi.sensor.cpu.proc.CpuSensor
 import fr.inria.powerapi.sensor.disk.proc.DiskSensor
+import javax.swing.SwingUtilities
 
 class Demo2Listener extends Listener {
   lazy val cpuUsageCache = collection.mutable.HashMap[TickSubscription, CpuSensorValues]()
   lazy val cache = collection.mutable.HashMap[Long, Map[String, Double]]()
+
+  override def preStart() {
+    SwingUtilities.invokeLater(new Runnable {
+      def run() {
+        Chart.run()
+      }
+    })
+  }
 
   def messagesToListen = Array(classOf[CpuSensorValues], classOf[CpuFormulaValues], classOf[DiskFormulaValues])
 
