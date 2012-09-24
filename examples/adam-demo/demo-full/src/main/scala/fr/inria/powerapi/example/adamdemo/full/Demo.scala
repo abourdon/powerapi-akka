@@ -46,13 +46,8 @@ trait Scenario {
 
 class OneProcessScenario extends Scenario {
   lazy val psFormat = """^\s*(\d+).*""".r
-  lazy val pids = Resource.fromInputStream(Runtime.getRuntime.exec(Array("ps", "-C", "firefox", "ho", "pid")).getInputStream).lines().toList.map({
-    pid =>
-      pid match {
-        case psFormat(id) => id.toInt
-        case _ => 1
-      }
-  })
+  private var pids: List[Int] = _
+  private var process = "firefox"
 
   def name = "Power consumption of an application"
 
@@ -63,22 +58,35 @@ class OneProcessScenario extends Scenario {
   }
 
   def start() {
+    pids = Resource.fromInputStream(Runtime.getRuntime.exec(Array("ps", "-C", process, "ho", "pid")).getInputStream).lines().toList.map({
+      pid =>
+        pid match {
+          case psFormat(id) => id.toInt
+          case _ => 1
+        }
+    })
     pids.foreach(pid => PowerAPI.startMonitoring(process = Process(pid), duration = 1 second))
   }
 
   def stop() {
     pids.foreach(pid => PowerAPI.stopMonitoring(process = Process(pid), duration = 1 second))
   }
+
+  def setProcess(process: String) {
+    stop()
+    this.process = process
+    start()
+  }
 }
 
 class OverheadWithOneProcessScenario extends Scenario {
   var externalPid: Int = _
-  var process: java.lang.Process = _
+  var externalProcess: java.lang.Process = _
 
   def name = "Power consumption of PowerAPI running one process"
 
   def init() = {
-    process = Runtime.getRuntime.exec(Array("/usr/bin/xterm", "/home/abourdon/bin/demo-oneprocess"))
+    externalProcess = Runtime.getRuntime.exec(Array("/usr/bin/xterm", "/home/abourdon/bin/demo-oneprocess"))
     Thread.sleep((10 seconds).toMillis)
 
     Chart.setTitle(name)
@@ -87,7 +95,6 @@ class OverheadWithOneProcessScenario extends Scenario {
   }
 
   def start() {
-
     externalPid = Resource.fromFile("/tmp/powerapi.demo-oneprocess.pid").lines().mkString.toInt
 
     PowerAPI.startMonitoring(process = Process(externalPid), duration = 1 second)
@@ -95,19 +102,14 @@ class OverheadWithOneProcessScenario extends Scenario {
 
   def stop() {
     PowerAPI.stopMonitoring(process = Process(externalPid), duration = 1 second)
-    process.destroy()
+    externalProcess.destroy()
   }
 }
 
 class GranularityScenario extends Scenario {
   lazy val psFormat = """^\s*(\d+).*""".r
-  lazy val pids = Resource.fromInputStream(Runtime.getRuntime.exec(Array("ps", "-C", "firefox", "ho", "pid")).getInputStream).lines().toList.map({
-    pid =>
-      pid match {
-        case psFormat(id) => id.toInt
-        case _ => 1
-      }
-  })
+  private var pids: List[Int] = _
+  private var process = "firefox"
 
   def name = "Power consumption of an application by hardware devices"
 
@@ -118,11 +120,24 @@ class GranularityScenario extends Scenario {
   }
 
   def start() {
+    pids = Resource.fromInputStream(Runtime.getRuntime.exec(Array("ps", "-C", process, "ho", "pid")).getInputStream).lines().toList.map({
+      pid =>
+        pid match {
+          case psFormat(id) => id.toInt
+          case _ => 1
+        }
+    })
     pids.foreach(pid => PowerAPI.startMonitoring(process = Process(pid), duration = 1 second))
   }
 
   def stop() {
     pids.foreach(pid => PowerAPI.stopMonitoring(process = Process(pid), duration = 1 second))
+  }
+
+  def setProcess(process: String) {
+    stop()
+    this.process = process
+    start()
   }
 }
 
@@ -177,12 +192,12 @@ class AllProcessesScenario extends Scenario {
 
 class OverheadWithAllProcessesScenario extends Scenario {
   var externalPid: Int = _
-  var process: java.lang.Process = _
+  var externalProcess: java.lang.Process = _
 
   def name = "Power consumption of PowerAPI running all processes"
 
   def init() = {
-    process = Runtime.getRuntime.exec(Array("/usr/bin/xterm", "/home/abourdon/bin/demo-allprocesses"))
+    externalProcess = Runtime.getRuntime.exec(Array("/usr/bin/xterm", "/home/abourdon/bin/demo-allprocesses"))
     Thread.sleep((10 seconds).toMillis)
 
     Chart.setTitle(name)
@@ -198,7 +213,7 @@ class OverheadWithAllProcessesScenario extends Scenario {
 
   def stop() {
     PowerAPI.stopMonitoring(process = Process(externalPid), duration = 1 second)
-    process.destroy()
+    externalProcess.destroy()
   }
 }
 
