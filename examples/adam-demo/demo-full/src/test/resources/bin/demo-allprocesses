@@ -1,0 +1,6 @@
+#!/bin/bash
+
+source ~/.bash_variables
+
+cd /home/abourdon/dev/powerapi/powerapi-akka/examples/adam-demo/demo-allprocesses
+mvn scala:run

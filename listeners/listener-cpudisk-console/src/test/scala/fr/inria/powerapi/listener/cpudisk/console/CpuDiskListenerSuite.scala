@@ -188,14 +188,13 @@ class CpuDiskListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
     def getPids = {
       val PSFormat = """^\s*(\d+).*""".r
-      val pids = Resource.fromInputStream(Runtime.getRuntime.exec(Array("ps", "-A")).getInputStream).lines().toList.map({
+      Resource.fromInputStream(Runtime.getRuntime.exec(Array("ps", "-A")).getInputStream).lines().toList.map({
         pid =>
           pid match {
             case PSFormat(id) => id.toInt
             case _ => 1
           }
       })
-      pids - pids.max
     }
 
     val pids = scala.collection.mutable.Set[Int]()
