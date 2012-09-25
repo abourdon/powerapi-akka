@@ -2,5 +2,5 @@
 
 source ~/.bash_variables
 
-cd /home/abourdon/dev/powerapi/powerapi-akka/examples/adam-demo/demo-oneprocess
+cd ~/dev/powerapi/powerapi-akka/examples/adam-demo/demo-oneprocess
 mvn scala:run

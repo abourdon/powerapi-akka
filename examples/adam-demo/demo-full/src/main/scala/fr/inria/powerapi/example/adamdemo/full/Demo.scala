@@ -85,7 +85,7 @@ class OverheadWithOneProcessScenario extends Scenario {
   def name = "Power consumption of PowerAPI running one process"
 
   def init = {
-    externalProcess = Runtime.getRuntime.exec(Array("/usr/bin/xterm", "/home/abourdon/bin/demo-oneprocess"))
+    externalProcess = Runtime.getRuntime.exec(Array("/usr/bin/xterm", sys.props("user.home") + "/bin/demo-oneprocess"))
     Thread.sleep((10 seconds).toMillis)
 
     Chart.setTitle(name)
@@ -196,7 +196,7 @@ class OverheadWithAllProcessesScenario extends Scenario {
   def name = "Power consumption of PowerAPI running all processes"
 
   def init = {
-    externalProcess = Runtime.getRuntime.exec(Array("/usr/bin/xterm", "/home/abourdon/bin/demo-allprocesses"))
+    externalProcess = Runtime.getRuntime.exec(Array("/usr/bin/xterm", sys.props("user.home") + "/bin/demo-allprocesses"))
     Thread.sleep((10 seconds).toMillis)
 
     Chart.setTitle(name)
