@@ -22,6 +22,7 @@ package fr.inria.powerapi.example.adamdemo.full
 import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
 import fr.inria.powerapi.formula.disk.api.DiskFormulaValues
 import fr.inria.powerapi.core.Listener
+import javax.swing.SwingUtilities
 
 object DemoListener {
   var justTotal = true
@@ -31,6 +32,16 @@ class DemoListener extends Listener {
   val cache = collection.mutable.Map[Long, Map[String, Double]]()
 
   def messagesToListen = Array(classOf[CpuFormulaValues], classOf[DiskFormulaValues])
+
+  init()
+  
+  def init() {
+    SwingUtilities.invokeLater(new Runnable {
+      def run() {
+        Chart.run()
+      }
+    })
+  }
 
   def acquire = {
     case cpuFormulaValues: CpuFormulaValues => process("cpu", cpuFormulaValues.energy.power, cpuFormulaValues.tick.timestamp)

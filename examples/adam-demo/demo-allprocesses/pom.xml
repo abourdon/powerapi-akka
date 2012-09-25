@@ -40,8 +40,8 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>fr.inria.powerapi.listener</groupId>
-      <artifactId>listener-cpu-console</artifactId>
+      <groupId>fr.inria.powerapi.example.adamdemo</groupId>
+      <artifactId>demo-full</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

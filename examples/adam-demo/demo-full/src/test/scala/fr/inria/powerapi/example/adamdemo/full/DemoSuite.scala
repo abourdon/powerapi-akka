@@ -32,7 +32,7 @@ class DemoSuite extends JUnitSuite with ShouldMatchersForJUnit {
   def testDemos() {
     Array[Scenario](Demo.demo1, Demo.demo2, Demo.demo3, Demo.demo4, Demo.demo5).foreach(demo => {
       println("Running demonstration: \"" + demo.name + "\"")
-      if (demo.init()) {
+      if (demo.init) {
         demo.start()
         Thread.sleep((15 seconds).toMillis)
         demo.stop()
@@ -47,7 +47,7 @@ class DemoSuite extends JUnitSuite with ShouldMatchersForJUnit {
   def testSetProcessForOneProcessScenario() {
     Runtime.getRuntime().exec("firefox")
     Thread.sleep((5 seconds).toMillis)
-    if (!Demo.demo1.init()) {
+    if (!Demo.demo1.init) {
       fail("Initialization error")
     }
     Demo.demo1.start()
@@ -66,7 +66,7 @@ class DemoSuite extends JUnitSuite with ShouldMatchersForJUnit {
   def testSetProcessForGranularityScenario() {
     Runtime.getRuntime().exec("firefox")
     Thread.sleep((5 seconds).toMillis)
-    if (!Demo.demo3.init()) {
+    if (!Demo.demo3.init) {
       fail("Initialization error")
     }
     Demo.demo3.start()

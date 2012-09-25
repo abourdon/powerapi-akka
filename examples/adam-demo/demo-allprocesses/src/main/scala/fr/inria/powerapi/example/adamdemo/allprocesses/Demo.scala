@@ -32,9 +32,11 @@ import scalax.io.StandardOpenOption.WriteTruncate
 import java.util.Timer
 import java.util.TimerTask
 
-class CpuListener extends fr.inria.powerapi.listener.cpu.console.CpuListener {
-  override def process(cpuFormulaValues: CpuFormulaValues) {
-    println("all: " + cpuFormulaValues.energy.power)
+class DemoListener extends fr.inria.powerapi.example.adamdemo.full.DemoListener {
+  override def init() {}
+
+  override def display(timestamp: Long) {
+    println(cache(timestamp)("cpu"))
   }
 }
 
@@ -71,7 +73,7 @@ object Demo extends App {
     pids ++= newPids
   }
 
-  PowerAPI.startMonitoring(listenerType = classOf[CpuListener])
+  PowerAPI.startMonitoring(listenerType = classOf[DemoListener])
   timer.schedule(new TimerTask() {
     def run() {
       update()
@@ -81,7 +83,7 @@ object Demo extends App {
   Thread.sleep((2 hours).toMillis)
 
   timer.cancel()
-  PowerAPI.stopMonitoring(listenerType = classOf[CpuListener])
+  PowerAPI.stopMonitoring(listenerType = classOf[DemoListener])
 
   Array(
     classOf[CpuSensor],

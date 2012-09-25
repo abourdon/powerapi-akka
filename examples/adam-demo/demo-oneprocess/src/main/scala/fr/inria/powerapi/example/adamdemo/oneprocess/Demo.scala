@@ -32,7 +32,7 @@ import scalax.io.StandardOpenOption.WriteTruncate
 
 class CpuListener extends fr.inria.powerapi.listener.cpu.console.CpuListener {
   override def process(cpuFormulaValues: CpuFormulaValues) {
-    println("pid(" + cpuFormulaValues.tick.subscription.process + ")" + cpuFormulaValues.energy.power)
+    println(cpuFormulaValues.energy.power)
   }
 }
 

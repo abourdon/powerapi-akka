@@ -31,7 +31,6 @@ import fr.inria.powerapi.core.Process
 import java.lang.management.ManagementFactory
 import scalax.io.Resource
 import akka.util.duration._
-import javax.swing.SwingUtilities
 import akka.actor.Cancellable
 import akka.actor.ActorSystem
 import java.util.Timer
@@ -39,7 +38,18 @@ import java.util.TimerTask
 
 trait Scenario {
   def name(): String
-  def init(): Boolean
+
+  def doInit: Boolean
+  def init: Boolean = {
+    println("Initialization...")
+    if (doInit) {
+      println("Done.")
+      true
+    } else {
+      println("Error.")
+      false
+    }
+  }
   def start(): Unit
   def stop(): Unit
 }
@@ -51,7 +61,7 @@ class OneProcessScenario extends Scenario {
 
   def name = "Power consumption of an application"
 
-  def init() = {
+  def doInit = {
     Chart.setTitle(name)
     DemoListener.justTotal = true
     true
@@ -85,7 +95,7 @@ class OverheadWithOneProcessScenario extends Scenario {
 
   def name = "Power consumption of PowerAPI running one process"
 
-  def init() = {
+  def doInit = {
     externalProcess = Runtime.getRuntime.exec(Array("/usr/bin/xterm", "/home/abourdon/bin/demo-oneprocess"))
     Thread.sleep((10 seconds).toMillis)
 
@@ -113,7 +123,7 @@ class GranularityScenario extends Scenario {
 
   def name = "Power consumption of an application by hardware devices"
 
-  def init() = {
+  def doInit = {
     Chart.setTitle(name)
     DemoListener.justTotal = false
     true
@@ -170,7 +180,7 @@ class AllProcessesScenario extends Scenario {
     pids ++= newPids
   }
 
-  def init() = {
+  def doInit = {
     Chart.setTitle(name)
     DemoListener.justTotal = true
     true
@@ -196,7 +206,7 @@ class OverheadWithAllProcessesScenario extends Scenario {
 
   def name = "Power consumption of PowerAPI running all processes"
 
-  def init() = {
+  def doInit = {
     externalProcess = Runtime.getRuntime.exec(Array("/usr/bin/xterm", "/home/abourdon/bin/demo-allprocesses"))
     Thread.sleep((10 seconds).toMillis)
 
@@ -226,11 +236,6 @@ object Demo {
   lazy val demo5 = new OverheadWithAllProcessesScenario
 
   Runtime.getRuntime().exec("firefox")
-  SwingUtilities.invokeLater(new Runnable {
-    def run() {
-      Chart.run()
-    }
-  })
   Array(classOf[CpuSensor], classOf[CpuFormula], classOf[DiskSensor], classOf[DiskFormula]).foreach(PowerAPI.startEnergyModule(_))
   PowerAPI.startMonitoring(listenerType = classOf[DemoListener])
 
