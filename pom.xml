@@ -10,11 +10,11 @@
 	<description>PowerAPI is a library offering and API to monitor energy spent at the process-level.</description>
 	<inceptionYear>2012</inceptionYear>
 
-	<!-- <parent> -->
-	<!-- <groupId>org.sonatype.oss</groupId> -->
-	<!-- <artifactId>oss-parent</artifactId> -->
-	<!-- <version>7</version> -->
-	<!-- </parent> -->
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>7</version>
+	</parent>
 
 	<url>https://github.com/abourdon/powerapi-akka</url>
 

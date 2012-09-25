@@ -16,6 +16,13 @@
 		<version>1.2-SNAPSHOT</version>
 	</parent>
 
+	<repositories>
+		<repository>
+			<id>JBoss Thirdparty Uploads</id>
+			<url>https://repository.jboss.org/nexus/content/repositories/thirdparty-uploads</url>
+		</repository>
+	</repositories>
+
 	<properties>
 		<target.lib>${project.build.directory}/lib</target.lib>
 		<sigar.version>1.6.5.132</sigar.version>
@@ -69,8 +76,8 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>net.alchim31.maven</groupId>
-				<artifactId>scala-maven-plugin</artifactId>
+				<groupId>org.scala-tools</groupId>
+				<artifactId>maven-scala-plugin</artifactId>
 				<configuration>
 					<jvmArgs>
 						<jvmArg>-Djava.library.path=${java.library.path}:${sigar.dir}</jvmArg>
