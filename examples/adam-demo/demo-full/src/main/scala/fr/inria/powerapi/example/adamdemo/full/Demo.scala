@@ -48,7 +48,7 @@ class OneProcessScenario extends Scenario {
   private var pids: List[Int] = _
   private var process = "firefox"
 
-  def name = "Power consumption of an application"
+  def name = "Power consumption of \"" + process + "\""
 
   def init = {
     Chart.setTitle(name)
@@ -74,15 +74,19 @@ class OneProcessScenario extends Scenario {
   def setProcess(process: String) {
     stop()
     this.process = process
+    Chart.setTitle(name)
     start()
   }
 }
 
 class OverheadWithOneProcessScenario extends Scenario {
-  var externalPid: Int = _
-  var externalProcess: java.lang.Process = _
+  lazy val psFormat = """^\s*(\d+).*""".r
+  private var pids: List[Int] = _
+  private var process = "firefox"
+  private var externalPid: Int = _
+  private var externalProcess: java.lang.Process = _
 
-  def name = "Power consumption of PowerAPI running one process"
+  def name = "Power consumption of \"" + process + "\", including PowerAPI itself"
 
   def init = {
     externalProcess = Runtime.getRuntime.exec(Array("/usr/bin/xterm", sys.props("user.home") + "/bin/demo-oneprocess"))
@@ -94,14 +98,30 @@ class OverheadWithOneProcessScenario extends Scenario {
   }
 
   def start() {
-    externalPid = Resource.fromFile("/tmp/powerapi.demo-oneprocess.pid").lines().mkString.toInt
+    pids = Resource.fromInputStream(Runtime.getRuntime.exec(Array("ps", "-C", process, "ho", "pid")).getInputStream).lines().toList.map({
+      pid =>
+        pid match {
+          case psFormat(id) => id.toInt
+          case _ => 1
+        }
+    })
+    pids.foreach(pid => PowerAPI.startMonitoring(process = Process(pid), duration = 1 second))
 
+    externalPid = Resource.fromFile("/tmp/powerapi.demo-oneprocess.pid").lines().mkString.toInt
     PowerAPI.startMonitoring(process = Process(externalPid), duration = 1 second)
   }
 
   def stop() {
+    pids.foreach(pid => PowerAPI.stopMonitoring(process = Process(pid), duration = 1 second))
     PowerAPI.stopMonitoring(process = Process(externalPid), duration = 1 second)
     externalProcess.destroy()
+  }
+
+  def setProcess(process: String) {
+    stop()
+    this.process = process
+    Chart.setTitle(name)
+    start()
   }
 }
 
@@ -110,7 +130,7 @@ class GranularityScenario extends Scenario {
   private var pids: List[Int] = _
   private var process = "firefox"
 
-  def name = "Power consumption of an application by hardware devices"
+  def name = "Power consumption of \"" + process + "\" by hardware devices"
 
   def init = {
     Chart.setTitle(name)
@@ -136,6 +156,7 @@ class GranularityScenario extends Scenario {
   def setProcess(process: String) {
     stop()
     this.process = process
+    Chart.setTitle(name)
     start()
   }
 }
@@ -190,8 +211,8 @@ class AllProcessesScenario extends Scenario {
 }
 
 class OverheadWithAllProcessesScenario extends Scenario {
-  var externalPid: Int = _
-  var externalProcess: java.lang.Process = _
+  private var externalPid: Int = _
+  private var externalProcess: java.lang.Process = _
 
   def name = "Power consumption of PowerAPI running all processes"
 

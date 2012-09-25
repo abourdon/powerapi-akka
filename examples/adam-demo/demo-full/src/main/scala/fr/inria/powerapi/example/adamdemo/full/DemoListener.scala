@@ -34,7 +34,7 @@ class DemoListener extends Listener {
   def messagesToListen = Array(classOf[CpuFormulaValues], classOf[DiskFormulaValues])
 
   init()
-  
+
   def init() {
     SwingUtilities.invokeLater(new Runnable {
       def run() {
@@ -69,8 +69,8 @@ class DemoListener extends Listener {
     if (DemoListener.justTotal) {
       Chart.add(Map("total" -> cache(timestamp).foldLeft(0: Double) { (acc, device) => acc + device._2 }), timestamp)
     } else {
-      Chart.add(Map("cpu" -> cache(timestamp)("cpu")), timestamp)
-      Chart.add(Map("disk" -> cache(timestamp)("disk")), timestamp)
+      Chart.add(Map("cpu" -> cache(timestamp).getOrElse("cpu", 0: Double)), timestamp)
+      Chart.add(Map("disk" -> cache(timestamp).getOrElse("disk", 0: Double)), timestamp)
     }
   }
 
