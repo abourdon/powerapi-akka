@@ -41,6 +41,7 @@ class Chart(title: String) {
   val chart = ChartFactory.createTimeSeriesChart(title,
     Chart.xValues, Chart.yValues, dataset, true, true, false)
   val timeSeries = collection.mutable.HashMap[String, TimeSeries]()
+  private var offset = 0.0
 
   def add(values: Map[String, Double], timestamp: Long) {
     values.foreach({ value =>
@@ -49,13 +50,22 @@ class Chart(title: String) {
         dataset.addSeries(serie)
         timeSeries += (value._1 -> serie)
       }
-      timeSeries(value._1).addOrUpdate(new FixedMillisecond(timestamp), value._2)
+      timeSeries(value._1).addOrUpdate(new FixedMillisecond(timestamp), value._2 + getOffset)
     })
   }
 
   def remove(serie: String) {
     timeSeries.remove(serie)
     dataset.removeSeries(new TimeSeries(serie))
+  }
+
+  def setOffset(offset: Double) = synchronized {
+    this.offset = offset
+    println("Setting offset to " + offset)
+  }
+
+  def getOffset = synchronized {
+    offset
   }
 }
 
@@ -101,5 +111,9 @@ object Chart {
 
   def remove(serie: String) {
     chart.remove(serie)
+  }
+
+  def setOffset(offset: Double) {
+    chart.setOffset(offset)
   }
 }

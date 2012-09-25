@@ -229,4 +229,8 @@ object Demo {
   PowerAPI.startMonitoring(listenerType = classOf[DemoListener])
 
   Thread.sleep((5 seconds).toMillis)
+
+  def setOffset(offset: Double) {
+    Chart.setOffset(offset)
+  }
 }
