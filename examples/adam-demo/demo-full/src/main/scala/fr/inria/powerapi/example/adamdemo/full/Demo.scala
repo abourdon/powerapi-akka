@@ -38,18 +38,7 @@ import java.util.TimerTask
 
 trait Scenario {
   def name(): String
-
-  def doInit: Boolean
-  def init: Boolean = {
-    println("Initialization...")
-    if (doInit) {
-      println("Done.")
-      true
-    } else {
-      println("Error.")
-      false
-    }
-  }
+  def init: Boolean
   def start(): Unit
   def stop(): Unit
 }
@@ -61,7 +50,7 @@ class OneProcessScenario extends Scenario {
 
   def name = "Power consumption of an application"
 
-  def doInit = {
+  def init = {
     Chart.setTitle(name)
     DemoListener.justTotal = true
     true
@@ -95,7 +84,7 @@ class OverheadWithOneProcessScenario extends Scenario {
 
   def name = "Power consumption of PowerAPI running one process"
 
-  def doInit = {
+  def init = {
     externalProcess = Runtime.getRuntime.exec(Array("/usr/bin/xterm", "/home/abourdon/bin/demo-oneprocess"))
     Thread.sleep((10 seconds).toMillis)
 
@@ -123,7 +112,7 @@ class GranularityScenario extends Scenario {
 
   def name = "Power consumption of an application by hardware devices"
 
-  def doInit = {
+  def init = {
     Chart.setTitle(name)
     DemoListener.justTotal = false
     true
@@ -180,7 +169,7 @@ class AllProcessesScenario extends Scenario {
     pids ++= newPids
   }
 
-  def doInit = {
+  def init = {
     Chart.setTitle(name)
     DemoListener.justTotal = true
     true
@@ -206,7 +195,7 @@ class OverheadWithAllProcessesScenario extends Scenario {
 
   def name = "Power consumption of PowerAPI running all processes"
 
-  def doInit = {
+  def init = {
     externalProcess = Runtime.getRuntime.exec(Array("/usr/bin/xterm", "/home/abourdon/bin/demo-allprocesses"))
     Thread.sleep((10 seconds).toMillis)
 
