@@ -36,7 +36,7 @@ class DemoListener extends fr.inria.powerapi.example.adamdemo.full.DemoListener 
   override def init() {}
 
   override def display(timestamp: Long) {
-    println(cache(timestamp)("cpu"))
+    println(cache(timestamp)(-1)("cpu"))
   }
 }
 

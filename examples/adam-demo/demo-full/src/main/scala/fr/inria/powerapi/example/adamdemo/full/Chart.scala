@@ -54,9 +54,9 @@ class Chart(title: String) {
     })
   }
 
-  def remove(serie: String) {
-    timeSeries.remove(serie)
-    dataset.removeSeries(new TimeSeries(serie))
+  def clear() {
+    timeSeries.clear()
+    dataset.removeAllSeries()
   }
 
   def setOffset(offset: Double) = synchronized {
@@ -109,8 +109,8 @@ object Chart {
     chart.add(values, timestamp)
   }
 
-  def remove(serie: String) {
-    chart.remove(serie)
+  def clear() {
+    chart.clear()
   }
 
   def setOffset(offset: Double) {

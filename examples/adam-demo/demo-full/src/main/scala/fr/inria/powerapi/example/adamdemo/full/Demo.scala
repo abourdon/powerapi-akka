@@ -52,7 +52,8 @@ class OneProcessScenario extends Scenario {
 
   def init = {
     Chart.setTitle(name)
-    DemoListener.justTotal = true
+    DemoListener.pidName(-1, process)
+    DemoListener.justTotal()
     true
   }
 
@@ -69,13 +70,17 @@ class OneProcessScenario extends Scenario {
 
   def stop() {
     pids.foreach(pid => PowerAPI.stopMonitoring(process = Process(pid), duration = 1 second))
+    Demo.clear()
   }
 
   def setProcess(process: String) {
     stop()
     this.process = process
-    Chart.setTitle(name)
-    start()
+    if (init) {
+      start()
+    } else {
+      println("Initialization error")
+    }
   }
 }
 
@@ -93,7 +98,8 @@ class OverheadWithOneProcessScenario extends Scenario {
     Thread.sleep((10 seconds).toMillis)
 
     Chart.setTitle(name)
-    DemoListener.justTotal = true
+    DemoListener.pidName(-1, process)
+    DemoListener.justTotal()
     true
   }
 
@@ -108,6 +114,7 @@ class OverheadWithOneProcessScenario extends Scenario {
     pids.foreach(pid => PowerAPI.startMonitoring(process = Process(pid), duration = 1 second))
 
     externalPid = Resource.fromFile("/tmp/powerapi.demo-oneprocess.pid").lines().mkString.toInt
+    DemoListener.pidName(externalPid, "powerapi")
     PowerAPI.startMonitoring(process = Process(externalPid), duration = 1 second)
   }
 
@@ -115,13 +122,17 @@ class OverheadWithOneProcessScenario extends Scenario {
     pids.foreach(pid => PowerAPI.stopMonitoring(process = Process(pid), duration = 1 second))
     PowerAPI.stopMonitoring(process = Process(externalPid), duration = 1 second)
     externalProcess.destroy()
+    Demo.clear()
   }
 
   def setProcess(process: String) {
     stop()
     this.process = process
-    Chart.setTitle(name)
-    start()
+    if (init) {
+      start()
+    } else {
+      println("Initialization error")
+    }
   }
 }
 
@@ -134,7 +145,8 @@ class GranularityScenario extends Scenario {
 
   def init = {
     Chart.setTitle(name)
-    DemoListener.justTotal = false
+    DemoListener.pidName(-1, process)
+    DemoListener.unJustTotal()
     true
   }
 
@@ -151,19 +163,23 @@ class GranularityScenario extends Scenario {
 
   def stop() {
     pids.foreach(pid => PowerAPI.stopMonitoring(process = Process(pid), duration = 1 second))
+    Demo.clear()
   }
 
   def setProcess(process: String) {
     stop()
     this.process = process
-    Chart.setTitle(name)
-    start()
+    if (init) {
+      start()
+    } else {
+      println("Initialization error")
+    }
   }
 }
 
 class AllProcessesScenario extends Scenario {
   val pids = scala.collection.mutable.Set[Int]()
-  val timer = new Timer()
+  var timer: Timer = _
 
   def name = "Power consumption of all processes"
 
@@ -191,8 +207,10 @@ class AllProcessesScenario extends Scenario {
   }
 
   def init = {
+    timer = new Timer()
     Chart.setTitle(name)
-    DemoListener.justTotal = true
+    DemoListener.pidName(-1, "all processes")
+    DemoListener.justTotal()
     true
   }
 
@@ -207,6 +225,8 @@ class AllProcessesScenario extends Scenario {
   def stop() {
     timer.cancel()
     pids.foreach(pid => PowerAPI.stopMonitoring(process = Process(pid), duration = 1 second))
+    pids.clear()
+    Demo.clear()
   }
 }
 
@@ -221,7 +241,8 @@ class OverheadWithAllProcessesScenario extends Scenario {
     Thread.sleep((10 seconds).toMillis)
 
     Chart.setTitle(name)
-    DemoListener.justTotal = true
+    DemoListener.pidName(-1, "powerapi")
+    DemoListener.justTotal()
     true
   }
 
@@ -234,6 +255,7 @@ class OverheadWithAllProcessesScenario extends Scenario {
   def stop() {
     PowerAPI.stopMonitoring(process = Process(externalPid), duration = 1 second)
     externalProcess.destroy()
+    Demo.clear()
   }
 }
 
@@ -253,5 +275,18 @@ object Demo {
 
   def setOffset(offset: Double) {
     Chart.setOffset(offset)
+  }
+
+  def clear() {
+    DemoListener.clear()
+    Chart.clear()
+  }
+
+  def justTotal() {
+    DemoListener.justTotal()
+  }
+
+  def unJustTotal() {
+    DemoListener.unJustTotal()
   }
 }

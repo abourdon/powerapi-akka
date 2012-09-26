@@ -37,17 +37,20 @@ class DemoListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
     demoListener.cache should have size 0
 
-    demoListener.add("cpu", 1, timestamp)
-    demoListener.cache should equal(Map(timestamp -> Map("cpu" -> 1)))
+    demoListener.add(timestamp, 123, "cpu", 1)
+    demoListener.cache should equal(Map(timestamp -> Map(-1 -> Map("cpu" -> 1))))
 
-    demoListener.add("cpu", 2, timestamp)
-    demoListener.cache should equal(Map(timestamp -> Map("cpu" -> 3)))
+    demoListener.add(timestamp, 123, "cpu", 2)
+    demoListener.cache should equal(Map(timestamp -> Map(-1 -> Map("cpu" -> 3))))
 
-    demoListener.add("disk", 1, timestamp)
-    demoListener.cache should equal(Map(timestamp -> Map("cpu" -> 3, "disk" -> 1)))
+    demoListener.add(timestamp, 123, "disk", 1)
+    demoListener.cache should equal(Map(timestamp -> Map(-1 -> Map("cpu" -> 3, "disk" -> 1))))
 
-    demoListener.add("disk", 2, timestamp)
-    demoListener.cache should equal(Map(timestamp -> Map("cpu" -> 3, "disk" -> 3)))
+    demoListener.add(timestamp, 123, "disk", 2)
+    demoListener.cache should equal(Map(timestamp -> Map(-1 -> Map("cpu" -> 3, "disk" -> 3))))
+
+    demoListener.add(timestamp, 456, "cpu", 1)
+    demoListener.cache should equal(Map(timestamp -> Map(-1 -> Map("cpu" -> 4, "disk" -> 3))))
   }
 
   @Test
@@ -58,7 +61,7 @@ class DemoListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
     demoListener.cache should have size 0
 
-    demoListener.add("cpu", 1, timestamp)
+    demoListener.add(timestamp, 123, "cpu", 1)
     demoListener.cache should have size 1
     demoListener.cache should contain key timestamp
 
@@ -69,8 +72,8 @@ class DemoListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
     demoListener.remove(timestamp)
     demoListener.cache should have size 0
 
-    demoListener.add("cpu", 1, timestamp)
-    demoListener.add("cpu", 1, otherTimestamp)
+    demoListener.add(timestamp, 123, "cpu", 1)
+    demoListener.add(otherTimestamp, 123, "cpu", 1)
     demoListener.cache should have size 2
     demoListener.cache should contain key timestamp
     demoListener.cache should contain key otherTimestamp
@@ -91,15 +94,31 @@ class DemoListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
     demoListener.cache should have size 0
 
-    demoListener.add("cpu", 1, timestamp)
+    demoListener.add(timestamp, 123, "cpu", 1)
     demoListener.flush(timestamp)
     demoListener.cache should have size 1
     demoListener.cache should contain key timestamp
 
-    demoListener.add("cpu", 1, otherTimestamp)
+    demoListener.add(otherTimestamp, 123, "cpu", 1)
     demoListener.flush(otherTimestamp)
     demoListener.cache should have size 1
     demoListener.cache should contain key otherTimestamp
+  }
+
+  @Test
+  def testHighlightedPid() {
+    val demoListener = TestActorRef[DemoListener].underlyingActor
+    val timestamp = 123456789L
+
+    demoListener.cache should have size 0
+
+    demoListener.add(timestamp, 123, "cpu", 1)
+    demoListener.cache should equal(Map(timestamp -> Map(-1 -> Map("cpu" -> 1))))
+
+    DemoListener.pidName(456, "n/a")
+
+    demoListener.add(timestamp, 456, "cpu", 1)
+    demoListener.cache should equal(Map(timestamp -> Map(-1 -> Map("cpu" -> 1), 456 -> Map("cpu" -> 1))))
   }
 
 }

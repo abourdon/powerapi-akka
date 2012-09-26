@@ -25,11 +25,45 @@ import fr.inria.powerapi.core.Listener
 import javax.swing.SwingUtilities
 
 object DemoListener {
-  var justTotal = true
+  val pidNames = collection.mutable.Map[Int, String](-1 -> "all processes")
+  private var justTotalRequest = true
+  private var clearRequest = false
+
+  def isNamed(pid: Int) = synchronized {
+    pidNames.contains(pid)
+  }
+
+  def pidName(pid: Int, name: String) = synchronized {
+    pidNames += pid -> name
+  }
+
+  def justTotal() = synchronized {
+    justTotalRequest = true
+  }
+
+  def unJustTotal() = synchronized {
+    justTotalRequest = false
+  }
+
+  def hasToJustTotal = synchronized {
+    justTotalRequest
+  }
+
+  def clear() = synchronized {
+    clearRequest = true
+  }
+
+  def unClear() = synchronized {
+    clearRequest = false
+  }
+
+  def hasToClear = synchronized {
+    clearRequest
+  }
 }
 
 class DemoListener extends Listener {
-  val cache = collection.mutable.Map[Long, Map[String, Double]]()
+  val cache = collection.mutable.Map[Long, Map[Int, Map[String, Double]]]()
 
   def messagesToListen = Array(classOf[CpuFormulaValues], classOf[DiskFormulaValues])
 
@@ -44,18 +78,31 @@ class DemoListener extends Listener {
   }
 
   def acquire = {
-    case cpuFormulaValues: CpuFormulaValues => process("cpu", cpuFormulaValues.energy.power, cpuFormulaValues.tick.timestamp)
-    case diskFormulaValues: DiskFormulaValues => process("disk", diskFormulaValues.energy.power, diskFormulaValues.tick.timestamp)
+    case cpuFormulaValues: CpuFormulaValues => process(cpuFormulaValues.tick.timestamp, cpuFormulaValues.tick.subscription.process.pid, "cpu", cpuFormulaValues.energy.power)
+    case diskFormulaValues: DiskFormulaValues => process(diskFormulaValues.tick.timestamp, diskFormulaValues.tick.subscription.process.pid, "disk", diskFormulaValues.energy.power)
   }
 
-  def process(device: String, power: Double, timestamp: Long) {
-    add(device, power, timestamp)
+  def process(timestamp: Long, pid: Int, device: String, power: Double) {
+    if (DemoListener.hasToClear) {
+      clear()
+      DemoListener.unClear()
+    }
+    add(timestamp, pid, device, power)
     flush(timestamp)
   }
 
-  def add(device: String, power: Double, timestamp: Long) {
-    val devices = cache.getOrElse(timestamp, Map[String, Double]())
-    cache += timestamp -> (devices + (device -> (devices.getOrElse(device, 0: Double) + power)))
+  def add(timestamp: Long, pid: Int, device: String, power: Double) {
+    val cachedPid =
+      if (DemoListener.isNamed(pid)) {
+        pid
+      } else {
+        -1
+      }
+    val processes = cache.getOrElse(timestamp, Map[Int, Map[String, Double]]())
+    val devices = processes.getOrElse(cachedPid, Map[String, Double]())
+    val powers = devices.getOrElse(device, 0: Double)
+
+    cache += timestamp -> (processes + (cachedPid -> (devices + (device -> (powers + power)))))
   }
 
   def flush(limit: Long) {
@@ -66,16 +113,26 @@ class DemoListener extends Listener {
   }
 
   def display(timestamp: Long) {
-    if (DemoListener.justTotal) {
-      Chart.add(Map("total" -> cache(timestamp).foldLeft(0: Double) { (acc, device) => acc + device._2 }), timestamp)
+    if (DemoListener.hasToJustTotal) {
+      cache(timestamp).foreach(process => {
+        Chart.add(Map(
+          DemoListener.pidNames(process._1) + " total" -> process._2.foldLeft(0: Double) { (acc, device) => acc + device._2 }), timestamp)
+      })
     } else {
-      Chart.add(Map("cpu" -> cache(timestamp).getOrElse("cpu", 0: Double)), timestamp)
-      Chart.add(Map("disk" -> cache(timestamp).getOrElse("disk", 0: Double)), timestamp)
+      cache(timestamp).foreach(process => {
+        Chart.add(Map(
+          DemoListener.pidNames(process._1) + " cpu" -> process._2.getOrElse("cpu", 0: Double),
+          DemoListener.pidNames(process._1) + " disk" -> process._2.getOrElse("disk", 0: Double)), timestamp)
+      })
     }
   }
 
   def remove(timestamp: Long) {
     cache -= timestamp
+  }
+
+  def clear() {
+    cache.clear()
   }
 
 }

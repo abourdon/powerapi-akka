@@ -21,11 +21,10 @@ package fr.inria.powerapi.listener.cpu.jfreechart
 
 import fr.inria.powerapi.core.Process
 import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
-import java.awt.{Toolkit, Dimension}
-import org.jfree.chart.{ChartPanel, ChartFactory}
-import org.jfree.data.time.{TimeSeriesDataItem, TimeSeriesCollection, TimeSeries, FixedMillisecond}
-import org.jfree.ui.{RefineryUtilities, ApplicationFrame}
-
+import java.awt.{ Toolkit, Dimension }
+import org.jfree.chart.{ ChartPanel, ChartFactory }
+import org.jfree.data.time.{ TimeSeriesDataItem, TimeSeriesCollection, TimeSeries, FixedMillisecond }
+import org.jfree.ui.{ RefineryUtilities, ApplicationFrame }
 
 /**
  * Display received CpuFormulaValues to the wrapped JFreeChart chart.
@@ -76,10 +75,8 @@ object Chart {
 
   def run() {
     applicationFrame.setContentPane(chartPanel)
-    val dimension = Toolkit.getDefaultToolkit.getScreenSize
-    applicationFrame.setSize(new Dimension(5 * dimension.width / 6, 5 * dimension.height / 6))
+    applicationFrame.setSize(new Dimension(800, 600))
     applicationFrame.setVisible(true)
-    RefineryUtilities.centerFrameOnScreen(applicationFrame)
   }
 
   def process(implicit cpuFormulaValues: CpuFormulaValues) {
