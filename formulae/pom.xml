@@ -10,7 +10,7 @@
     <parent>
         <groupId>fr.inria.powerapi</groupId>
         <artifactId>powerapi</artifactId>
-        <version>1.3-SNAPSHOT</version>
+        <version>1.3</version>
     </parent>
 
     <modules>
