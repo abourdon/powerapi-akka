@@ -1,39 +1,36 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-  <groupId>fr.inria.powerapi.sensor</groupId>
-  <artifactId>sensor-disk-atop</artifactId>
-  <name>${project.artifactId}</name>
-  <description>Implements the PowerAPI disk Sensor module for systems based on an ATOP linux kernel,
+	<groupId>fr.inria.powerapi.sensor</groupId>
+	<artifactId>sensor-disk-atop</artifactId>
+	<name>${project.artifactId}</name>
+	<description>Implements the PowerAPI disk Sensor module for systems based on an ATOP linux kernel,
 
         See also: http://www.atoptool.nl.
     </description>
-  <inceptionYear>2012</inceptionYear>
+	<inceptionYear>2012</inceptionYear>
 
-  <parent>
-    <groupId>fr.inria.powerapi</groupId>
-    <artifactId>sensors</artifactId>
-    <version>1.4-SNAPSHOT</version>
-  </parent>
+	<parent>
+		<groupId>fr.inria.powerapi</groupId>
+		<artifactId>sensors</artifactId>
+		<version>1.4-SNAPSHOT</version>
+	</parent>
 
-  <dependencies>
-    <dependency>
-      <groupId>fr.inria.powerapi</groupId>
-      <artifactId>core</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>fr.inria.powerapi.sensor</groupId>
-      <artifactId>sensor-disk-api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.github.scala-incubator.io</groupId>
-      <artifactId>scala-io-core_${scala.version}</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.github.scala-incubator.io</groupId>
-      <artifactId>scala-io-core_${scala.version}</artifactId>
-    </dependency>
-  </dependencies>
+	<dependencies>
+		<dependency>
+			<groupId>fr.inria.powerapi</groupId>
+			<artifactId>core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>fr.inria.powerapi.sensor</groupId>
+			<artifactId>sensor-disk-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.scala-incubator.io</groupId>
+			<artifactId>scala-io-core_${scala.version}</artifactId>
+		</dependency>
+	</dependencies>
 </project>
