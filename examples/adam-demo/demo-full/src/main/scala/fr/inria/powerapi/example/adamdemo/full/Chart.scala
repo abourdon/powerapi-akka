@@ -22,7 +22,6 @@ package fr.inria.powerapi.example.adamdemo.full
 
 import java.awt.Dimension
 import java.awt.Toolkit
-
 import org.jfree.chart.ChartFactory
 import org.jfree.chart.ChartPanel
 import org.jfree.data.time.FixedMillisecond
@@ -31,6 +30,7 @@ import org.jfree.data.time.TimeSeriesCollection
 import org.jfree.data.time.TimeSeriesDataItem
 import org.jfree.ui.ApplicationFrame
 import org.jfree.ui.RefineryUtilities
+import java.awt.BasicStroke
 
 /**
  * Display received CpuFormulaValues to the wrapped JFreeChart chart.
@@ -50,6 +50,7 @@ class Chart(title: String) {
         val serie = new TimeSeries(value._1)
         dataset.addSeries(serie)
         timeSeries += (value._1 -> serie)
+        chart.getXYPlot().getRenderer().setSeriesStroke(dataset.getSeriesCount() - 1, new BasicStroke(3))
       }
       timeSeries(value._1).addOrUpdate(new FixedMillisecond(timestamp), value._2 + getOffset)
     })
@@ -79,7 +80,16 @@ object Chart {
   val xValues = "Time (s)"
   val yValues = "Power (W)"
   val title = "PowerAPI"
-  lazy val chart = new Chart(title)
+  val chart = {
+    val ch = new Chart(title)
+    val plot = ch.chart.getXYPlot()
+    plot.setBackgroundPaint(java.awt.Color.WHITE)
+    plot.setDomainGridlinesVisible(true)
+    plot.setDomainGridlinePaint(java.awt.Color.GRAY)
+    plot.setRangeGridlinesVisible(true)
+    plot.setRangeGridlinePaint(java.awt.Color.GRAY)
+    ch
+  }
 
   val chartPanel = {
     val panel = new ChartPanel(chart.chart)
