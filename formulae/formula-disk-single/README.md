@@ -18,15 +18,18 @@ Conform to `fr.inria.powerapi.formula.formula-disk-api`.
 
 To provide disk energy spent by a process, this module has to know:
 * the power consumed by the disk when the reading process;
-* the power consumed by the disk when writting process
+* the maximum rate during the reading process;
+* the power consumed by the disk when writing process;
+* the maximum rate during the writing process
 
 For example:
 ```
 powerapi {
 	disk {
 		read-power = 2.1
+		read-rate = 100MB/s
 		write-power = 2.2
-		max-rate = 3Gb/s
+		write-rate = 90MB/s
 	}
 }
 ```
