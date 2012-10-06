@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="PowerAPI-Akka : PowerAPI Akka version" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>PowerAPI-Akka</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/abourdon/powerapi-akka">View on GitHub</a>
+
+          <h1 id="project_title">PowerAPI-Akka</h1>
+          <h2 id="project_tagline">PowerAPI Akka version</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/abourdon/powerapi-akka/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/abourdon/powerapi-akka/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>PowerAPI Akka version</h1>
+
+<p>PowerAPI Akka version is a scala-based library for monitoring energy at the process-level. It is based on a modular and asynchronous event-driven architecture using the <a href="http://akka.io" title="Akka library">Akka library</a>.</p>
+
+<p>PowerAPI differs from existing energy process-level monitoring tool in its pure software, fully customizable and modular aspect which let user to precisely define what he wants to monitor, without any external device.</p>
+
+<p>PowerAPI offers an API which can be used to express request about energy spent by a processus, following its hardware resource utilization (in term of CPU, memory, disk, network, etc.).</p>
+
+<h2>Documentation</h2>
+
+<ul>
+<li><a href="#getting-started">Getting started</a></li>
+<li><a href="#architecture-details">Architecture details</a></li>
+<li><a href="#api-details">API details</a></li>
+<li><a href="#future-works">Future works</a></li>
+<li><a href="#license">License</a></li>
+</ul><h2>Getting started</h2>
+
+<p>PowerAPI is completely written in <a href="http://www.scala-lang.org" title="Scala language">Scala</a> (v. 2.9.1+), using the <a href="http://akka.io" title="Akka library">Akka library</a> (v 2.0.1+). Configuration part is managed by the <a href="https://github.com/typesafehub/config" title="Typesafe Config">Typesafe Config</a> (integrated version from the <a href="http://akka.io" title="Akka library">Akka library</a>).
+PowerAPI project is fully managed by <a href="http://maven.apache.org" title="Maven">Maven</a> (v. 3).</p>
+
+<h3>How to acquire it</h3>
+
+<p>There are two ways to acquire PowerAPI: With or without Maven repositories. In other words, directly from Maven repositories (to get stable or snapshot versions), or from our Git repository (to directly get the source code).</p>
+
+<h4>With Maven repositories</h4>
+
+<p><strong>Stable versions</strong> are available from the <a href="http://search.maven.org" title="Maven central repository">Maven central repository</a>. Thus, you just have to put on your <em>pom</em> file your desired modules. That's all.</p>
+
+<p><strong>Snapshot versions</strong> are available from the <a href="https://oss.sonatype.org" title="OSS Sonatype repository">OSS Sonatype repository</a>. Thus, you have to add this repository location:</p>
+
+<div class="highlight"><pre><span class="nt">&lt;repository&gt;</span>
+    <span class="nt">&lt;id&gt;</span>OSS Sonatype snapshot repository<span class="nt">&lt;/id&gt;</span>
+    <span class="nt">&lt;url&gt;</span>https://oss.sonatype.org/content/repositories/snapshots<span class="nt">&lt;/url&gt;</span>
+    <span class="nt">&lt;snapshots&gt;</span>
+        <span class="nt">&lt;enabled&gt;</span>true<span class="nt">&lt;/enabled&gt;</span>
+    <span class="nt">&lt;/snapshots&gt;</span>
+<span class="nt">&lt;/repository&gt;</span>
+</pre></div>
+
+<p>After that, you just have to put on your <em>pom</em> file your desired modules.</p>
+
+<h4>Without Maven repositories</h4>
+
+<p>Without Maven repositories, you have to deal with our Git repository in order to get the <strong>source code</strong> as explain bellow:</p>
+
+<p>To acquire PowerAPI, simply clone it via your Git client:</p>
+
+<div class="highlight"><pre>git clone git://github.com/abourdon/powerapi-akka.git
+</pre></div>
+
+<p>As PowerAPI is a <a href="http://maven.apache.org" title="Maven">Maven</a> managed project, you have to launch the <code>install</code> command at the root directory (here, <code>powerapi_akka_directory</code>) in order to compile and install it to your local machine:</p>
+
+<div class="highlight"><pre><span class="nb">cd</span> <span class="nv">$powerapi_akka_directory</span>
+mvn install
+</pre></div>
+
+<p><strong>By default, all modules are selected to be installed. Be careful to correctly selecting yours, depending on your environment and the use case you want to do</strong> (see <code>pom.xml</code> file at the root directory for more details).</p>
+
+<h3>How to use it</h3>
+
+<p>In the way you acquire PowerAPI from <a href="http://maven.apache.org" title="Maven">Maven</a> repositories, you can directly use it as a Jar project in your <em>pom</em> file.</p>
+
+<p>In the way you acquire PowerAPI from our Git repository, you can navigate to your desired module and use it as a standard <a href="http://maven.apache.org" title="Maven">Maven</a> module:</p>
+
+<div class="highlight"><pre><span class="nb">cd</span> <span class="nv">$powerapi_akka_directory</span>/sensors/sensor-cpu-api
+mvn <span class="nb">test</span>
+</pre></div>
+
+<h3>How to configure it</h3>
+
+<p>As said above, configuration part is managed by the <a href="https://github.com/typesafehub/config" title="Typesafe Config">Typesafe Config</a>. Thus, be aware to properly configure each module from its <code>.conf</code> file(s).</p>
+
+<p>Let's take an example for the <code>fr.inria.powerapi.formula.formula-cpu-general</code> module, which implements the PowerAPI CPU <code>Formula</code> in using the well-known formula, <code>P = c * f * V * V</code>, where <code>c</code> constant, <code>f</code> a frequency and <code>V</code> its associated voltage.</p>
+
+<p>To compute this formula, <code>fr.inria.powerapi.formula.formula-cpu-general</code> module has to know:</p>
+
+<ul>
+<li>the CPU <em>Thermal Dissipation Power</em> value;</li>
+<li>the array of frequency/voltage used by the CPU</li>
+</ul><p>These information can be written in its associated configuration file as the following:</p>
+
+<pre><code>powerapi {
+    cpu {
+        tdp = 105
+        frequencies = [
+            { value = 1800002, voltage = 1.31 }
+            { value = 2100002, voltage = 1.41 }
+            { value = 2400003, voltage = 1.5 }
+        ]
+    }
+}
+</code></pre>
+
+<p>Each module can have its own configuration part. See more details in its associated README file.</p>
+
+<h2>Architecture details</h2>
+
+<p>PowerAPI is based on a modular and asynchronous event-driven architecture using the <a href="http://akka.io" title="Akka library">Akka library</a>. Architecture is centralized around a common event bus where each module can publish/subscribe to sending events. One particularity of this architecture is that each module is in passive state and reacts to events sent by the common event bus.</p>
+
+<p>These modules are organized as follow:</p>
+
+<h3>Core</h3>
+
+<p>As its name indicates, <code>Core</code> module gather all <em>kernel</em> functionnalities that will be used by other modules. More particulary, this module defines the whole types used by PowerAPI to define its architecture.</p>
+
+<p>This module also defines the essential <code>Clock</code> class, responsible of the periodically sending of the <code>Tick</code> message, itself responsible of the process of the PowerAPI business part.</p>
+
+<h3>Sensors</h3>
+
+<p>To compute the energy spent by a process through its hardware resource utilization, PowerAPI cuts computation in two parts:
+1. Monitoring of hardware resource process utilization;
+2. Computing the energy implies by the hardware resource process utilization.</p>
+
+<p>The Sensor modules or <em>Sensors</em> represents a set of <code>Sensor</code>, responsible of the monitoring of hardware resource process utilization. Thus, you have a CPU <code>Sensor</code>, a memory <code>Sensor</code>, a disk <code>Sensor</code> and so on.
+As these information are given by operating system, there is one <code>Sensor</code> implementation by operating system type. Thus you may have a CPU Linux <code>Sensor</code>, a CPU Windows <code>Sensor</code>, and so on.</p>
+
+<h3>Formulae</h3>
+
+<p>Set of <code>Formula</code>, responsible of the computation of the energy spent by a process on a particular hardware resource (e.g CPU, memory, disk or network), following information provided by its associated <code>Sensor</code>.
+A <code>Formula</code> may depend on the type of the monitored hardware resource. Thus, for the same hardware resource, several <code>Formula</code> implementations could exist.</p>
+
+<h3>Listeners</h3>
+
+<p>Set of <code>Listener</code>, that listen <code>Formula</code> events sending by the common event bus. Thus, a <code>Listener</code> define the actions to do when receiving results from the energy computation (e.g displaying information, producing and submitting information to the common event bus, etc.).</p>
+
+<h3>Library</h3>
+
+<p>The Library module defines the API that can be used by user to interact with PowerAPI.</p>
+
+<h2>API details</h2>
+
+<p>Process-level energy monitoring is based on a periodically computation that can be expressed via the API. Here there are several examples to describe PowerAPI's API:</p>
+
+<h3>What is the CPU energy spent by the 123 process? Please give me fresh results every 500 milliseconds</h3>
+
+<p>Considering that process run under Linux, using a <em>procfs</em> file system on a <em>standard</em> CPU architecture.
+Thus, we need to use the <em>procfs</em> CPU <code>Sensor</code> implementation and the general CPU <code>Formula</code> implementation. Add to this the desire to display CPU energy spent by process into the console. So we need to:</p>
+
+<ol>
+<li>Activate the desired modules:</li>
+</ol><div class="highlight"><pre><span class="nc">Array</span><span class="o">(</span>
+    <span class="n">classOf</span><span class="o">[</span><span class="kt">fr.inria.powerapi.sensor.proc.CpuSensor</span><span class="o">],</span>
+    <span class="n">classOf</span><span class="o">[</span><span class="kt">fr.inria.powerapi.formula.general.CpuFormula</span><span class="o">]</span>
+<span class="o">).</span><span class="n">foreach</span><span class="o">(</span><span class="nc">PowerAPI</span><span class="o">.</span><span class="n">startEnergyModule</span><span class="o">(</span><span class="k">_</span><span class="o">))</span>
+</pre></div>
+
+<ol>
+<li>Request to PowerAPI the CPU energy spent by the 123 process, every 500 milliseconds:</li>
+</ol><div class="highlight"><pre><span class="nc">PowerAPI</span><span class="o">.</span><span class="n">startMonitoring</span><span class="o">(</span>
+    <span class="nc">Process</span><span class="o">(</span><span class="mi">123</span><span class="o">),</span>
+    <span class="mi">500</span> <span class="n">milliseconds</span><span class="o">,</span>
+    <span class="n">classOf</span><span class="o">[</span><span class="kt">fr.inria.powerapi.listener.console.CpuListener</span><span class="o">]</span>
+<span class="o">)</span>
+</pre></div>
+
+<h3>Based on the first request, how can I display CPU energy information into a chart too?</h3>
+
+<p>Based on the previous code, we simply have to add a new <code>Listener</code> which will be able to display CPU energy information into a chart.
+PowerAPI integrates a <code>Listener</code> using the <a href="http://www.jfree.org/jfreechart" title="JFreeChart">JFreeChart</a> Java graph library. So let's add it to the PowerAPI system:</p>
+
+<div class="highlight"><pre><span class="nc">PowerAPI</span><span class="o">.</span><span class="n">startMonitoring</span><span class="o">(</span>
+    <span class="n">listener</span> <span class="k">=</span> <span class="n">classOf</span><span class="o">[</span><span class="kt">fr.inria.powerapi.listener.jfreechart.CpuListener</span><span class="o">]</span>
+<span class="o">)</span>
+</pre></div>
+
+<p>That's all!</p>
+
+<h2>Future works</h2>
+
+<p>We are working on new hardware resource <em>energy modules</em> (<code>Sensor</code> + <code>Formula</code>) development. If you are interested to participate, feel free to contact <a href="mailto:powerapi-user-list@googlegroups.com">powerapi-user-list@googlegroups.com</a>!</p>
+
+<h2>License</h2>
+
+<p>Copyright (C) 2012 Inria, University Lille 1.</p>
+
+<p>PowerAPI is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.</p>
+
+<p>PowerAPI is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.</p>
+
+<p>You should have received a copy of the GNU General Public License
+along with PowerAPI. If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">PowerAPI-Akka maintained by <a href="https://github.com/abourdon">abourdon</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
