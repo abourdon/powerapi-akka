@@ -2,7 +2,7 @@
 
 ## Presentation
 
-Implements PowerAPI disk `Formula` module in making the ratio between the _power by read/write bytes_ of the physical disk and the read/write bytes by the process.
+Implements PowerAPI disk `Formula` module giving disk energy of a specified process in making the ratio between the read/write power by the maximum read/write rate of the physical disk.
 
 __Note that this implementation doesn't take into account that a process could use different physical disks. It assumes that all processes use the primary disk__
 
@@ -18,9 +18,9 @@ Conform to `fr.inria.powerapi.formula.formula-disk-api`.
 
 To provide disk energy spent by a process, this module has to know:
 * the power consumed by the disk when the reading process;
-* the maximum rate during the reading process;
+* the maximum rate during the reading process allowed by the disk;
 * the power consumed by the disk when writing process;
-* the maximum rate during the writing process
+* the maximum rate during the writing process allowed by the disk.
 
 For example:
 ```

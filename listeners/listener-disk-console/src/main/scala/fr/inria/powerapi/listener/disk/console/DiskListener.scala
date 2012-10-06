@@ -22,6 +22,11 @@ package fr.inria.powerapi.listener.disk.console
 import fr.inria.powerapi.core.Listener
 import fr.inria.powerapi.formula.disk.api.DiskFormulaValues
 
+/**
+ * Disk listener, displaying DiskFormulaValues to the console.
+ *
+ * @author abourdon
+ */
 class DiskListener extends Listener {
   def messagesToListen = Array(classOf[DiskFormulaValues])
 

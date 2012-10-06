@@ -27,10 +27,28 @@ import java.io.FileInputStream
 import java.net.URL
 import java.io.IOException
 
+/**
+ * Disk sensor configuration.
+ *
+ * @author abourdon
+ */
 trait Configuration extends fr.inria.powerapi.core.Configuration {
+  /**
+   * Process I/O information file, giving information about I/O operation for the process itself.
+   * Typically presents under /proc/[pid]/io.
+   *
+   * Note that this file is typically read restrictive. You should have to get root access in order to read it.
+   */
   lazy val iofile = load(_.getString("powerapi.disk.io"))("file:///proc/%?/io")
 }
 
+/**
+ * Disk sensor collecting information from the /proc virtual file system, commonly used under Linux platforms.
+ *
+ * @see http://www.kernel.org/doc/man-pages/online/pages/man5/proc.5.html
+ *
+ * @author abourdon
+ */
 class DiskSensor extends fr.inria.powerapi.sensor.disk.api.DiskSensor with Configuration {
   /**
    * Get the number of ridden and written bytes of the specified process, since its begining

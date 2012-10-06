@@ -26,12 +26,19 @@ import fr.inria.powerapi.core.Tick
 import fr.inria.powerapi.sensor.disk.api.DiskSensorValues
 
 /**
- * Disk formula messages definition.
+ * Disk formula's messages definition.
  *
  * @author abourdon
  */
 case class DiskFormulaValues(energy: Energy, tick: Tick) extends Message
 
+/**
+ * Base trait for disk formula modules.
+ *
+ * Each of these has to listen to the DiskSensorValues message and implements the associated process method.
+ *
+ * @author abourdon
+ */
 trait DiskFormula extends Formula {
   def messagesToListen = Array(classOf[DiskSensorValues])
 

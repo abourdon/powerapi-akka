@@ -45,7 +45,7 @@ case class CpuSensorValues(
 /**
  * Base trait for CPU sensor modules.
  *
- * Each of these have to listen to the Tick message and implements the associated process method.
+ * Each of these has to listen to the Tick message and implements the associated process method.
  *
  * @author abourdon
  */

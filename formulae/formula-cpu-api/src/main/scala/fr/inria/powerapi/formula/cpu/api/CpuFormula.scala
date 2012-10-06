@@ -24,16 +24,16 @@ import fr.inria.powerapi.core.{Energy, Formula, Tick, Message}
 import fr.inria.powerapi.sensor.cpu.api.CpuSensorValues
 
 /**
- * CPU formula messages definition.
+ * CPU formula's messages definition.
  *
  * @author abourdon
  */
 case class CpuFormulaValues(energy: Energy, tick: Tick) extends Message
 
 /**
- * Base trait for CPU sensor modules.
+ * Base trait for CPU formula modules.
  *
- * Each of these have to listen to the CpuSensorValues message and implements the associated process method.
+ * Each of these has to listen to the CpuSensorValues message and implements the associated process method.
  *
  * @author abourdon
  */

@@ -25,12 +25,13 @@ import fr.inria.powerapi.core.Tick
 import fr.inria.powerapi.core.Message
 
 /**
- * DiskSensor's results values
+ * DiskSensor's results values.
  *
- * @param rw Ridden and written bytes which the process did cause to be fetched from the storage layer.
+ * @param rw, Ridden and written bytes which the process did cause to be fetched from the storage layer.
  * As a system can have several disks, values are gather into a Map.
  * Each disk is identified by the String key value. Each read and byte counters are identified by the couple (Long, Long).
- * @param tick the original Tick responsible of the computation of this DiskSensorValues
+ * @param tick, the original Tick responsible of the computation of this DiskSensorValues.
+ *
  * @author abourdon
  */
 case class DiskSensorValues(rw: Map[String, (Long, Long)], tick: Tick) extends Message
@@ -38,7 +39,7 @@ case class DiskSensorValues(rw: Map[String, (Long, Long)], tick: Tick) extends M
 /**
  * Base trait for disk sensor modules.
  *
- * Each of these have to listen to the Tick message and implements the associated acquire method.
+ * Each of these has to listen to the Tick message and implements the associated process method.
  *
  * @author abourdon
  */

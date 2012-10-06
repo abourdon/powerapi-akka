@@ -24,7 +24,7 @@ import fr.inria.powerapi.core.Listener
 import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
 
 /**
- * CPU listener which simply display received CpuFormulaValues to the console
+ * CPU listener which simply display received CpuFormulaValues to the console.
  *
  * @author abourdon
  */

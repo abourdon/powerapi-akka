@@ -32,12 +32,37 @@ import akka.util.Duration
 import akka.actor.Cancellable
 import javax.swing.SwingUtilities
 
+/**
+ * CpuDiskListener's configuration.
+ *
+ * @author abourdon
+ */
 trait Configuration extends fr.inria.powerapi.core.Configuration {
+  /**
+   * Result display refresh rate. 1 second as default.
+   */
   lazy val refreshRate = load(conf => Duration.parse(conf.getString("powerapi.listener-cpudisk-jfreechart.refresh-rate")))(1 second)
+
+  /**
+   * If result has to be aggregated by hardware device (CPU, disk) or not.
+   */
   lazy val aggregateByDevice = load(_.getBoolean("powerapi.listener-cpudisk-jfreechart.aggregate-by-device"))(true)
+
+  /**
+   * If this CPU and disk listener has to simply write power, or the whole information contained into both CpuFormulaValues and DiskFormulaValues message.
+   */
   lazy val justTotal = load(_.getBoolean("powerapi.listener-cpudisk-jfreechart.just-total"))(false)
 }
 
+/**
+ * CPU and disk listener, displaying result into a JFreeChart graph from both CpuFormulaValues and DiskFormulaValues messages.
+ *
+ * Each CPU or disk result is cached into a data structure, in order to display a global result.
+ *
+ * @see http://www.jfree.org/jfreechart
+ *
+ * @author abourdon
+ */
 class CpuDiskListener extends Listener with Configuration {
   // cache = Map(timestamp -> Map(process -> Map(device name -> power value)))
   lazy val cache = new collection.mutable.HashMap[Long, Map[Process, Map[String, Double]]]()

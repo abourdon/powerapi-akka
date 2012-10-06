@@ -32,13 +32,24 @@ import scalax.io.Resource
  * @author abourdon
  */
 trait Configuration extends fr.inria.powerapi.core.Configuration {
+  /**
+   * The output file path.
+   */
   lazy val filePath = load(_.getString("powerapi.listener.cpu-console.out-prefix") + System.nanoTime())(Path.createTempFile(prefix = "powerapi.listener-cpu-file", deleteOnExit = false).path)
+
+  /**
+   * If result has to be append to an existing file, or simply overrided.
+   */
   lazy val append = load(_.getBoolean("powerapi.listener.cpu-console.append"))(true)
+
+  /**
+   * If this CPU listener has to simply write power, or the whole information contained into the CpuFormulaValues message.
+   */
   lazy val justPower = load(_.getBoolean("powerapi.listener.cpu-console.just-power"))(false)
 }
 
 /**
- * CPU listener displaying received CpuFormulaValues into a file and following properties
+ * CPU listener displaying received CpuFormulaValues into a file following properties
  * contained into a configuration file.
  *
  * @author abourdon

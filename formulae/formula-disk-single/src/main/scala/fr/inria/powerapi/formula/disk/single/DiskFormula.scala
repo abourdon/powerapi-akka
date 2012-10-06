@@ -24,9 +24,19 @@ import fr.inria.powerapi.core.TickSubscription
 import fr.inria.powerapi.formula.disk.api.DiskFormulaValues
 import fr.inria.powerapi.sensor.disk.api.DiskSensorValues
 
+/**
+ * Disk formula configuration.
+ *
+ * @author abourdon
+ */
 trait Configuration extends fr.inria.powerapi.core.Configuration {
   implicit def toRate(str: String) = new Rate(str)
 
+  /**
+   * Wrapper for a Rate type, which can express a disk rate, e.g, 1.5MB/s.
+   *
+   * @author abourdon
+   */
   class Rate(str: String) {
     lazy val RateFormat = """([\d\,.]+)([MG])B/s""".r
     def fromRateToDouble = str match {
@@ -49,12 +59,34 @@ trait Configuration extends fr.inria.powerapi.core.Configuration {
     }
   }
 
+  /**
+   * Disk reading process power.
+   */
   lazy val readPower = load(_.getDouble("powerapi.disk.read-power"))(0)
+
+  /**
+   * Maximum disk read rate.
+   */
   lazy val readRate = load(_.getString("powerapi.disk.read-rate").fromRateToDouble)(0)
+
+  /**
+   * Disk writing process power.
+   */
   lazy val writePower = load(_.getDouble("powerapi.disk.write-power"))(0)
+
+  /**
+   * Maximum disk writing rate.
+   */
   lazy val writeRate = load(_.getString("powerapi.disk.write-rate").fromRateToDouble)(0)
 }
 
+/**
+ * Disk formula component, giving disk energy of a specified process in making the ratio between the read/write power by the maximum read/write rate of the physical disk.
+ *
+ * Note that this implementation doesn't take into account that a process could use different physical disks. It assumes that all processes use the primary disk.
+ *
+ * @author abourdon
+ */
 class DiskFormula extends fr.inria.powerapi.formula.disk.api.DiskFormula with Configuration {
   lazy val readEnergyByByte = readPower / readRate
   lazy val writeEnergyByByte = writePower / writeRate

@@ -26,7 +26,7 @@ import javax.swing.SwingUtilities
 
 
 /**
- * CPU listener which display received CpuFormulaValues over a JFreeChart chart.
+ * CPU listener which display received CpuFormulaValues into a JFreeChart chart.
  *
  * @see http://www.jfree.org/jfreechart
  *

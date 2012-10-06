@@ -26,9 +26,10 @@ import java.awt.{ Toolkit, Dimension }
 import org.jfree.chart.{ ChartPanel, ChartFactory }
 import org.jfree.data.time.{ TimeSeriesDataItem, TimeSeriesCollection, TimeSeries, FixedMillisecond }
 import org.jfree.ui.{ RefineryUtilities, ApplicationFrame }
+import java.awt.BasicStroke
 
 /**
- * Display received CpuFormulaValues to the wrapped JFreeChart chart.
+ * Display result received from the CpuDiskListener Component to a wrapped JFreeChart chart.
  *
  * @author abourdon
  */
@@ -44,6 +45,7 @@ class Chart(title: String) {
         val serie = new TimeSeries(value._1)
         dataset.addSeries(serie)
         timeSeries += (value._1 -> serie)
+        chart.getXYPlot().getRenderer().setSeriesStroke(dataset.getSeriesCount() - 1, new BasicStroke(3))
       }
       timeSeries(value._1).add(new TimeSeriesDataItem(new FixedMillisecond(timestamp), value._2))
     })
@@ -59,7 +61,16 @@ object Chart {
   val xValues = "Time (s)"
   val yValues = "Power (W)"
   val title = "PowerAPI"
-  lazy val chart = new Chart(title)
+  lazy val chart = {
+    val ch = new Chart(title)
+    val plot = ch.chart.getXYPlot()
+    plot.setBackgroundPaint(java.awt.Color.WHITE)
+    plot.setDomainGridlinesVisible(true)
+    plot.setDomainGridlinePaint(java.awt.Color.GRAY)
+    plot.setRangeGridlinesVisible(true)
+    plot.setRangeGridlinePaint(java.awt.Color.GRAY)
+    ch
+  }
 
   val chartPanel = {
     val panel = new ChartPanel(chart.chart)

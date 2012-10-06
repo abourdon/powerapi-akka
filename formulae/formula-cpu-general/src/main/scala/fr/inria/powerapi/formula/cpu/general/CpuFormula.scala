@@ -32,12 +32,21 @@ import scala.collection.JavaConversions
  * @author abourdon
  */
 trait Configuration extends fr.inria.powerapi.core.Configuration {
-  lazy val tdp = load {
-    _.getDouble("powerapi.cpu.tdp")
-  }(0)
-  lazy val cores = load {
-    _.getDouble("powerapi.cpu.cores")
-  }(1)
+  /**
+   * CPU Thermal Dissipation Power value.
+   *
+   * @see http://en.wikipedia.org/wiki/CPU_power_dissipation
+   */
+  lazy val tdp = load { _.getDouble("powerapi.cpu.tdp") }(0)
+
+  /**
+   * CPU cores number.
+   */
+  lazy val cores = load { _.getDouble("powerapi.cpu.cores") }(1)
+
+  /**
+   * Map of frequencies and their associated voltages.
+   */
   lazy val frequencies = load {
     conf =>
       (for (item <- JavaConversions.asScalaBuffer(conf.getConfigList("powerapi.cpu.frequencies")))

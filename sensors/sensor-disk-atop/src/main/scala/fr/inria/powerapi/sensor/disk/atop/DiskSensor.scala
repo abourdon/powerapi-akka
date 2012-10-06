@@ -27,12 +27,26 @@ import scalax.io.Resource
 import java.io.FileInputStream
 import java.net.URL
 
+/**
+ * Disk sensor configuration part.
+ *
+ * @author abourdon
+ */
 trait Configuration extends fr.inria.powerapi.core.Configuration {
+  /**
+   * Specific process stat file, typically located to the /proc/[pid]/stat path.
+   */
   lazy val processStatPath = load { _.getString("powerapi.disk.process-stat") }("file:///proc/%?/stat")
 }
 
+/**
+ * Disk sensor collecting data from ATOP linux based kernels.
+ *
+ * @see http://www.atoptool.nl
+ *
+ * @author abourdon
+ */
 class DiskSensor extends fr.inria.powerapi.sensor.disk.api.DiskSensor with Configuration {
-
   def readAndWrite(implicit process: Process) =
     try {
       // FIXME: Due to Java JDK bug #7132461, there is no way to apply buffer to procfs files and thus, directly open stream from the given URL.

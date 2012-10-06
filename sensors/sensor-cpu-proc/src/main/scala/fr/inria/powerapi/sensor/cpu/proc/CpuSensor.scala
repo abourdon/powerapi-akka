@@ -20,12 +20,11 @@
  */
 package fr.inria.powerapi.sensor.cpu.proc
 
-import fr.inria.powerapi.core.{Tick, Process}
-import fr.inria.powerapi.sensor.cpu.api.{TimeInStates, ProcessElapsedTime, GlobalElapsedTime, CpuSensorValues}
-import java.io.{IOException, FileInputStream}
+import fr.inria.powerapi.core.{ Tick, Process }
+import fr.inria.powerapi.sensor.cpu.api.{ TimeInStates, ProcessElapsedTime, GlobalElapsedTime, CpuSensorValues }
+import java.io.{ IOException, FileInputStream }
 import java.net.URL
 import scalax.io.Resource
-
 
 /**
  * CPU sensor configuration.
@@ -33,18 +32,30 @@ import scalax.io.Resource
  * @author abourdon
  */
 trait Configuration extends fr.inria.powerapi.core.Configuration {
-  lazy val cores = load {
-    _.getInt("powerapi.cpu.cores")
-  }(0)
-  lazy val globalStatPath = load {
-    _.getString("powerapi.cpu.global-stat")
-  }("file:///proc/stat")
-  lazy val processStatPath = load {
-    _.getString("powerapi.cpu.process-stat")
-  }("file:///proc/%?/stat")
-  lazy val timeInStatePath = load {
-    _.getString("powerapi.cpu.time-in-state")
-  }("file:///sys/devices/system/cpu/cpu%?/cpufreq/stats/time_in_state")
+  /**
+   * Cores number.
+   */
+  lazy val cores = load { _.getInt("powerapi.cpu.cores") }(0)
+
+  /**
+   * Global stat file, giving global information of the system itself.
+   * Typically presents under /proc/stat.
+   */
+  lazy val globalStatPath = load { _.getString("powerapi.cpu.global-stat") }("file:///proc/stat")
+
+  /**
+   * Process stat file, giving information about the process itself.
+   * Typically presents under /proc/[pid]/stat.
+   */
+  lazy val processStatPath = load { _.getString("powerapi.cpu.process-stat") }("file:///proc/%?/stat")
+
+  /**
+   * Time in state file, giving information about how many time CPU spent under each frequency.
+   * This information is typically given by the cpufrequtils utils.
+   *
+   * @see http://www.kernel.org/pub/linux/utils/kernel/cpufreq/cpufreq-info.html
+   */
+  lazy val timeInStatePath = load { _.getString("powerapi.cpu.time-in-state") }("file:///sys/devices/system/cpu/cpu%?/cpufreq/stats/time_in_state")
 }
 
 /**
@@ -67,13 +78,13 @@ class CpuSensor extends fr.inria.powerapi.sensor.cpu.api.CpuSensor with Configur
     def timeInStates = {
       val result = collection.mutable.HashMap[Int, Long]()
 
-      (for (core <- 0 until cores) yield (timeInStatePath replace("%?", core.toString))).foreach(timeInStateFile => {
+      (for (core <- 0 until cores) yield (timeInStatePath replace ("%?", core.toString))).foreach(timeInStateFile => {
         try {
           // FIXME: Due to Java JDK bug #7132461, there is no way to apply buffer to procfs files and thus, directly open stream from the given URL.
           // Then, we simply read these files thanks to a FileInputStream in getting those local path
           Resource.fromInputStream(new FileInputStream(new URL(timeInStateFile).getPath)).lines().foreach(f = line => {
             line match {
-              case TimeInStateFormat(freq, t) => result += (freq.toInt -> (t.toLong + (result getOrElse(freq.toInt, 0: Long))))
+              case TimeInStateFormat(freq, t) => result += (freq.toInt -> (t.toLong + (result getOrElse (freq.toInt, 0: Long))))
               case _ => log.warning("unable to parse line \"" + line + "\" from file \"" + timeInStateFile)
             }
           })
@@ -118,7 +129,7 @@ class CpuSensor extends fr.inria.powerapi.sensor.cpu.api.CpuSensor with Configur
       try {
         // FIXME: Due to Java JDK bug #7132461, there is no way to apply buffer to procfs files and thus, directly open stream from the given URL.
         // Then, we simply read these files thanks to a FileInputStream in getting those local path
-        val line = Resource.fromInputStream(new FileInputStream(new URL(processStatPath replace("%?", process.pid.toString)).getPath)).lines().toIndexedSeq(0).toString.split("\\s")
+        val line = Resource.fromInputStream(new FileInputStream(new URL(processStatPath replace ("%?", process.pid.toString)).getPath)).lines().toIndexedSeq(0).toString.split("\\s")
         // User time + System time
         line(13).toLong + line(14).toLong
       } catch {
