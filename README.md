@@ -137,8 +137,8 @@ Process-level energy monitoring is based on a periodically computation that can 
 
 ### What is the CPU energy spent by the 123 process? Please give me fresh results every 500 milliseconds
 
-Assume that process run under Linux, using a _procfs_ file system on a *standard* CPU architecture.
-Thus, we need to use the [procfs](http://en.wikipedia.org/wiki/Procfs "Procfs") CPU `Sensor` implementation and the general CPU `Formula` implementation. Add to this the desire to display CPU energy spent by process into a console. So we need to:
+Assume that process run under Linux, using a [procfs](http://en.wikipedia.org/wiki/Procfs "Procfs") file system on a _standard_ CPU architecture.
+Thus, we need to use the _procfs_ CPU `Sensor` implementation and the general CPU `Formula` implementation. Add to this the desire to display CPU energy spent by process into a console. So we need to:
 
 1. Activate the desired modules:
 
@@ -174,7 +174,7 @@ That's all!
 
 ## Future works
 
-We are working on new _energy modules_ (`Sensor` + `Formula`) development. If you are interested to participate, feel free to contact us via our [GitHub webpage](https://github.com/abourdon/powerapi-akka "GitHub") or mail us at powerapi-user-list@googlegroups.com!
+We are working on new _energy modules_ (`Sensor` + `Formula`) development. If you are interested to participate, feel free to contact us via our [GitHub](https://github.com/abourdon/powerapi-akka "GitHub") webpage or mail us at powerapi-user-list@googlegroups.com!
 
 ## License
 
