@@ -37,7 +37,7 @@
 
 <p>PowerAPI differs from existing energy process-level monitoring tool in its pure software, fully customizable and modular aspect which let user to precisely define what he wants to monitor, without any external device.</p>
 
-<p>PowerAPI offers an API which can be used to express request about energy spent by a processus, following its hardware resource utilization (in term of CPU, memory, disk, network, etc.).</p>
+<p>PowerAPI offers an API which can be used to express request about energy spent by a process, following its hardware resource utilization (in term of CPU, memory, disk, network, etc.).</p>
 
 <h2>Documentation</h2>
 
@@ -54,13 +54,13 @@ PowerAPI project is fully managed by <a href="http://maven.apache.org" title="Ma
 
 <h3>How to acquire it</h3>
 
-<p>There are two ways to acquire PowerAPI: With or without Maven repositories. In other words, directly from Maven repositories (to get stable or snapshot versions), or from our Git repository (to directly get the source code).</p>
+<p>There are two ways to acquire PowerAPI: With or without Maven repositories. In other words, directly from Maven repositories (to get stable or snapshot versions), or from our Git repository (to get the source code).</p>
 
 <h4>With Maven repositories</h4>
 
-<p><strong>Stable versions</strong> are available from the <a href="http://search.maven.org" title="Maven central repository">Maven central repository</a>. Thus, you just have to put on your <em>pom</em> file your desired modules. That's all.</p>
+<p><strong>Stable versions</strong> are available from the <a href="http://search.maven.org" title="Maven central repository">Maven central repository</a>. Thus, you just have to put on your <code>pom.xml</code> file your desired modules. That's all.</p>
 
-<p><strong>Snapshot versions</strong> are available from the <a href="https://oss.sonatype.org" title="OSS Sonatype repository">OSS Sonatype repository</a>. Thus, you have to add this repository location:</p>
+<p><strong>Snapshot versions</strong> are available from the <a href="https://oss.sonatype.org" title="OSS Sonatype repository">OSS Sonatype repository</a>. Thus, you have to add this following repository location:</p>
 
 <div class="highlight"><pre><span class="nt">&lt;repository&gt;</span>
     <span class="nt">&lt;id&gt;</span>OSS Sonatype snapshot repository<span class="nt">&lt;/id&gt;</span>
@@ -71,11 +71,11 @@ PowerAPI project is fully managed by <a href="http://maven.apache.org" title="Ma
 <span class="nt">&lt;/repository&gt;</span>
 </pre></div>
 
-<p>After that, you just have to put on your <em>pom</em> file your desired modules.</p>
+<p>After that, you just have to put on your <code>pom.xml</code> file your desired modules.</p>
 
 <h4>Without Maven repositories</h4>
 
-<p>Without Maven repositories, you have to deal with our Git repository in order to get the <strong>source code</strong> as explain bellow:</p>
+<p>Without Maven repositories, you have to deal with our Git repository as explain bellow:</p>
 
 <p>To acquire PowerAPI, simply clone it via your Git client:</p>
 
@@ -92,7 +92,7 @@ mvn install
 
 <h3>How to use it</h3>
 
-<p>In the way you acquire PowerAPI from <a href="http://maven.apache.org" title="Maven">Maven</a> repositories, you can directly use it as a Jar project in your <em>pom</em> file.</p>
+<p>In the way you acquire PowerAPI from <a href="http://maven.apache.org" title="Maven">Maven</a> repositories, you can directly use it as a <em>Jar project</em> in your <code>pom.xml</code> file.</p>
 
 <p>In the way you acquire PowerAPI from our Git repository, you can navigate to your desired module and use it as a standard <a href="http://maven.apache.org" title="Maven">Maven</a> module:</p>
 
@@ -104,14 +104,14 @@ mvn <span class="nb">test</span>
 
 <p>As said above, configuration part is managed by the <a href="https://github.com/typesafehub/config" title="Typesafe Config">Typesafe Config</a>. Thus, be aware to properly configure each module from its <code>.conf</code> file(s).</p>
 
-<p>Let's take an example for the <code>fr.inria.powerapi.formula.formula-cpu-general</code> module, which implements the PowerAPI CPU <code>Formula</code> in using the well-known formula, <code>P = c * f * V * V</code>, where <code>c</code> constant, <code>f</code> a frequency and <code>V</code> its associated voltage.</p>
+<p>Let's take an example for the <code>fr.inria.powerapi.formula.formula-cpu-general</code> module, which implements the PowerAPI CPU <code>Formula</code> using the <a href="http://en.wikipedia.org/wiki/CMOS" title="CPU power formula">well-known formula</a>, <code>P = c * f * V * V</code>, where <code>c</code> constant, <code>f</code> a frequency and <code>V</code> its associated voltage.</p>
 
 <p>To compute this formula, <code>fr.inria.powerapi.formula.formula-cpu-general</code> module has to know:</p>
 
 <ul>
-<li>the CPU <em>Thermal Dissipation Power</em> value;</li>
-<li>the array of frequency/voltage used by the CPU</li>
-</ul><p>These information can be written in its associated configuration file as the following:</p>
+<li>the CPU <a href="http://en.wikipedia.org/wiki/Thermal_design_power" title="Thermal Design Power">Thermal Design Power</a> value;</li>
+<li>the array of frequency/voltage used by the CPU.</li>
+</ul><p>This information can be written in its associated configuration file as the following:</p>
 
 <pre><code>powerapi {
     cpu {
@@ -125,11 +125,11 @@ mvn <span class="nb">test</span>
 }
 </code></pre>
 
-<p>Each module can have its own configuration part. See more details in its associated README file.</p>
+<p>Each module can have its own configuration part. See more details in its associated <code>README</code> file.</p>
 
 <h2>Architecture details</h2>
 
-<p>PowerAPI is based on a modular and asynchronous event-driven architecture using the <a href="http://akka.io" title="Akka library">Akka library</a>. Architecture is centralized around a common event bus where each module can publish/subscribe to sending events. One particularity of this architecture is that each module is in passive state and reacts to events sent by the common event bus.</p>
+<p>PowerAPI is based on a modular and asynchronous event-driven architecture using the <a href="http://akka.io" title="Akka library">Akka library</a>. Architecture is centralized around a common <a href="http://en.wikipedia.org/wiki/Event_monitoring" title="Event monitoring">event bus</a> where each module can publish/subscribe to sending events. One particularity of this architecture is that each module is in passive state and reacts to events sent by the common event bus.</p>
 
 <p>These modules are organized as follow:</p>
 
@@ -137,25 +137,25 @@ mvn <span class="nb">test</span>
 
 <p>As its name indicates, <code>Core</code> module gather all <em>kernel</em> functionnalities that will be used by other modules. More particulary, this module defines the whole types used by PowerAPI to define its architecture.</p>
 
-<p>This module also defines the essential <code>Clock</code> class, responsible of the periodically sending of the <code>Tick</code> message, itself responsible of the process of the PowerAPI business part.</p>
+<p>This module also defines the essential <code>Clock</code> class, responsible of the periodically sending of the <code>Tick</code> message, later responsible of the process of the PowerAPI business part.</p>
 
 <h3>Sensors</h3>
 
-<p>To compute the energy spent by a process through its hardware resource utilization, PowerAPI cuts computation in two parts:
-1. Monitoring of hardware resource process utilization;
-2. Computing the energy implies by the hardware resource process utilization.</p>
+<p>To compute energy spent by a process through its hardware resource utilization, PowerAPI cuts computation in two parts:
+1. Hardware resource process utilization monitoring;
+2. Computation of the energy implies by the hardware resource process utilization.</p>
 
-<p>The Sensor modules or <em>Sensors</em> represents a set of <code>Sensor</code>, responsible of the monitoring of hardware resource process utilization. Thus, you have a CPU <code>Sensor</code>, a memory <code>Sensor</code>, a disk <code>Sensor</code> and so on.
-As these information are given by operating system, there is one <code>Sensor</code> implementation by operating system type. Thus you may have a CPU Linux <code>Sensor</code>, a CPU Windows <code>Sensor</code>, and so on.</p>
+<p>Sensor modules or <em>Sensors</em> represents a set of <code>Sensor</code>, responsible of the monitoring of hardware resource process utilization. Thus, there is a CPU <code>Sensor</code>, a memory <code>Sensor</code>, a disk <code>Sensor</code> and so on.
+As information is given by operating system, there is one <code>Sensor</code> implementation by operating system type. Thus there is a CPU Linux <code>Sensor</code>, a CPU Windows <code>Sensor</code>, and so on.</p>
 
 <h3>Formulae</h3>
 
-<p>Set of <code>Formula</code>, responsible of the computation of the energy spent by a process on a particular hardware resource (e.g CPU, memory, disk or network), following information provided by its associated <code>Sensor</code>.
+<p>Set of <code>Formula</code>, responsible of the computation of the energy spent by a process on a particular hardware resource (e.g CPU, memory, disk, network), following information provided by its associated <code>Sensor</code>.
 A <code>Formula</code> may depend on the type of the monitored hardware resource. Thus, for the same hardware resource, several <code>Formula</code> implementations could exist.</p>
 
 <h3>Listeners</h3>
 
-<p>Set of <code>Listener</code>, that listen <code>Formula</code> events sending by the common event bus. Thus, a <code>Listener</code> define the actions to do when receiving results from the energy computation (e.g displaying information, producing and submitting information to the common event bus, etc.).</p>
+<p>Set of <code>Listener</code>, which listen <code>Formula</code> events sending by the common event bus. A <code>Listener</code> define the actions to do when receiving results from the energy computation (e.g displaying information or producing and submitting information to the common event bus).</p>
 
 <h3>Library</h3>
 
@@ -167,8 +167,8 @@ A <code>Formula</code> may depend on the type of the monitored hardware resource
 
 <h3>What is the CPU energy spent by the 123 process? Please give me fresh results every 500 milliseconds</h3>
 
-<p>Considering that process run under Linux, using a <em>procfs</em> file system on a <em>standard</em> CPU architecture.
-Thus, we need to use the <em>procfs</em> CPU <code>Sensor</code> implementation and the general CPU <code>Formula</code> implementation. Add to this the desire to display CPU energy spent by process into the console. So we need to:</p>
+<p>Assume that process run under Linux, using a <a href="http://en.wikipedia.org/wiki/Procfs" title="Procfs">procfs</a> file system on a <em>standard</em> CPU architecture.
+Thus, we need to use the <em>procfs</em> CPU <code>Sensor</code> implementation and the general CPU <code>Formula</code> implementation. Add to this the desire to display CPU energy spent by process into a console. So we need to:</p>
 
 <ol>
 <li>Activate the desired modules:</li>
@@ -179,7 +179,7 @@ Thus, we need to use the <em>procfs</em> CPU <code>Sensor</code> implementation 
 </pre></div>
 
 <ol>
-<li>Request to PowerAPI the CPU energy spent by the 123 process, every 500 milliseconds:</li>
+<li>Ask to PowerAPI to provide the CPU energy spent by the 123 process, every 500 milliseconds, using a <em>console Listener</em>:</li>
 </ol><div class="highlight"><pre><span class="nc">PowerAPI</span><span class="o">.</span><span class="n">startMonitoring</span><span class="o">(</span>
     <span class="nc">Process</span><span class="o">(</span><span class="mi">123</span><span class="o">),</span>
     <span class="mi">500</span> <span class="n">milliseconds</span><span class="o">,</span>
@@ -201,7 +201,7 @@ PowerAPI integrates a <code>Listener</code> using the <a href="http://www.jfree.
 
 <h2>Future works</h2>
 
-<p>We are working on new hardware resource <em>energy modules</em> (<code>Sensor</code> + <code>Formula</code>) development. If you are interested to participate, feel free to contact <a href="mailto:powerapi-user-list@googlegroups.com">powerapi-user-list@googlegroups.com</a>!</p>
+<p>We are working on new <em>energy modules</em> (<code>Sensor</code> + <code>Formula</code>) development. If you are interested to participate, feel free to contact us via our <a href="https://github.com/abourdon/powerapi-akka" title="GitHub">GitHub</a> webpage or mail us at <a href="mailto:powerapi-user-list@googlegroups.com">powerapi-user-list@googlegroups.com</a>!</p>
 
 <h2>License</h2>
 
