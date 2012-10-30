@@ -13,7 +13,7 @@ PowerAPI offers an API which can be used to express request about energy spent b
 * [Future works](#future-works)
 * [License](#license)
 
-## Getting started
+## <a id="getting-started"></a>Getting started
 
 PowerAPI is completely written in [Scala](http://www.scala-lang.org "Scala language") (v. 2.9.1+), using the [Akka library](http://akka.io "Akka library") (v 2.0.1+). Configuration part is managed by the [Typesafe Config](https://github.com/typesafehub/config "Typesafe Config") (integrated version from the [Akka library](http://akka.io "Akka library")).
 PowerAPI project is fully managed by [Maven](http://maven.apache.org "Maven") (v. 3).
@@ -97,7 +97,7 @@ powerapi {
 
 Each module can have its own configuration part. See more details in its associated `README` file.
 
-## Architecture details
+## <a id="architecture-details"></a>Architecture details
 
 PowerAPI is based on a modular and asynchronous event-driven architecture using the [Akka library](http://akka.io "Akka library"). Architecture is centralized around a common [event bus](http://en.wikipedia.org/wiki/Event_monitoring "Event monitoring") where each module can publish/subscribe to sending events. One particularity of this architecture is that each module is in passive state and reacts to events sent by the common event bus.
 
@@ -131,7 +131,7 @@ Set of `Listener`, which listen `Formula` events sending by the common event bus
 
 The Library module defines the API that can be used by user to interact with PowerAPI.
 
-## API details
+## <a id="api-details"></a>API details
 
 Process-level energy monitoring is based on a periodically computation that can be expressed via the API. Here there are several examples to describe PowerAPI's API:
 
@@ -172,23 +172,23 @@ PowerAPI.startMonitoring(
 
 That's all!
 
-## Future works
+## <a id="future-works"></a>Future works
 
 We are working on new _energy modules_ (`Sensor` + `Formula`) development. If you are interested to participate, feel free to contact us via our [GitHub](https://github.com/abourdon/powerapi-akka "GitHub") webpage or mail us at powerapi-user-list@googlegroups.com!
 
-## License
+## <a id="license"></a>License
 
 Copyright (C) 2012 Inria, University Lille 1.
 
 PowerAPI is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
 
 PowerAPI is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
+GNU Affero General Public License for more details.
 
-You should have received a copy of the GNU General Public License
+You should have received a copy of the GNU Affero General Public License
 along with PowerAPI. If not, see <http://www.gnu.org/licenses/>.
