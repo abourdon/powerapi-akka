@@ -82,7 +82,7 @@ To compute this formula, `fr.inria.powerapi.formula.formula-cpu-general` module 
 
 This information can be written in its associated configuration file as the following:
 
-```
+```json
 powerapi {
 	cpu {
 		tdp = 105
