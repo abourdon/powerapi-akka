@@ -1,36 +1,43 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-
   <head>
-    <meta charset='utf-8' />
-    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="PowerAPI : Library API to monitor energy spent at the process-level" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>PowerAPI by abourdon</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
-
-    <title>PowerAPI</title>
   </head>
-
   <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/abourdon/powerapi-akka">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/abourdon/powerapi-akka/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/abourdon/powerapi-akka/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/abourdon/powerapi-akka">View on GitHub</a>
+    <div class="wrapper">
 
-          <h1 id="project_title">PowerAPI</h1>
-          <h2 id="project_tagline">Library API to monitor energy spent at the process-level</h2>
+      <section>
+        <div id="title">
+          <h1>PowerAPI</h1>
+          <p>Library API to monitor energy spent at the process-level</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/abourdon">abourdon</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
+        </div>
 
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/abourdon/powerapi-akka/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/abourdon/powerapi-akka/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
         <h1>PowerAPI</h1>
 
 <p>PowerAPI is a scala-based library for monitoring energy at the process-level. It is based on a modular and asynchronous event-driven architecture using the <a href="http://akka.io" title="Akka library">Akka library</a>.</p>
@@ -47,8 +54,7 @@
 <li><a href="#api-details">API details</a></li>
 <li><a href="#future-works">Future works</a></li>
 <li><a href="#license">License</a></li>
-</ul><h2>
-<a></a>Getting started</h2>
+</ul><h2>Getting started</h2>
 
 <p>PowerAPI is completely written in <a href="http://www.scala-lang.org" title="Scala language">Scala</a> (v. 2.9.1+), using the <a href="http://akka.io" title="Akka library">Akka library</a> (v 2.0.1+). Configuration part is managed by the <a href="https://github.com/typesafehub/config" title="Typesafe Config">Typesafe Config</a> (integrated version from the <a href="http://akka.io" title="Akka library">Akka library</a>).
 PowerAPI project is fully managed by <a href="http://maven.apache.org" title="Maven">Maven</a> (v. 3).</p>
@@ -128,8 +134,7 @@ mvn <span class="nb">test</span>
 
 <p>Each module can have its own configuration part. See more details in its associated <code>README</code> file.</p>
 
-<h2>
-<a></a>Architecture details</h2>
+<h2>Architecture details</h2>
 
 <p>PowerAPI is based on a modular and asynchronous event-driven architecture using the <a href="http://akka.io" title="Akka library">Akka library</a>. Architecture is centralized around a common <a href="http://en.wikipedia.org/wiki/Event_monitoring" title="Event monitoring">event bus</a> where each module can publish/subscribe to sending events. One particularity of this architecture is that each module is in passive state and reacts to events sent by the common event bus.</p>
 
@@ -163,8 +168,7 @@ A <code>Formula</code> may depend on the type of the monitored hardware resource
 
 <p>The Library module defines the API that can be used by user to interact with PowerAPI.</p>
 
-<h2>
-<a></a>API details</h2>
+<h2>API details</h2>
 
 <p>Process-level energy monitoring is based on a periodically computation that can be expressed via the API. Here there are several examples to describe PowerAPI's API:</p>
 
@@ -202,13 +206,11 @@ PowerAPI integrates a <code>Listener</code> using the <a href="http://www.jfree.
 
 <p>That's all!</p>
 
-<h2>
-<a></a>Future works</h2>
+<h2>Future works</h2>
 
 <p>We are working on new <em>energy modules</em> (<code>Sensor</code> + <code>Formula</code>) development. If you are interested to participate, feel free to contact us via our <a href="https://github.com/abourdon/powerapi-akka" title="GitHub">GitHub</a> webpage or mail us at <a href="mailto:powerapi-user-list@googlegroups.com">powerapi-user-list@googlegroups.com</a>!</p>
 
-<h2>
-<a></a>License</h2>
+<h2>License</h2>
 
 <p>Copyright (C) 2012 Inria, University Lille 1.</p>
 
@@ -225,17 +227,9 @@ GNU Affero General Public License for more details.</p>
 <p>You should have received a copy of the GNU Affero General Public License
 along with PowerAPI. If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p>
       </section>
-    </div>
 
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">PowerAPI maintained by <a href="https://github.com/abourdon">abourdon</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
-      </footer>
     </div>
-
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
     
-
   </body>
 </html>
