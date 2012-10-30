@@ -13,7 +13,7 @@ PowerAPI offers an API which can be used to express request about energy spent b
 * [Future works](#future-works)
 * [License](#license)
 
-## <a id="getting-started"></a>Getting started
+<h2 id="getting-started">Getting started</h2>
 
 PowerAPI is completely written in [Scala](http://www.scala-lang.org "Scala language") (v. 2.9.1+), using the [Akka library](http://akka.io "Akka library") (v 2.0.1+). Configuration part is managed by the [Typesafe Config](https://github.com/typesafehub/config "Typesafe Config") (integrated version from the [Akka library](http://akka.io "Akka library")).
 PowerAPI project is fully managed by [Maven](http://maven.apache.org "Maven") (v. 3).
@@ -97,7 +97,7 @@ powerapi {
 
 Each module can have its own configuration part. See more details in its associated `README` file.
 
-## <a id="architecture-details"></a>Architecture details
+<h2 id="architecture-details">Architecture details</h2>
 
 PowerAPI is based on a modular and asynchronous event-driven architecture using the [Akka library](http://akka.io "Akka library"). Architecture is centralized around a common [event bus](http://en.wikipedia.org/wiki/Event_monitoring "Event monitoring") where each module can publish/subscribe to sending events. One particularity of this architecture is that each module is in passive state and reacts to events sent by the common event bus.
 
@@ -131,7 +131,7 @@ Set of `Listener`, which listen `Formula` events sending by the common event bus
 
 The Library module defines the API that can be used by user to interact with PowerAPI.
 
-## <a id="api-details"></a>API details
+<h2 id="api-details">API details</h2>
 
 Process-level energy monitoring is based on a periodically computation that can be expressed via the API. Here there are several examples to describe PowerAPI's API:
 
@@ -172,11 +172,11 @@ PowerAPI.startMonitoring(
 
 That's all!
 
-## <a id="future-works"></a>Future works
+<h2 id="future-works">Future works</h2>
 
 We are working on new _energy modules_ (`Sensor` + `Formula`) development. If you are interested to participate, feel free to contact us via our [GitHub](https://github.com/abourdon/powerapi-akka "GitHub") webpage or mail us at powerapi-user-list@googlegroups.com!
 
-## <a id="license"></a>License
+<h2 id="license">License</h2>
 
 Copyright (C) 2012 Inria, University Lille 1.
 
