@@ -30,8 +30,8 @@ import fr.inria.powerapi.core.Listener
 import fr.inria.powerapi.core.Message
 import fr.inria.powerapi.core.Process
 import fr.inria.powerapi.library.PowerAPI
-import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
-import fr.inria.powerapi.formula.disk.api.DiskFormulaValues
+import fr.inria.powerapi.formula.cpu.api.CpuFormulaMessage
+import fr.inria.powerapi.formula.disk.api.DiskFormulaMessage
 import scalax.io.Resource
 import akka.util.duration._
 import akka.actor.ActorSystem
@@ -57,12 +57,12 @@ class CpuDiskListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
     val timestamp = 0L
     cpuDiskListener.cache should have size 0
 
-    cpuDiskListener.process(CpuFormulaValues(Energy.fromPower(1), Tick(TickSubscription(Process(123), 1 second), timestamp)))
-    cpuDiskListener.process(DiskFormulaValues(Energy.fromPower(10), Tick(TickSubscription(Process(123), 1 second), timestamp)))
-    cpuDiskListener.process(CpuFormulaValues(Energy.fromPower(2), Tick(TickSubscription(Process(456), 1 second), timestamp)))
-    cpuDiskListener.process(CpuFormulaValues(Energy.fromPower(3), Tick(TickSubscription(Process(789), 1 second), timestamp)))
-    cpuDiskListener.process(DiskFormulaValues(Energy.fromPower(20), Tick(TickSubscription(Process(456), 1 second), timestamp)))
-    cpuDiskListener.process(DiskFormulaValues(Energy.fromPower(30), Tick(TickSubscription(Process(789), 1 second), timestamp)))
+    cpuDiskListener.process(CpuFormulaMessage(Energy.fromPower(1), Tick(TickSubscription(Process(123), 1 second), timestamp)))
+    cpuDiskListener.process(DiskFormulaMessage(Energy.fromPower(10), Tick(TickSubscription(Process(123), 1 second), timestamp)))
+    cpuDiskListener.process(CpuFormulaMessage(Energy.fromPower(2), Tick(TickSubscription(Process(456), 1 second), timestamp)))
+    cpuDiskListener.process(CpuFormulaMessage(Energy.fromPower(3), Tick(TickSubscription(Process(789), 1 second), timestamp)))
+    cpuDiskListener.process(DiskFormulaMessage(Energy.fromPower(20), Tick(TickSubscription(Process(456), 1 second), timestamp)))
+    cpuDiskListener.process(DiskFormulaMessage(Energy.fromPower(30), Tick(TickSubscription(Process(789), 1 second), timestamp)))
 
     cpuDiskListener.cache should equal(Map(
       timestamp -> Map(
@@ -81,17 +81,17 @@ class CpuDiskListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
     val timestamp = 0L
     cpuDiskListener.cache should have size 0
 
-    cpuDiskListener.process(CpuFormulaValues(Energy.fromPower(1), Tick(TickSubscription(Process(123), 1 second), timestamp)))
-    cpuDiskListener.process(DiskFormulaValues(Energy.fromPower(10), Tick(TickSubscription(Process(123), 1 second), timestamp)))
-    cpuDiskListener.process(CpuFormulaValues(Energy.fromPower(2), Tick(TickSubscription(Process(456), 1 second), timestamp)))
-    cpuDiskListener.process(CpuFormulaValues(Energy.fromPower(3), Tick(TickSubscription(Process(789), 1 second), timestamp)))
-    cpuDiskListener.process(DiskFormulaValues(Energy.fromPower(20), Tick(TickSubscription(Process(456), 1 second), timestamp)))
-    cpuDiskListener.process(DiskFormulaValues(Energy.fromPower(30), Tick(TickSubscription(Process(789), 1 second), timestamp)))
+    cpuDiskListener.process(CpuFormulaMessage(Energy.fromPower(1), Tick(TickSubscription(Process(123), 1 second), timestamp)))
+    cpuDiskListener.process(DiskFormulaMessage(Energy.fromPower(10), Tick(TickSubscription(Process(123), 1 second), timestamp)))
+    cpuDiskListener.process(CpuFormulaMessage(Energy.fromPower(2), Tick(TickSubscription(Process(456), 1 second), timestamp)))
+    cpuDiskListener.process(CpuFormulaMessage(Energy.fromPower(3), Tick(TickSubscription(Process(789), 1 second), timestamp)))
+    cpuDiskListener.process(DiskFormulaMessage(Energy.fromPower(20), Tick(TickSubscription(Process(456), 1 second), timestamp)))
+    cpuDiskListener.process(DiskFormulaMessage(Energy.fromPower(30), Tick(TickSubscription(Process(789), 1 second), timestamp)))
 
     val anotherTimestamp = 1L
-    cpuDiskListener.process(CpuFormulaValues(Energy.fromPower(1), Tick(TickSubscription(Process(123), 1 second), anotherTimestamp)))
-    cpuDiskListener.process(DiskFormulaValues(Energy.fromPower(10), Tick(TickSubscription(Process(123), 1 second), anotherTimestamp)))
-    cpuDiskListener.process(CpuFormulaValues(Energy.fromPower(2), Tick(TickSubscription(Process(456), 1 second), anotherTimestamp)))
+    cpuDiskListener.process(CpuFormulaMessage(Energy.fromPower(1), Tick(TickSubscription(Process(123), 1 second), anotherTimestamp)))
+    cpuDiskListener.process(DiskFormulaMessage(Energy.fromPower(10), Tick(TickSubscription(Process(123), 1 second), anotherTimestamp)))
+    cpuDiskListener.process(CpuFormulaMessage(Energy.fromPower(2), Tick(TickSubscription(Process(456), 1 second), anotherTimestamp)))
 
     cpuDiskListener.cache should equal(Map(
       timestamp -> Map(
@@ -119,21 +119,21 @@ class CpuDiskListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
     val timestamp = 0L
     cpuDiskListener.cache should have size 0
 
-    val cpuFormulaValues = CpuFormulaValues(Energy.fromPower(1), Tick(TickSubscription(Process(123), 1 second), timestamp))
-    cpuDiskListener.process(cpuFormulaValues)
+    val cpuFormulaMessage = CpuFormulaMessage(Energy.fromPower(1), Tick(TickSubscription(Process(123), 1 second), timestamp))
+    cpuDiskListener.process(cpuFormulaMessage)
     cpuDiskListener.cache should contain key timestamp
     cpuDiskListener.cache(timestamp) should equal(Map(Process(123) -> Map("cpu" -> 1.0)))
 
-    val diskFormulaValues = DiskFormulaValues(Energy.fromPower(2), Tick(TickSubscription(Process(123), 1 second), timestamp))
-    cpuDiskListener.process(diskFormulaValues)
+    val diskFormulaMessage = DiskFormulaMessage(Energy.fromPower(2), Tick(TickSubscription(Process(123), 1 second), timestamp))
+    cpuDiskListener.process(diskFormulaMessage)
     cpuDiskListener.cache(timestamp) should equal(Map(Process(123) -> Map("cpu" -> 1.0, "disk" -> 2.0)))
 
     val anotherTimestamp = 1L
-    cpuDiskListener.process(CpuFormulaValues(Energy.fromPower(3), Tick(TickSubscription(Process(123), 1 second), anotherTimestamp)))
+    cpuDiskListener.process(CpuFormulaMessage(Energy.fromPower(3), Tick(TickSubscription(Process(123), 1 second), anotherTimestamp)))
     cpuDiskListener.cache(timestamp) should equal(Map(Process(123) -> Map("cpu" -> 1.0, "disk" -> 2.0)))
     cpuDiskListener.cache(anotherTimestamp) should equal(Map(Process(123) -> Map("cpu" -> 3.0)))
 
-    cpuDiskListener.process(DiskFormulaValues(Energy.fromPower(4), Tick(TickSubscription(Process(123), 1 second), anotherTimestamp)))
+    cpuDiskListener.process(DiskFormulaMessage(Energy.fromPower(4), Tick(TickSubscription(Process(123), 1 second), anotherTimestamp)))
     cpuDiskListener.cache should have size 1
     cpuDiskListener.cache(anotherTimestamp) should equal(Map(Process(123) -> Map("cpu" -> 3.0, "disk" -> 4.0)))
   }

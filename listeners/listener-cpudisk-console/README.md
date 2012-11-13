@@ -7,8 +7,8 @@ Make the aggregation between CPU and disk `Formula` results and display them int
 ## In
 
 Listen to:
-* `CpuFormulaValues`, which are typically provided by `fr.inria.powerapi.formula.formula-cpu-api` (inherited) module.
-* `DiskFormulaValues`, which are typically provided by `fr.inria.powerapi.formula.formula-disk-api` (inherited) module.
+* `CpuFormulaMessage`, which are typically provided by `fr.inria.powerapi.formula.formula-cpu-api` (inherited) module.
+* `DiskFormulaMessage`, which are typically provided by `fr.inria.powerapi.formula.formula-disk-api` (inherited) module.
 
 ## Out
 

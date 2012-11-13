@@ -6,7 +6,7 @@ Display CPU `Formula` results into the console.
 
 ## In
 
-Listen to `CPUFormulaValues`, which are typically provided by `fr.inria.powerapi.formula.formula-cpu-api` (inherited) module.
+Listen to `CPUFormulaMessage`, which are typically provided by `fr.inria.powerapi.formula.formula-cpu-api` (inherited) module.
 
 ## Out
 

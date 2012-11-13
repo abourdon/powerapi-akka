@@ -20,8 +20,8 @@
  */
 package fr.inria.powerapi.listener.cpudisk.jfreechart
 import fr.inria.powerapi.core.Listener
-import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
-import fr.inria.powerapi.formula.disk.api.DiskFormulaValues
+import fr.inria.powerapi.formula.cpu.api.CpuFormulaMessage
+import fr.inria.powerapi.formula.disk.api.DiskFormulaMessage
 import fr.inria.powerapi.core.Message
 import fr.inria.powerapi.core.Energy
 import fr.inria.powerapi.core.Process
@@ -49,13 +49,13 @@ trait Configuration extends fr.inria.powerapi.core.Configuration {
   lazy val aggregateByDevice = load(_.getBoolean("powerapi.listener-cpudisk-jfreechart.aggregate-by-device"))(true)
 
   /**
-   * If this CPU and disk listener has to simply write power, or the whole information contained into both CpuFormulaValues and DiskFormulaValues message.
+   * If this CPU and disk listener has to simply write power, or the whole information contained into both CpuFormulaMessage and DiskFormulaMessage message.
    */
   lazy val justTotal = load(_.getBoolean("powerapi.listener-cpudisk-jfreechart.just-total"))(false)
 }
 
 /**
- * CPU and disk listener, displaying result into a JFreeChart graph from both CpuFormulaValues and DiskFormulaValues messages.
+ * CPU and disk listener, displaying result into a JFreeChart graph from both CpuFormulaMessage and DiskFormulaMessage messages.
  *
  * Each CPU or disk result is cached into a data structure, in order to display a global result.
  *
@@ -69,7 +69,7 @@ class CpuDiskListener extends Listener with Configuration {
 
   var cleanupSchedule: Cancellable = _
 
-  def messagesToListen = Array(classOf[CpuFormulaValues], classOf[DiskFormulaValues])
+  def messagesToListen = Array(classOf[CpuFormulaMessage], classOf[DiskFormulaMessage])
 
   override def preStart() {
     cleanupSchedule = context.system.scheduler.schedule(Duration.Zero, refreshRate) {
@@ -87,16 +87,16 @@ class CpuDiskListener extends Listener with Configuration {
   }
 
   def acquire = {
-    case cpuFormulaValues: CpuFormulaValues => process(cpuFormulaValues)
-    case diskFormulaValues: DiskFormulaValues => process(diskFormulaValues)
+    case cpuFormulaMessage: CpuFormulaMessage => process(cpuFormulaMessage)
+    case diskFormulaMessage: DiskFormulaMessage => process(diskFormulaMessage)
   }
 
-  def process(cpuFormulaValues: CpuFormulaValues) {
-    addEntry(cpuFormulaValues.tick.timestamp, cpuFormulaValues.tick.subscription.process, "cpu", cpuFormulaValues.energy.power)
+  def process(cpuFormulaMessage: CpuFormulaMessage) {
+    addEntry(cpuFormulaMessage.tick.timestamp, cpuFormulaMessage.tick.subscription.process, "cpu", cpuFormulaMessage.energy.power)
   }
 
-  def process(diskFormulaValues: DiskFormulaValues) {
-    addEntry(diskFormulaValues.tick.timestamp, diskFormulaValues.tick.subscription.process, "disk", diskFormulaValues.energy.power)
+  def process(diskFormulaMessage: DiskFormulaMessage) {
+    addEntry(diskFormulaMessage.tick.timestamp, diskFormulaMessage.tick.subscription.process, "disk", diskFormulaMessage.energy.power)
   }
 
   def addEntry(timestamp: Long, process: Process, device: String, power: Double) = synchronized {

@@ -23,28 +23,31 @@ import fr.inria.powerapi.core.Energy
 import fr.inria.powerapi.core.Formula
 import fr.inria.powerapi.core.Message
 import fr.inria.powerapi.core.Tick
-import fr.inria.powerapi.sensor.disk.api.DiskSensorValues
+import fr.inria.powerapi.sensor.disk.api.DiskSensorMessage
+import fr.inria.powerapi.core.FormulaMessage
+import fr.inria.powerapi.core.Energy
+import fr.inria.powerapi.core.Tick
 
 /**
- * Disk formula's messages definition.
+ * Disk formula's message definition.
  *
  * @author abourdon
  */
-case class DiskFormulaValues(energy: Energy, tick: Tick) extends Message
+case class DiskFormulaMessage(energy: Energy, tick: Tick, device: String = "disk") extends FormulaMessage
 
 /**
  * Base trait for disk formula modules.
  *
- * Each of these has to listen to the DiskSensorValues message and implements the associated process method.
+ * Each of these has to listen to the DiskSensorMessage message and implements the associated process method.
  *
  * @author abourdon
  */
 trait DiskFormula extends Formula {
-  def messagesToListen = Array(classOf[DiskSensorValues])
+  def messagesToListen = Array(classOf[DiskSensorMessage])
 
-  def process(diskSensorValues: DiskSensorValues)
+  def process(diskSensorMessage: DiskSensorMessage)
 
   def acquire = {
-    case diskSensorValues: DiskSensorValues => process(diskSensorValues)
+    case diskSensorMessage: DiskSensorMessage => process(diskSensorMessage)
   }
 }

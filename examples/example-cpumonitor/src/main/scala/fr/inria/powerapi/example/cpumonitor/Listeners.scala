@@ -20,9 +20,13 @@
  */
 package fr.inria.powerapi.example.cpumonitor
 
-import fr.inria.powerapi.core.{Tick, Energy, Process, TickSubscription}
-import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
-import fr.inria.powerapi.listener.cpu.jfreechart.{CpuListener, Chart}
+import fr.inria.powerapi.core.Energy
+import fr.inria.powerapi.core.Process
+import fr.inria.powerapi.core.Tick
+import fr.inria.powerapi.core.TickSubscription
+import fr.inria.powerapi.formula.cpu.api.CpuFormulaMessage
+import fr.inria.powerapi.listener.cpu.jfreechart.Chart
+import fr.inria.powerapi.listener.cpu.jfreechart.CpuListener
 
 /**
  * CPU Listener which filter received information before display it into a graph.
@@ -33,56 +37,56 @@ class FilteredChart extends CpuListener {
   val powers = collection.mutable.HashMap[Process, Double]()
 
   override def acquire = {
-    case cpuFormulaValues: CpuFormulaValues => {
-      val process = cpuFormulaValues.tick.subscription.process
-      val old = powers getOrElse(process, Double.PositiveInfinity)
-      val now = cpuFormulaValues.energy.power
+    case cpuFormulaMessage: CpuFormulaMessage => {
+      val process = cpuFormulaMessage.tick.subscription.process
+      val old = powers getOrElse (process, Double.PositiveInfinity)
+      val now = cpuFormulaMessage.energy.power
       // We only process the chart if the difference between old and new value are over 10%
       if (math.min(now, old) / math.max(now, old) < 0.1) {
         powers += (process -> now)
-        Chart.process(cpuFormulaValues)
+        Chart.process(cpuFormulaMessage)
       }
     }
   }
 }
 
 /**
- * CPU listener which gather all CpuFormulaValues in order to compute only one result
- * as the sum of all received CpuFormulaValues for a specific timestamp.
+ * CPU listener which gather all CpuFormulaMessage in order to compute only one result
+ * as the sum of all received CpuFormulaMessage for a specific timestamp.
  *
  * @author abourdon
  */
 class GatheredChart extends CpuListener {
   val cache = collection.mutable.HashMap[Long, Double]()
 
-  override def process(cpuFormulaValues: CpuFormulaValues) {
-    def gatherPowers(cpuFormulaValues: CpuFormulaValues) {
-      cache(cpuFormulaValues.tick.timestamp) += cpuFormulaValues.energy.power
+  override def process(cpuFormulaMessage: CpuFormulaMessage) {
+    def gatherPowers(cpuFormulaMessage: CpuFormulaMessage) {
+      cache(cpuFormulaMessage.tick.timestamp) += cpuFormulaMessage.energy.power
     }
 
-    def displayCache(cpuFormulaValues: CpuFormulaValues) {
+    def displayCache(cpuFormulaMessage: CpuFormulaMessage) {
       if (!cache.isEmpty) {
         val timestamp = cache.keySet.toIndexedSeq(0)
         Chart.process(
-          CpuFormulaValues(
+          CpuFormulaMessage(
             Energy.fromPower(cache(timestamp)),
-            Tick(TickSubscription(Process(-1), cpuFormulaValues.tick.subscription.duration))))
+            Tick(TickSubscription(Process(-1), cpuFormulaMessage.tick.subscription.duration))))
       }
     }
 
-    def updateTimestamp(cpuFormulaValues: CpuFormulaValues) {
+    def updateTimestamp(cpuFormulaMessage: CpuFormulaMessage) {
       if (!cache.isEmpty) {
         val oldTimestamp = cache.keySet.toIndexedSeq(0)
         cache -= oldTimestamp
       }
-      cache += (cpuFormulaValues.tick.timestamp -> 0)
+      cache += (cpuFormulaMessage.tick.timestamp -> 0)
     }
 
-    if (cache.contains(cpuFormulaValues.tick.timestamp)) {
-      gatherPowers(cpuFormulaValues)
+    if (cache.contains(cpuFormulaMessage.tick.timestamp)) {
+      gatherPowers(cpuFormulaMessage)
     } else {
-      displayCache(cpuFormulaValues)
-      updateTimestamp(cpuFormulaValues)
+      displayCache(cpuFormulaMessage)
+      updateTimestamp(cpuFormulaMessage)
     }
   }
 }

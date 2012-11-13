@@ -20,11 +20,15 @@
  */
 package fr.inria.powerapi.formula.cpu.general
 
-import com.typesafe.config.Config
-import fr.inria.powerapi.core.{ TickSubscription, Energy }
-import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
-import fr.inria.powerapi.sensor.cpu.api.{ TimeInStates, ProcessElapsedTime, GlobalElapsedTime, CpuSensorValues }
 import scala.collection.JavaConversions
+import scala.collection.mutable
+
+import com.typesafe.config.Config
+
+import fr.inria.powerapi.core.Energy
+import fr.inria.powerapi.core.TickSubscription
+import fr.inria.powerapi.formula.cpu.api.CpuFormulaMessage
+import fr.inria.powerapi.sensor.cpu.api.CpuSensorMessage
 
 /**
  * CPU formula configuration.
@@ -77,14 +81,14 @@ class CpuFormula extends fr.inria.powerapi.formula.cpu.api.CpuFormula with Confi
   lazy val constant = (0.7 * tdp) / (frequencies.max._1 * math.pow(frequencies.max._2, 2))
   lazy val powers = frequencies.map(frequency => (frequency._1, (constant * frequency._1 * math.pow(frequency._2, 2))))
 
-  lazy val cache = mutable.HashMap[TickSubscription, CpuSensorValues]()
+  lazy val cache = mutable.HashMap[TickSubscription, CpuSensorMessage]()
 
-  def process(cpuSensorValues: CpuSensorValues) {
-    publish(compute(cpuSensorValues))
-    refreshCache(cpuSensorValues)
+  def process(cpuSensorMessage: CpuSensorMessage) {
+    publish(compute(cpuSensorMessage))
+    refreshCache(cpuSensorMessage)
   }
 
-  def usage(old: CpuSensorValues, now: CpuSensorValues) = {
+  def usage(old: CpuSensorMessage, now: CpuSensorMessage) = {
     val processUsage = (now.processElapsedTime.time - old.processElapsedTime.time).toDouble
     val globalUsage = (now.globalElapsedTime.time - old.globalElapsedTime.time).toDouble
     if (globalUsage == 0) {
@@ -94,7 +98,7 @@ class CpuFormula extends fr.inria.powerapi.formula.cpu.api.CpuFormula with Confi
     }
   }
 
-  def power(old: CpuSensorValues, now: CpuSensorValues) = {
+  def power(old: CpuSensorMessage, now: CpuSensorMessage) = {
     val timeInStates = now.timeInStates - old.timeInStates
     val totalPower = powers.foldLeft(0: Double) {
       (acc, power) => acc + (power._2 * timeInStates.times.getOrElse(power._1, 0: Long))
@@ -110,12 +114,12 @@ class CpuFormula extends fr.inria.powerapi.formula.cpu.api.CpuFormula with Confi
 
   }
 
-  def compute(now: CpuSensorValues): CpuFormulaValues = {
+  def compute(now: CpuSensorMessage): CpuFormulaMessage = {
     val old = cache getOrElse (now.tick.subscription, now)
-    CpuFormulaValues(Energy.fromPower(power(old, now) * usage(old, now)), now.tick)
+    CpuFormulaMessage(Energy.fromPower(power(old, now) * usage(old, now)), now.tick)
   }
 
-  def refreshCache(now: CpuSensorValues) {
+  def refreshCache(now: CpuSensorMessage) {
     cache += (now.tick.subscription -> now)
   }
 }

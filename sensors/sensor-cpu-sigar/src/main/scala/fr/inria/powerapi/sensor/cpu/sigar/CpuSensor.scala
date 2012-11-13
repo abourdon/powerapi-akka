@@ -20,8 +20,12 @@
  */
 package fr.inria.powerapi.sensor.cpu.sigar
 
-import fr.inria.powerapi.core.{Tick, Process}
-import fr.inria.powerapi.sensor.cpu.api.{TimeInStates, ProcessElapsedTime, GlobalElapsedTime, CpuSensorValues}
+import fr.inria.powerapi.core.Process
+import fr.inria.powerapi.core.Tick
+import fr.inria.powerapi.sensor.cpu.api.CpuSensorMessage
+import fr.inria.powerapi.sensor.cpu.api.GlobalElapsedTime
+import fr.inria.powerapi.sensor.cpu.api.ProcessElapsedTime
+import fr.inria.powerapi.sensor.cpu.api.TimeInStates
 
 /**
  * CPU sensor component using the Hyperic SIGAR API to get hardware information.
@@ -38,7 +42,7 @@ class CpuSensor extends fr.inria.powerapi.sensor.cpu.api.CpuSensor {
 
   def process(tick: Tick) {
     publish(
-      CpuSensorValues(
+      CpuSensorMessage(
         TimeInStates(timeInStates),
         GlobalElapsedTime(elapsedTime),
         ProcessElapsedTime(elapsedTime(tick.subscription.process)),

@@ -21,10 +21,10 @@
 package fr.inria.powerapi.example.adamdemo.full
 
 import fr.inria.powerapi.sensor.cpu.proc.CpuSensor
-import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
+import fr.inria.powerapi.formula.cpu.api.CpuFormulaMessage
 import fr.inria.powerapi.formula.cpu.general.CpuFormula
 import fr.inria.powerapi.sensor.disk.proc.DiskSensor
-import fr.inria.powerapi.formula.disk.api.DiskFormulaValues
+import fr.inria.powerapi.formula.disk.api.DiskFormulaMessage
 import fr.inria.powerapi.formula.disk.single.DiskFormula
 import fr.inria.powerapi.library.PowerAPI
 import fr.inria.powerapi.core.Listener

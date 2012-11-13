@@ -21,8 +21,8 @@
 package fr.inria.powerapi.formula.disk.single
 import fr.inria.powerapi.core.Energy
 import fr.inria.powerapi.core.TickSubscription
-import fr.inria.powerapi.formula.disk.api.DiskFormulaValues
-import fr.inria.powerapi.sensor.disk.api.DiskSensorValues
+import fr.inria.powerapi.formula.disk.api.DiskFormulaMessage
+import fr.inria.powerapi.sensor.disk.api.DiskSensorMessage
 
 /**
  * Disk formula configuration.
@@ -91,10 +91,10 @@ class DiskFormula extends fr.inria.powerapi.formula.disk.api.DiskFormula with Co
   lazy val readEnergyByByte = readPower / readRate
   lazy val writeEnergyByByte = writePower / writeRate
 
-  lazy val cache = collection.mutable.Map[TickSubscription, DiskSensorValues]()
-  lazy val defaultSensorValue = DiskSensorValues(Map("n/a" -> (0: Long, 0: Long)), null)
+  lazy val cache = collection.mutable.Map[TickSubscription, DiskSensorMessage]()
+  lazy val defaultSensorValue = DiskSensorMessage(Map("n/a" -> (0: Long, 0: Long)), null)
 
-  def power(now: DiskSensorValues, old: DiskSensorValues) = try {
+  def power(now: DiskSensorMessage, old: DiskSensorMessage) = try {
     val duration = now.tick.subscription.duration.toMillis / 1000.0
     Energy.fromJoule(((now.rw("n/a")._1 - old.rw("n/a")._1) * readEnergyByByte + (now.rw("n/a")._2 - old.rw("n/a")._2) * writeEnergyByByte), now.tick.subscription.duration)
   } catch {
@@ -104,17 +104,17 @@ class DiskFormula extends fr.inria.powerapi.formula.disk.api.DiskFormula with Co
     }
   }
 
-  def compute(now: DiskSensorValues): DiskFormulaValues = {
+  def compute(now: DiskSensorMessage): DiskFormulaMessage = {
     val old = cache getOrElse (now.tick.subscription, now)
-    DiskFormulaValues(power(now, old), now.tick)
+    DiskFormulaMessage(power(now, old), now.tick)
   }
 
-  def refreshCache(now: DiskSensorValues) {
+  def refreshCache(now: DiskSensorMessage) {
     cache += (now.tick.subscription -> now)
   }
 
-  def process(diskSensorValues: DiskSensorValues) {
-    publish(compute(diskSensorValues))
-    refreshCache(diskSensorValues)
+  def process(diskSensorMessage: DiskSensorMessage) {
+    publish(compute(diskSensorMessage))
+    refreshCache(diskSensorMessage)
   }
 }

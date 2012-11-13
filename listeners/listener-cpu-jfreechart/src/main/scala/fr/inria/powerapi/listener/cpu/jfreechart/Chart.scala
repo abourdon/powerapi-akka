@@ -20,16 +20,22 @@
  */
 package fr.inria.powerapi.listener.cpu.jfreechart
 
-import fr.inria.powerapi.core.Process
-import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
-import java.awt.{ Toolkit, Dimension }
-import org.jfree.chart.{ ChartPanel, ChartFactory }
-import org.jfree.data.time.{ TimeSeriesDataItem, TimeSeriesCollection, TimeSeries, FixedMillisecond }
-import org.jfree.ui.{ RefineryUtilities, ApplicationFrame }
 import java.awt.BasicStroke
+import java.awt.Dimension
+
+import org.jfree.chart.ChartFactory
+import org.jfree.chart.ChartPanel
+import org.jfree.data.time.FixedMillisecond
+import org.jfree.data.time.TimeSeries
+import org.jfree.data.time.TimeSeriesCollection
+import org.jfree.data.time.TimeSeriesDataItem
+import org.jfree.ui.ApplicationFrame
+
+import fr.inria.powerapi.core.Process
+import fr.inria.powerapi.formula.cpu.api.CpuFormulaMessage
 
 /**
- * Display received CpuFormulaValues to the wrapped JFreeChart chart.
+ * Display received CpuFormulaMessage to the wrapped JFreeChart chart.
  *
  * @author abourdon
  */
@@ -39,15 +45,15 @@ class Chart(title: String) {
     Chart.xValues, Chart.yValues, dataset, true, true, false)
   val timeSeries = collection.mutable.HashMap[Process, TimeSeries]()
 
-  def process(implicit cpuFormulaValues: CpuFormulaValues) {
-    val pid = cpuFormulaValues.tick.subscription.process
+  def process(implicit cpuFormulaMessage: CpuFormulaMessage) {
+    val pid = cpuFormulaMessage.tick.subscription.process
     if (!timeSeries.contains(pid)) {
       val serie = new TimeSeries(pid.toString)
       dataset.addSeries(serie)
       timeSeries += (pid -> serie)
       chart.getXYPlot().getRenderer().setSeriesStroke(dataset.getSeriesCount() - 1, new BasicStroke(3))
     }
-    timeSeries(pid).add(new TimeSeriesDataItem(new FixedMillisecond(cpuFormulaValues.tick.timestamp), cpuFormulaValues.energy.power))
+    timeSeries(pid).add(new TimeSeriesDataItem(new FixedMillisecond(cpuFormulaMessage.tick.timestamp), cpuFormulaMessage.energy.power))
   }
 }
 
@@ -91,7 +97,7 @@ object Chart {
     applicationFrame.setVisible(true)
   }
 
-  def process(implicit cpuFormulaValues: CpuFormulaValues) {
+  def process(implicit cpuFormulaMessage: CpuFormulaMessage) {
     chart.process
   }
 }

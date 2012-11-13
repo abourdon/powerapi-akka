@@ -20,7 +20,7 @@
  */
 package fr.inria.powerapi.example.adamdemo.allprocesses
 
-import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
+import fr.inria.powerapi.formula.cpu.api.CpuFormulaMessage
 import fr.inria.powerapi.sensor.cpu.proc.CpuSensor
 import fr.inria.powerapi.core.Process
 import scalax.io.Resource

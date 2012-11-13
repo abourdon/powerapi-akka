@@ -20,8 +20,8 @@
  */
 package fr.inria.powerapi.listener.cpudisk.console
 import fr.inria.powerapi.core.Listener
-import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
-import fr.inria.powerapi.formula.disk.api.DiskFormulaValues
+import fr.inria.powerapi.formula.cpu.api.CpuFormulaMessage
+import fr.inria.powerapi.formula.disk.api.DiskFormulaMessage
 import fr.inria.powerapi.core.Message
 import fr.inria.powerapi.core.Energy
 import fr.inria.powerapi.core.Process
@@ -44,7 +44,7 @@ trait Configuration extends fr.inria.powerapi.core.Configuration {
 }
 
 /**
- * CPU and disk listener, displaying result into the console from both CpuFormulaValues and DiskFormulaValues messages.
+ * CPU and disk listener, displaying result into the console from both CpuFormulaMessage and DiskFormulaMessage messages.
  *
  * Each CPU or disk result is cached into a data structure, in order to display a global result.
  *
@@ -56,7 +56,7 @@ class CpuDiskListener extends Listener with Configuration {
 
   var cleanupSchedule: Cancellable = _
 
-  def messagesToListen = Array(classOf[CpuFormulaValues], classOf[DiskFormulaValues])
+  def messagesToListen = Array(classOf[CpuFormulaMessage], classOf[DiskFormulaMessage])
 
   override def preStart() {
     cleanupSchedule = context.system.scheduler.schedule(Duration.Zero, refreshRate) {
@@ -69,16 +69,16 @@ class CpuDiskListener extends Listener with Configuration {
   }
 
   def acquire = {
-    case cpuFormulaValues: CpuFormulaValues => process(cpuFormulaValues)
-    case diskFormulaValues: DiskFormulaValues => process(diskFormulaValues)
+    case cpuFormulaMessage: CpuFormulaMessage => process(cpuFormulaMessage)
+    case diskFormulaMessage: DiskFormulaMessage => process(diskFormulaMessage)
   }
 
-  def process(cpuFormulaValues: CpuFormulaValues) {
-    addEntry(cpuFormulaValues.tick.timestamp, cpuFormulaValues.tick.subscription.process, "cpu", cpuFormulaValues.energy.power)
+  def process(cpuFormulaMessage: CpuFormulaMessage) {
+    addEntry(cpuFormulaMessage.tick.timestamp, cpuFormulaMessage.tick.subscription.process, "cpu", cpuFormulaMessage.energy.power)
   }
 
-  def process(diskFormulaValues: DiskFormulaValues) {
-    addEntry(diskFormulaValues.tick.timestamp, diskFormulaValues.tick.subscription.process, "disk", diskFormulaValues.energy.power)
+  def process(diskFormulaMessage: DiskFormulaMessage) {
+    addEntry(diskFormulaMessage.tick.timestamp, diskFormulaMessage.tick.subscription.process, "disk", diskFormulaMessage.energy.power)
   }
 
   def addEntry(timestamp: Long, process: Process, device: String, power: Double) = synchronized {

@@ -21,21 +21,21 @@
 package fr.inria.powerapi.listener.cpu.console
 
 import fr.inria.powerapi.core.Listener
-import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
+import fr.inria.powerapi.formula.cpu.api.CpuFormulaMessage
 
 /**
- * CPU listener which simply display received CpuFormulaValues to the console.
+ * CPU listener which simply display received CpuFormulaMessage to the console.
  *
  * @author abourdon
  */
 class CpuListener extends Listener {
-  def messagesToListen = Array(classOf[CpuFormulaValues])
+  def messagesToListen = Array(classOf[CpuFormulaMessage])
 
-  def process(cpuFormulaValues: CpuFormulaValues) {
-    println(cpuFormulaValues)
+  def process(cpuFormulaMessage: CpuFormulaMessage) {
+    println(cpuFormulaMessage)
   }
 
   def acquire = {
-    case cpuFormulaValues: CpuFormulaValues => process(cpuFormulaValues)
+    case cpuFormulaMessage: CpuFormulaMessage => process(cpuFormulaMessage)
   }
 }

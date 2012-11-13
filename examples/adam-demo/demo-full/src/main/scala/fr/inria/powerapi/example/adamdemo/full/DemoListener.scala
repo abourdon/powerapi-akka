@@ -20,8 +20,8 @@
  */
 package fr.inria.powerapi.example.adamdemo.full
 
-import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
-import fr.inria.powerapi.formula.disk.api.DiskFormulaValues
+import fr.inria.powerapi.formula.cpu.api.CpuFormulaMessage
+import fr.inria.powerapi.formula.disk.api.DiskFormulaMessage
 import fr.inria.powerapi.core.Listener
 import javax.swing.SwingUtilities
 
@@ -66,7 +66,7 @@ object DemoListener {
 class DemoListener extends Listener {
   val cache = collection.mutable.Map[Long, Map[Int, Map[String, Double]]]()
 
-  def messagesToListen = Array(classOf[CpuFormulaValues], classOf[DiskFormulaValues])
+  def messagesToListen = Array(classOf[CpuFormulaMessage], classOf[DiskFormulaMessage])
 
   init()
 
@@ -79,8 +79,8 @@ class DemoListener extends Listener {
   }
 
   def acquire = {
-    case cpuFormulaValues: CpuFormulaValues => process(cpuFormulaValues.tick.timestamp, cpuFormulaValues.tick.subscription.process.pid, "cpu", cpuFormulaValues.energy.power)
-    case diskFormulaValues: DiskFormulaValues => process(diskFormulaValues.tick.timestamp, diskFormulaValues.tick.subscription.process.pid, "disk", diskFormulaValues.energy.power)
+    case cpuFormulaMessage: CpuFormulaMessage => process(cpuFormulaMessage.tick.timestamp, cpuFormulaMessage.tick.subscription.process.pid, "cpu", cpuFormulaMessage.energy.power)
+    case diskFormulaMessage: DiskFormulaMessage => process(diskFormulaMessage.tick.timestamp, diskFormulaMessage.tick.subscription.process.pid, "disk", diskFormulaMessage.energy.power)
   }
 
   def process(timestamp: Long, pid: Int, device: String, power: Double) {

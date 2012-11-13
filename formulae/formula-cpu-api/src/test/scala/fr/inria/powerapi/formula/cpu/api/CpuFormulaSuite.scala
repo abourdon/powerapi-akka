@@ -20,19 +20,18 @@
  */
 package fr.inria.powerapi.formula.cpu.api
 
-import akka.actor.{Props, ActorSystem}
+import akka.actor.{ Props, ActorSystem }
 import akka.dispatch.Await
 import akka.pattern.ask
 import akka.util.Timeout
 import akka.util.duration._
-import fr.inria.powerapi.core.{Message, MessagesToListen}
-import fr.inria.powerapi.sensor.cpu.api.CpuSensorValues
+import fr.inria.powerapi.core.{ Message, MessagesToListen }
+import fr.inria.powerapi.sensor.cpu.api.CpuSensorMessage
 import org.junit.Test
-import org.scalatest.junit.{ShouldMatchersForJUnit, JUnitSuite}
-
+import org.scalatest.junit.{ ShouldMatchersForJUnit, JUnitSuite }
 
 class CpuFormulaMock extends CpuFormula {
-  def process(cpuSensorValues: CpuSensorValues) {}
+  def process(cpuSensorMessage: CpuSensorMessage) {}
 }
 
 class CpuFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
@@ -46,6 +45,6 @@ class CpuFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
     val messages = Await.result(request, timeout.duration).asInstanceOf[Array[Class[_ <: Message]]]
 
     messages should have size 1
-    messages(0) should be(classOf[CpuSensorValues])
+    messages(0) should be(classOf[CpuSensorMessage])
   }
 }

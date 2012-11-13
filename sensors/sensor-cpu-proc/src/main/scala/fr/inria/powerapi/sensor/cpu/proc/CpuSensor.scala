@@ -20,10 +20,16 @@
  */
 package fr.inria.powerapi.sensor.cpu.proc
 
-import fr.inria.powerapi.core.{ Tick, Process }
-import fr.inria.powerapi.sensor.cpu.api.{ TimeInStates, ProcessElapsedTime, GlobalElapsedTime, CpuSensorValues }
-import java.io.{ IOException, FileInputStream }
+import java.io.FileInputStream
+import java.io.IOException
 import java.net.URL
+
+import fr.inria.powerapi.core.Process
+import fr.inria.powerapi.core.Tick
+import fr.inria.powerapi.sensor.cpu.api.CpuSensorMessage
+import fr.inria.powerapi.sensor.cpu.api.GlobalElapsedTime
+import fr.inria.powerapi.sensor.cpu.api.ProcessElapsedTime
+import fr.inria.powerapi.sensor.cpu.api.TimeInStates
 import scalax.io.Resource
 
 /**
@@ -158,7 +164,7 @@ class CpuSensor extends fr.inria.powerapi.sensor.cpu.api.CpuSensor with Configur
 
   def process(tick: Tick) {
     publish(
-      CpuSensorValues(
+      CpuSensorMessage(
         TimeInStates(timeInStates),
         GlobalElapsedTime(elapsedTime),
         ProcessElapsedTime(elapsedTime(tick.subscription.process)),

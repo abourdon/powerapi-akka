@@ -21,28 +21,29 @@
 package fr.inria.powerapi.formula.cpu.api
 
 import fr.inria.powerapi.core.{Energy, Formula, Tick, Message}
-import fr.inria.powerapi.sensor.cpu.api.CpuSensorValues
+import fr.inria.powerapi.sensor.cpu.api.CpuSensorMessage
+import fr.inria.powerapi.core.FormulaMessage
 
 /**
  * CPU formula's messages definition.
  *
  * @author abourdon
  */
-case class CpuFormulaValues(energy: Energy, tick: Tick) extends Message
+case class CpuFormulaMessage(energy: Energy, tick: Tick, device: String = "cpu") extends FormulaMessage
 
 /**
  * Base trait for CPU formula modules.
  *
- * Each of these has to listen to the CpuSensorValues message and implements the associated process method.
+ * Each of these has to listen to the CpuSensorMessage message and implements the associated process method.
  *
  * @author abourdon
  */
 trait CpuFormula extends Formula {
-  def messagesToListen = Array(classOf[CpuSensorValues])
+  def messagesToListen = Array(classOf[CpuSensorMessage])
 
-  def process(cpuSensorValues: CpuSensorValues)
+  def process(cpuSensorMessage: CpuSensorMessage)
 
   def acquire = {
-    case cpuSensorValues: CpuSensorValues => process(cpuSensorValues)
+    case cpuSensorMessage: CpuSensorMessage => process(cpuSensorMessage)
   }
 }

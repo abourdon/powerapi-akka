@@ -30,11 +30,11 @@ import fr.inria.powerapi.core.Message
  * @param rw, Ridden and written bytes which the process did cause to be fetched from the storage layer.
  * As a system can have several disks, values are gather into a Map.
  * Each disk is identified by the String key value. Each read and byte counters are identified by the couple (Long, Long).
- * @param tick, the original Tick responsible of the computation of this DiskSensorValues.
+ * @param tick, the original Tick responsible of the computation of this DiskSensorMessage.
  *
  * @author abourdon
  */
-case class DiskSensorValues(rw: Map[String, (Long, Long)], tick: Tick) extends Message
+case class DiskSensorMessage(rw: Map[String, (Long, Long)], tick: Tick) extends Message
 
 /**
  * Base trait for disk sensor modules.

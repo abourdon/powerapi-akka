@@ -20,7 +20,7 @@
  */
 package fr.inria.powerapi.example.adamdemo.oneprocess
 
-import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
+import fr.inria.powerapi.formula.cpu.api.CpuFormulaMessage
 import fr.inria.powerapi.sensor.cpu.proc.CpuSensor
 import fr.inria.powerapi.core.Process
 import scalax.io.Resource
@@ -32,8 +32,8 @@ import scalax.file.Path
 import scalax.io.StandardOpenOption.WriteTruncate
 
 class CpuListener extends fr.inria.powerapi.listener.cpu.console.CpuListener {
-  override def process(cpuFormulaValues: CpuFormulaValues) {
-    println(cpuFormulaValues.energy.power)
+  override def process(cpuFormulaMessage: CpuFormulaMessage) {
+    println(cpuFormulaMessage.energy.power)
   }
 }
 

@@ -4,7 +4,7 @@ Display CPU and Disk `Formula`e into a [JFreeChart](http://www.jfree.org/jfreech
 
 ## In
 
-Listen to `CPUFormulaValues` and `DiskFormulaValues`, which are typically provided by resp. `fr.inria.powerapi.formula.formula-cpu-api` and `fr.inria.powerapi.formula.formula-disk-api` (inherited) modules.
+Listen to `CPUFormulaMessage` and `DiskFormulaMessage`, which are typically provided by resp. `fr.inria.powerapi.formula.formula-cpu-api` and `fr.inria.powerapi.formula.formula-disk-api` (inherited) modules.
 
 ## Out
 

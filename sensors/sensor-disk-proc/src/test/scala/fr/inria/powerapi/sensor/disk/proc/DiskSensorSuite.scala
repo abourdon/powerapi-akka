@@ -39,13 +39,14 @@ import fr.inria.powerapi.core.Tick
 import fr.inria.powerapi.core.TickIt
 import fr.inria.powerapi.core.TickSubscription
 import fr.inria.powerapi.core.UnTickIt
-import fr.inria.powerapi.sensor.disk.api.DiskSensorValues
+import fr.inria.powerapi.sensor.disk.api.DiskSensorMessage
+import fr.inria.powerapi.sensor.disk.proc.Configuration
 
 class DiskReceiverMock extends Actor {
-  var receivedValues: Option[DiskSensorValues] = None
+  var receivedValues: Option[DiskSensorMessage] = None
 
   def receive = {
-    case diskSensorValues: DiskSensorValues => receivedValues = Some(diskSensorValues)
+    case diskSensorMessage: DiskSensorMessage => receivedValues = Some(diskSensorMessage)
   }
 }
 
@@ -73,7 +74,7 @@ class DiskSensorSuite extends JUnitSuite with ShouldMatchersForJUnit {
     val diskReceiver = TestActorRef[DiskReceiverMock]
     val clock = system.actorOf(Props[Clock])
     system.eventStream.subscribe(diskSensor, classOf[Tick])
-    system.eventStream.subscribe(diskReceiver, classOf[DiskSensorValues])
+    system.eventStream.subscribe(diskReceiver, classOf[DiskSensorMessage])
 
     clock ! TickIt(TickSubscription(Process(123), 10 seconds))
     Thread.sleep(1000)
@@ -81,7 +82,7 @@ class DiskSensorSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
     diskReceiver.underlyingActor.receivedValues match {
       case None => fail()
-      case Some(diskSensorValues) => testReadAndWrite(diskSensorValues.rw("n/a"))
+      case Some(diskSensorMessage) => testReadAndWrite(diskSensorMessage.rw("n/a"))
     }
   }
 }

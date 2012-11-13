@@ -28,12 +28,12 @@ import akka.util.duration._
 import akka.util.Timeout
 import fr.inria.powerapi.core.Message
 import fr.inria.powerapi.core.MessagesToListen
-import fr.inria.powerapi.sensor.disk.api.DiskSensorValues
+import fr.inria.powerapi.sensor.disk.api.DiskSensorMessage
 import org.scalatest.junit.JUnitSuite
 import org.scalatest.junit.ShouldMatchersForJUnit
 
 class DiskFormulaMock extends DiskFormula {
-  def process(diskSensorValues: DiskSensorValues) {}
+  def process(diskSensorMessage: DiskSensorMessage) {}
 }
 
 class DiskFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
@@ -47,6 +47,6 @@ class DiskFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
     val messages = Await.result(request, timeout.duration).asInstanceOf[Array[Class[_ <: Message]]]
 
     messages should have size 1
-    messages(0) should be(classOf[DiskSensorValues])
+    messages(0) should be(classOf[DiskSensorMessage])
   }
 }

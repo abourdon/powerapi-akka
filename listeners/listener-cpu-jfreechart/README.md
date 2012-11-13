@@ -4,7 +4,7 @@ Display CPU `Formula` into a [JFreeChart](http://www.jfree.org/jfreechart "JFree
 
 ## In
 
-Listen to `CPUFormulaValues`, which are typically provided by `fr.inria.powerapi.formula.formula-cpu-api` (inherited) module.
+Listen to `CPUFormulaMessage`, which are typically provided by `fr.inria.powerapi.formula.formula-cpu-api` (inherited) module.
 
 ## Out
 

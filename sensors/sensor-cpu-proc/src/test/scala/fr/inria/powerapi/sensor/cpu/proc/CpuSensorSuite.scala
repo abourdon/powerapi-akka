@@ -20,23 +20,37 @@
  */
 package fr.inria.powerapi.sensor.cpu.proc
 
+import java.net.URL
+
+import scala.util.Properties
+
+import org.junit.Test
+import org.scalatest.junit.JUnitSuite
+import org.scalatest.junit.ShouldMatchersForJUnit
+
+import akka.actor.Actor
+import akka.actor.ActorSystem
+import akka.actor.Props
 import akka.actor.actorRef2Scala
-import akka.actor.{Props, ActorSystem, Actor}
 import akka.testkit.TestActorRef
 import akka.util.duration.intToDurationInt
-import fr.inria.powerapi.core.{UnTickIt, TickSubscription, TickIt, Tick, Process, Clock}
-import fr.inria.powerapi.sensor.cpu.api.{TimeInStates, ProcessElapsedTime, GlobalElapsedTime, CpuSensorValues}
-import java.net.URL
-import org.junit.Test
-import org.scalatest.junit.{ShouldMatchersForJUnit, JUnitSuite}
-import scala.util.Properties
+import fr.inria.powerapi.core.Clock
+import fr.inria.powerapi.core.Process
+import fr.inria.powerapi.core.Tick
+import fr.inria.powerapi.core.TickIt
+import fr.inria.powerapi.core.TickSubscription
+import fr.inria.powerapi.core.UnTickIt
+import fr.inria.powerapi.sensor.cpu.api.CpuSensorMessage
+import fr.inria.powerapi.sensor.cpu.api.GlobalElapsedTime
+import fr.inria.powerapi.sensor.cpu.api.ProcessElapsedTime
+import fr.inria.powerapi.sensor.cpu.api.TimeInStates
 
 
 class CpuSensorReceiver extends Actor {
-  var receivedData: Option[CpuSensorValues] = None
+  var receivedData: Option[CpuSensorMessage] = None
 
   def receive = {
-    case cpuSensorValues: CpuSensorValues => receivedData = Some(cpuSensorValues)
+    case cpuSensorMessage: CpuSensorMessage => receivedData = Some(cpuSensorMessage)
   }
 }
 
@@ -91,7 +105,7 @@ class CpuSensorSuite extends JUnitSuite with ShouldMatchersForJUnit {
     val cpuSensorReceiver = TestActorRef[CpuSensorReceiver]
     val clock = system.actorOf(Props[Clock])
     system.eventStream.subscribe(cpuSensor, classOf[Tick])
-    system.eventStream.subscribe(cpuSensorReceiver, classOf[CpuSensorValues])
+    system.eventStream.subscribe(cpuSensorReceiver, classOf[CpuSensorMessage])
 
     clock ! TickIt(TickSubscription(Process(123), 10 seconds))
     Thread.sleep(1000)
@@ -99,10 +113,10 @@ class CpuSensorSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
     cpuSensorReceiver.underlyingActor.receivedData match {
       case None => fail()
-      case Some(cpuSensorValues) => {
-        testTimeInStates(cpuSensorValues.timeInStates)
-        testGlobalElapsedTime(cpuSensorValues.globalElapsedTime)
-        testProcessElapsedTime(cpuSensorValues.processElapsedTime)
+      case Some(cpuSensorMessage) => {
+        testTimeInStates(cpuSensorMessage.timeInStates)
+        testGlobalElapsedTime(cpuSensorMessage.globalElapsedTime)
+        testProcessElapsedTime(cpuSensorMessage.processElapsedTime)
       }
     }
 

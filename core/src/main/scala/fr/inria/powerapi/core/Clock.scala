@@ -30,13 +30,8 @@ import collection.mutable
  *
  * @author abourdon
  */
-case class TickSubscription(process: Process, duration: Duration)
-
 case class TickIt(subscription: TickSubscription) extends Message
-
 case class UnTickIt(subscription: TickSubscription) extends Message
-
-case class Tick(subscription: TickSubscription, timestamp: Long = System.currentTimeMillis) extends Message
 
 /**
  * Clock configuration.

@@ -38,4 +38,3 @@ PowerAPI.startMonitoring(
 ```
 
 That's all!
-

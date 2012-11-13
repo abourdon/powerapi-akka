@@ -20,7 +20,7 @@
  */
 package fr.inria.powerapi.sensor.disk.atop
 import java.io.IOException
-import fr.inria.powerapi.sensor.disk.api.DiskSensorValues
+import fr.inria.powerapi.sensor.disk.api.DiskSensorMessage
 import fr.inria.powerapi.core.Process
 import fr.inria.powerapi.core.Tick
 import fr.inria.powerapi.core.Listener
@@ -50,14 +50,14 @@ class DiskSensorMock extends DiskSensor with ConfigurationMock
 class DiskSensorReceiver extends Listener {
   val receivedData = collection.mutable.Map[String, (Long, Long)]()
 
-  def messagesToListen = Array(classOf[DiskSensorValues])
+  def messagesToListen = Array(classOf[DiskSensorMessage])
 
   def acquire = {
-    case diskSensorValues: DiskSensorValues => process(diskSensorValues)
+    case diskSensorMessage: DiskSensorMessage => process(diskSensorMessage)
   }
 
-  def process(diskSensorValues: DiskSensorValues) {
-    receivedData ++= diskSensorValues.rw
+  def process(diskSensorMessage: DiskSensorMessage) {
+    receivedData ++= diskSensorMessage.rw
   }
 }
 
@@ -77,7 +77,7 @@ class DiskSensorSuite extends JUnitSuite with ShouldMatchersForJUnit {
     val diskSensorReceiver = TestActorRef[DiskSensorReceiver]
     val clock = system.actorOf(Props[Clock])
     system.eventStream.subscribe(diskSensor, classOf[Tick])
-    system.eventStream.subscribe(diskSensorReceiver, classOf[DiskSensorValues])
+    system.eventStream.subscribe(diskSensorReceiver, classOf[DiskSensorMessage])
 
     clock ! TickIt(TickSubscription(Process(123), 10 seconds))
     Thread.sleep(1000)

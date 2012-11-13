@@ -33,7 +33,7 @@ import org.jfree.ui.RefineryUtilities
 import java.awt.BasicStroke
 
 /**
- * Display received CpuFormulaValues to the wrapped JFreeChart chart.
+ * Display received CpuFormulaMessage to the wrapped JFreeChart chart.
  *
  * @author abourdon
  */

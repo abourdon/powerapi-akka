@@ -20,14 +20,23 @@
  */
 package fr.inria.powerapi.formula.cpu.general
 
+import org.junit.Test
+import org.scalatest.junit.JUnitSuite
+import org.scalatest.junit.ShouldMatchersForJUnit
+
 import akka.actor.actorRef2Scala
-import akka.actor.{ActorSystem, ActorLogging, Actor}
+import akka.actor.Actor
+import akka.actor.ActorLogging
+import akka.actor.ActorSystem
 import akka.testkit.TestActorRef
 import akka.util.duration.intToDurationInt
-import fr.inria.powerapi.core.{TickSubscription, Tick, Process}
-import fr.inria.powerapi.sensor.cpu.api.{TimeInStates, ProcessElapsedTime, GlobalElapsedTime, CpuSensorValues}
-import org.junit.Test
-import org.scalatest.junit.{ShouldMatchersForJUnit, JUnitSuite}
+import fr.inria.powerapi.core.Process
+import fr.inria.powerapi.core.Tick
+import fr.inria.powerapi.core.TickSubscription
+import fr.inria.powerapi.sensor.cpu.api.CpuSensorMessage
+import fr.inria.powerapi.sensor.cpu.api.GlobalElapsedTime
+import fr.inria.powerapi.sensor.cpu.api.ProcessElapsedTime
+import fr.inria.powerapi.sensor.cpu.api.TimeInStates
 
 case object Timestamps
 
@@ -78,7 +87,7 @@ class CpuFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
   @Test
   def testRefreshCache() {
-    val old = CpuSensorValues(
+    val old = CpuSensorMessage(
       TimeInStates(Map[Int, Long]()),
       GlobalElapsedTime(100),
       ProcessElapsedTime(50),
@@ -86,7 +95,7 @@ class CpuFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
     cpuformula.underlyingActor.refreshCache(old)
     cpuformula.underlyingActor.cache getOrElse(TickSubscription(Process(123), 500 milliseconds), null) should equal(old)
 
-    val now = CpuSensorValues(
+    val now = CpuSensorMessage(
       TimeInStates(Map[Int, Long]()),
       GlobalElapsedTime(300),
       ProcessElapsedTime(80),
@@ -99,13 +108,13 @@ class CpuFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
   @Test
   def testUsage() {
-    val old = CpuSensorValues(
+    val old = CpuSensorMessage(
       TimeInStates(Map[Int, Long]()),
       GlobalElapsedTime(100),
       ProcessElapsedTime(50),
       null)
 
-    val now = CpuSensorValues(
+    val now = CpuSensorMessage(
       TimeInStates(Map[Int, Long]()),
       GlobalElapsedTime(300),
       ProcessElapsedTime(80),
@@ -117,14 +126,14 @@ class CpuFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
   @Test
   def testPower() {
     val oldTimeInStates = TimeInStates(Map[Int, Long](1800002 -> 10, 2100002 -> 20, 2400003 -> 30))
-    val old = CpuSensorValues(
+    val old = CpuSensorMessage(
       oldTimeInStates,
       GlobalElapsedTime(100),
       ProcessElapsedTime(50),
       null)
 
     val nowTimInStates = TimeInStates(Map[Int, Long](1800002 -> 100, 2100002 -> 200, 2400003 -> 300))
-    val now = CpuSensorValues(
+    val now = CpuSensorMessage(
       nowTimInStates,
       GlobalElapsedTime(300),
       ProcessElapsedTime(80),
@@ -145,7 +154,7 @@ class CpuFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
   def testCompute() {
     val tick = Tick(TickSubscription(Process(123), 10 seconds))
     val oldTimeInStates = TimeInStates(Map[Int, Long](1800002 -> 10, 2100002 -> 20, 2400003 -> 30))
-    val old = CpuSensorValues(
+    val old = CpuSensorMessage(
       oldTimeInStates,
       GlobalElapsedTime(100),
       ProcessElapsedTime(50),
@@ -153,7 +162,7 @@ class CpuFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
     cpuformula.underlyingActor.refreshCache(old)
 
     val nowTimInStates = TimeInStates(Map[Int, Long](1800002 -> 100, 2100002 -> 200, 2400003 -> 300))
-    val now = CpuSensorValues(
+    val now = CpuSensorMessage(
       nowTimInStates,
       GlobalElapsedTime(300),
       ProcessElapsedTime(80),

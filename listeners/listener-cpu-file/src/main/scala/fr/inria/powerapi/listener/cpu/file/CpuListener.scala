@@ -21,7 +21,7 @@
 package fr.inria.powerapi.listener.cpu.file
 
 import fr.inria.powerapi.core.Listener
-import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
+import fr.inria.powerapi.formula.cpu.api.CpuFormulaMessage
 import scalax.file.Path
 import scalax.io.Line
 import scalax.io.Resource
@@ -43,13 +43,13 @@ trait Configuration extends fr.inria.powerapi.core.Configuration {
   lazy val append = load(_.getBoolean("powerapi.listener.cpu-console.append"))(true)
 
   /**
-   * If this CPU listener has to simply write power, or the whole information contained into the CpuFormulaValues message.
+   * If this CPU listener has to simply write power, or the whole information contained into the CpuFormulaMessage message.
    */
   lazy val justPower = load(_.getBoolean("powerapi.listener.cpu-console.just-power"))(false)
 }
 
 /**
- * CPU listener displaying received CpuFormulaValues into a file following properties
+ * CPU listener displaying received CpuFormulaMessage into a file following properties
  * contained into a configuration file.
  *
  * @author abourdon
@@ -60,12 +60,12 @@ class CpuListener extends Listener with Configuration {
     Resource.fromFile(filePath)
   }
 
-  def process(cpuFormulaValues: CpuFormulaValues) {
+  def process(cpuFormulaMessage: CpuFormulaMessage) {
     val toWrite =
       if (justPower) {
-        cpuFormulaValues.energy.power.toString
+        cpuFormulaMessage.energy.power.toString
       } else {
-        cpuFormulaValues.toString
+        cpuFormulaMessage.toString
       }
 
     if (append) {
@@ -77,8 +77,8 @@ class CpuListener extends Listener with Configuration {
   }
 
   def acquire = {
-    case cpuFormulaValues: CpuFormulaValues => process(cpuFormulaValues)
+    case cpuFormulaMessage: CpuFormulaMessage => process(cpuFormulaMessage)
   }
 
-  def messagesToListen = Array(classOf[CpuFormulaValues])
+  def messagesToListen = Array(classOf[CpuFormulaMessage])
 }

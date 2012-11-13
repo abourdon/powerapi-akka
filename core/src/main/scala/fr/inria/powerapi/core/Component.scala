@@ -36,14 +36,9 @@ import akka.event.LoggingReceive
  */
 
 /**
- * Base trait for each PowerAPI message.
- */
-trait Message
-
-/**
  * Request to have the array of Messages that a Component have to listen.
  */
-case object MessagesToListen extends Message
+object MessagesToListen extends Message
 
 /**
  * Base trait for each PowerAPI module, also called Component.

@@ -10,7 +10,7 @@ This module reacts to `Tick` messages, typically sent by the core `Clock` class.
 
 ## Out
 
-This module provide CPU sensor information which is represented by the `CPUSensorValues` type, and gather:
+This module provide CPU sensor information which is represented by the `CPUSensorMessage` type, and gather:
 * the time spent under each frequency by the CPU;
 * the CPU elapsed time;
 * the process CPU elapsed time;

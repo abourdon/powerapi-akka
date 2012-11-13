@@ -21,7 +21,7 @@
 package fr.inria.powerapi.sensor.cpu.api
 
 import org.junit.Test
-import org.scalatest.junit.{ShouldMatchersForJUnit, JUnitSuite}
+import org.scalatest.junit.{ ShouldMatchersForJUnit, JUnitSuite }
 
 class TimeInStatesSuite extends JUnitSuite with ShouldMatchersForJUnit {
   @Test

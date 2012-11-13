@@ -19,13 +19,14 @@
  * Contact: powerapi-user-list@googlegroups.com.
  */
 package fr.inria.powerapi.sensor.disk.atop
+import java.io.FileInputStream
 import java.io.IOException
-import fr.inria.powerapi.sensor.disk.api.DiskSensorValues
+import java.net.URL
+
 import fr.inria.powerapi.core.Process
 import fr.inria.powerapi.core.Tick
+import fr.inria.powerapi.sensor.disk.api.DiskSensorMessage
 import scalax.io.Resource
-import java.io.FileInputStream
-import java.net.URL
 
 /**
  * Disk sensor configuration part.
@@ -62,6 +63,6 @@ class DiskSensor extends fr.inria.powerapi.sensor.disk.api.DiskSensor with Confi
     }
 
   def process(tick: Tick) {
-    publish(DiskSensorValues(Map("n/a" -> readAndWrite(tick.subscription.process)), tick))
+    publish(DiskSensorMessage(Map("n/a" -> readAndWrite(tick.subscription.process)), tick))
   }
 }

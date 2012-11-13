@@ -20,21 +20,21 @@
  */
 package fr.inria.powerapi.listener.disk.console
 import fr.inria.powerapi.core.Listener
-import fr.inria.powerapi.formula.disk.api.DiskFormulaValues
+import fr.inria.powerapi.formula.disk.api.DiskFormulaMessage
 
 /**
- * Disk listener, displaying DiskFormulaValues to the console.
+ * Disk listener, displaying DiskFormulaMessage to the console.
  *
  * @author abourdon
  */
 class DiskListener extends Listener {
-  def messagesToListen = Array(classOf[DiskFormulaValues])
+  def messagesToListen = Array(classOf[DiskFormulaMessage])
 
-  def process(diskFormulaValues: DiskFormulaValues) {
-    println(diskFormulaValues)
+  def process(diskFormulaMessage: DiskFormulaMessage) {
+    println(diskFormulaMessage)
   }
 
   def acquire = {
-    case diskFormulaValues: DiskFormulaValues => process(diskFormulaValues)
+    case diskFormulaMessage: DiskFormulaMessage => process(diskFormulaMessage)
   }
 }

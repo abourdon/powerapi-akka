@@ -21,12 +21,12 @@
 package fr.inria.powerapi.listener.cpu.jfreechart
 
 import fr.inria.powerapi.core.Listener
-import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
+import fr.inria.powerapi.formula.cpu.api.CpuFormulaMessage
 import javax.swing.SwingUtilities
 
 
 /**
- * CPU listener which display received CpuFormulaValues into a JFreeChart chart.
+ * CPU listener which display received CpuFormulaMessage into a JFreeChart chart.
  *
  * @see http://www.jfree.org/jfreechart
  *
@@ -42,13 +42,13 @@ class CpuListener extends Listener {
     })
   }
 
-  def messagesToListen = Array(classOf[CpuFormulaValues])
+  def messagesToListen = Array(classOf[CpuFormulaMessage])
 
-  def process(cpuFormulaValues: CpuFormulaValues) {
-    Chart.process(cpuFormulaValues)
+  def process(cpuFormulaMessage: CpuFormulaMessage) {
+    Chart.process(cpuFormulaMessage)
   }
 
   def acquire = {
-    case cpuFormulaValues: CpuFormulaValues => process(cpuFormulaValues)
+    case cpuFormulaMessage: CpuFormulaMessage => process(cpuFormulaMessage)
   }
 }

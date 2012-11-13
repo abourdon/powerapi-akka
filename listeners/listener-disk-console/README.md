@@ -6,7 +6,7 @@ Display disk `Formula` results into the console.
 
 ## In
 
-Listen to `DiskFormulaValues`, which are typically provided by `fr.inria.powerapi.formula.formula-disk-api` (inherited) module.
+Listen to `DiskFormulaMessage`, which are typically provided by `fr.inria.powerapi.formula.formula-disk-api` (inherited) module.
 
 ## Out
 

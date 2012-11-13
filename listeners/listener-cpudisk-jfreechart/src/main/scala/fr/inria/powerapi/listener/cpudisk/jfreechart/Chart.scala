@@ -20,13 +20,16 @@
  */
 package fr.inria.powerapi.listener.cpudisk.jfreechart
 
-import fr.inria.powerapi.core.Process
-import fr.inria.powerapi.formula.cpu.api.CpuFormulaValues
-import java.awt.{ Toolkit, Dimension }
-import org.jfree.chart.{ ChartPanel, ChartFactory }
-import org.jfree.data.time.{ TimeSeriesDataItem, TimeSeriesCollection, TimeSeries, FixedMillisecond }
-import org.jfree.ui.{ RefineryUtilities, ApplicationFrame }
 import java.awt.BasicStroke
+import java.awt.Dimension
+
+import org.jfree.chart.ChartFactory
+import org.jfree.chart.ChartPanel
+import org.jfree.data.time.FixedMillisecond
+import org.jfree.data.time.TimeSeries
+import org.jfree.data.time.TimeSeriesCollection
+import org.jfree.data.time.TimeSeriesDataItem
+import org.jfree.ui.ApplicationFrame
 
 /**
  * Display result received from the CpuDiskListener Component to a wrapped JFreeChart chart.
