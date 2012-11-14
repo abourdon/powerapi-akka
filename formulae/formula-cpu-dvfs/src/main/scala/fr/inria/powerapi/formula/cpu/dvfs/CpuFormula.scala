@@ -18,7 +18,7 @@
  *
  * Contact: powerapi-user-list@googlegroups.com.
  */
-package fr.inria.powerapi.formula.cpu.general
+package fr.inria.powerapi.formula.cpu.dvfs
 
 import scala.collection.JavaConversions
 import scala.collection.mutable

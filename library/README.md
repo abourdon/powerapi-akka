@@ -5,14 +5,14 @@ Defines the API that can be use by user to interact with PowerAPI. Here there ar
 ### What is the CPU energy spent by the 123 process? Please give me fresh results every 500 milliseconds
 
 Considering that process run under Linux, using a procfs file system on a *standard* CPU architecture.
-Thus, we need to use the procfs CPU `Sensor` implementation and the general CPU `Formula` implementation. Add to this the desire to display CPU energy spent by process into the console. So we need to:
+Thus, we need to use the procfs CPU `Sensor` implementation and the a given CPU `Formula` implementation, let's say the [DVFS](http://en.wikipedia.org/wiki/Voltage_and_frequency_scaling "DVFS") version. Add to this the desire to display CPU energy spent by process into the console. So we need to:
 
 1. Activate desired modules:
 
 ``` scala
 Array(
-    classOf[fr.inria.powerapi.sensor.proc.CpuSensor],
-    classOf[fr.inria.powerapi.formula.general.CpuFormula]
+    classOf[fr.inria.powerapi.sensor.cpu.proc.CpuSensor],
+    classOf[fr.inria.powerapi.formula.cpu.dvfs.CpuFormula]
 ).foreach(PowerAPI.startEnergyModule(_))
 ```
 

@@ -20,26 +20,26 @@
  */
 package fr.inria.powerapi.listener.cpudisk.console
 import java.lang.management.ManagementFactory
-import org.junit.After
-import org.junit.Before
+
 import org.junit.Ignore
 import org.junit.Test
 import org.scalatest.junit.JUnitSuite
 import org.scalatest.junit.ShouldMatchersForJUnit
+
+import akka.actor.ActorSystem
+import akka.testkit.TestActorRef
+import akka.util.duration._
+import akka.util.Duration
+import fr.inria.powerapi.core.Energy
 import fr.inria.powerapi.core.Listener
 import fr.inria.powerapi.core.Message
 import fr.inria.powerapi.core.Process
-import fr.inria.powerapi.library.PowerAPI
-import fr.inria.powerapi.formula.cpu.api.CpuFormulaMessage
-import fr.inria.powerapi.formula.disk.api.DiskFormulaMessage
-import scalax.io.Resource
-import akka.util.duration._
-import akka.actor.ActorSystem
-import akka.testkit.TestActorRef
-import fr.inria.powerapi.core.Energy
 import fr.inria.powerapi.core.Tick
 import fr.inria.powerapi.core.TickSubscription
-import akka.util.Duration
+import fr.inria.powerapi.formula.cpu.api.CpuFormulaMessage
+import fr.inria.powerapi.formula.disk.api.DiskFormulaMessage
+import fr.inria.powerapi.library.PowerAPI
+import scalax.io.Resource
 
 trait ConfigurationMock extends Configuration {
   override lazy val refreshRate = Duration.Inf
@@ -143,7 +143,7 @@ class CpuDiskListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
   def testPid() {
     Array(
       classOf[fr.inria.powerapi.sensor.cpu.proc.CpuSensor],
-      classOf[fr.inria.powerapi.formula.cpu.general.CpuFormula],
+      classOf[fr.inria.powerapi.formula.cpu.dvfs.CpuFormula],
       classOf[fr.inria.powerapi.sensor.disk.proc.DiskSensor],
       classOf[fr.inria.powerapi.formula.disk.single.DiskFormula]).foreach(PowerAPI.startEnergyModule(_))
 
@@ -153,7 +153,7 @@ class CpuDiskListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
     Array(
       classOf[fr.inria.powerapi.sensor.cpu.proc.CpuSensor],
-      classOf[fr.inria.powerapi.formula.cpu.general.CpuFormula],
+      classOf[fr.inria.powerapi.formula.cpu.dvfs.CpuFormula],
       classOf[fr.inria.powerapi.sensor.disk.proc.DiskSensor],
       classOf[fr.inria.powerapi.formula.disk.single.DiskFormula]).foreach(PowerAPI.stopEnergyModule(_))
   }
@@ -163,7 +163,7 @@ class CpuDiskListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
   def testCurrentPid() {
     Array(
       classOf[fr.inria.powerapi.sensor.cpu.proc.CpuSensor],
-      classOf[fr.inria.powerapi.formula.cpu.general.CpuFormula],
+      classOf[fr.inria.powerapi.formula.cpu.dvfs.CpuFormula],
       classOf[fr.inria.powerapi.sensor.disk.proc.DiskSensor],
       classOf[fr.inria.powerapi.formula.disk.single.DiskFormula]).foreach(PowerAPI.startEnergyModule(_))
 
@@ -174,7 +174,7 @@ class CpuDiskListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
     Array(
       classOf[fr.inria.powerapi.sensor.cpu.proc.CpuSensor],
-      classOf[fr.inria.powerapi.formula.cpu.general.CpuFormula],
+      classOf[fr.inria.powerapi.formula.cpu.dvfs.CpuFormula],
       classOf[fr.inria.powerapi.sensor.disk.proc.DiskSensor],
       classOf[fr.inria.powerapi.formula.disk.single.DiskFormula]).foreach(PowerAPI.stopEnergyModule(_))
   }
@@ -183,7 +183,7 @@ class CpuDiskListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
   def testAllPids() {
     Array(
       classOf[fr.inria.powerapi.sensor.cpu.proc.CpuSensor],
-      classOf[fr.inria.powerapi.formula.cpu.general.CpuFormula],
+      classOf[fr.inria.powerapi.formula.cpu.dvfs.CpuFormula],
       classOf[fr.inria.powerapi.sensor.disk.proc.DiskSensor],
       classOf[fr.inria.powerapi.formula.disk.single.DiskFormula]).foreach(PowerAPI.startEnergyModule(_))
 
@@ -224,7 +224,7 @@ class CpuDiskListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
     Array(
       classOf[fr.inria.powerapi.sensor.cpu.proc.CpuSensor],
-      classOf[fr.inria.powerapi.formula.cpu.general.CpuFormula],
+      classOf[fr.inria.powerapi.formula.cpu.dvfs.CpuFormula],
       classOf[fr.inria.powerapi.sensor.disk.proc.DiskSensor],
       classOf[fr.inria.powerapi.formula.disk.single.DiskFormula]).foreach(PowerAPI.stopEnergyModule(_))
   }

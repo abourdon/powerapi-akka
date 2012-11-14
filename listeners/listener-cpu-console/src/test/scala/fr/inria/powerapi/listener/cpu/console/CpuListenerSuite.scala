@@ -22,13 +22,13 @@ package fr.inria.powerapi.listener.cpu.console
 
 import akka.util.duration._
 import fr.inria.powerapi.core.Process
-import fr.inria.powerapi.formula.cpu.general.CpuFormula
 import fr.inria.powerapi.library.PowerAPI
 import fr.inria.powerapi.sensor.cpu.proc.CpuSensor
 import java.lang.management.ManagementFactory
 import org.junit.{ Test, Ignore, Before, After }
 import org.scalatest.junit.{ ShouldMatchersForJUnit, JUnitSuite }
 import scalax.io.Resource
+import fr.inria.powerapi.formula.cpu.dvfs.CpuFormula
 
 class CpuListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
   @Before

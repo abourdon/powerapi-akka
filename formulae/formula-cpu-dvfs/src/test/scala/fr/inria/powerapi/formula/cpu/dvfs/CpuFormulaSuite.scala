@@ -18,7 +18,7 @@
  *
  * Contact: powerapi-user-list@googlegroups.com.
  */
-package fr.inria.powerapi.formula.cpu.general
+package fr.inria.powerapi.formula.cpu.dvfs
 
 import org.junit.Test
 import org.scalatest.junit.JUnitSuite
@@ -33,6 +33,7 @@ import akka.util.duration.intToDurationInt
 import fr.inria.powerapi.core.Process
 import fr.inria.powerapi.core.Tick
 import fr.inria.powerapi.core.TickSubscription
+import fr.inria.powerapi.formula.cpu.dvfs.CpuFormula;
 import fr.inria.powerapi.sensor.cpu.api.CpuSensorMessage
 import fr.inria.powerapi.sensor.cpu.api.GlobalElapsedTime
 import fr.inria.powerapi.sensor.cpu.api.ProcessElapsedTime

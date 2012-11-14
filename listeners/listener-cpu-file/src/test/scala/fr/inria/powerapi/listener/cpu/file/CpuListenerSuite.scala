@@ -22,13 +22,13 @@ package fr.inria.powerapi.listener.cpu.file
 
 import akka.util.duration.intToDurationInt
 import fr.inria.powerapi.core.Process
-import fr.inria.powerapi.formula.cpu.general.CpuFormula
 import fr.inria.powerapi.library.PowerAPI
 import fr.inria.powerapi.sensor.cpu.proc.CpuSensor
 import java.lang.management.ManagementFactory
-import org.junit.{Test, Before, After}
-import org.scalatest.junit.{ShouldMatchersForJUnit, JUnitSuite}
+import org.junit.{ Test, Before, After }
+import org.scalatest.junit.{ ShouldMatchersForJUnit, JUnitSuite }
 import scalax.file.Path
+import fr.inria.powerapi.formula.cpu.dvfs.CpuFormula
 
 trait ConfigurationMock extends Configuration {
   override lazy val filePath = Path.createTempFile(

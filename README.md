@@ -74,9 +74,9 @@ mvn test
 
 As said above, configuration part is managed by the [Typesafe Config](https://github.com/typesafehub/config "Typesafe Config"). Thus, be aware to properly configure each module from its `.conf` file(s).
 
-Let's take an example for the `fr.inria.powerapi.formula.formula-cpu-general` module, which implements the PowerAPI CPU `Formula` using the [well-known formula](http://en.wikipedia.org/wiki/CMOS "CPU power formula"), `P = c * f * V * V`, where `c` constant, `f` a frequency and `V` its associated voltage.
+Let's take an example for the `fr.inria.powerapi.formula.formula-cpu-dvfs` module, which implements the PowerAPI CPU `Formula` using the [well-known formula](http://en.wikipedia.org/wiki/CMOS "CPU power formula"), `P = c * f * V * V`, where `c` constant, `f` a frequency and `V` its associated voltage.
 
-To compute this formula, `fr.inria.powerapi.formula.formula-cpu-general` module has to know:
+To compute this formula, `fr.inria.powerapi.formula.formula-cpu-dvfs` module has to know:
 * the CPU [Thermal Design Power](http://en.wikipedia.org/wiki/Thermal_design_power "Thermal Design Power") value;
 * the array of frequency/voltage used by the CPU.
 
@@ -138,14 +138,14 @@ Process-level energy monitoring is based on a periodically computation that can 
 ### What is the CPU energy spent by the 123 process? Please give me fresh results every 500 milliseconds
 
 Assume that process run under Linux, using a [procfs](http://en.wikipedia.org/wiki/Procfs "Procfs") file system on a _standard_ CPU architecture.
-Thus, we need to use the _procfs_ CPU `Sensor` implementation and the general CPU `Formula` implementation. Add to this the desire to display CPU energy spent by process into a console. So we need to:
+Thus, we need to use the _procfs_ CPU `Sensor` implementation and a given CPU `Formula` implementation, let's say the [DVFS](http://en.wikipedia.org/wiki/Voltage_and_frequency_scaling "DVFS") version. Add to this the desire to display CPU energy spent by process into a console. So we need to:
 
 1. Activate the desired modules:
 
 ```scala
 Array(
-    classOf[fr.inria.powerapi.sensor.proc.CpuSensor],
-    classOf[fr.inria.powerapi.formula.general.CpuFormula]
+    classOf[fr.inria.powerapi.sensor.cpu.proc.CpuSensor],
+    classOf[fr.inria.powerapi.formula.cpu.dvfs.CpuFormula]
 ).foreach(PowerAPI.startEnergyModule(_))
 ```
 

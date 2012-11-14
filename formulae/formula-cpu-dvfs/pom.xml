@@ -2,12 +2,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>fr.inria.powerapi.formula</groupId>
-    <artifactId>formula-cpu-general</artifactId>
+    <artifactId>formula-cpu-dvfs</artifactId>
     <name>${project.artifactId}</name>
     <description>Implements PowerAPI CPU Formula module in weighting each frequency by the time spent by CPU in working
         under it.
 
-        Global CPU energy computation is based on the general well-known formula: P = c * f * V * V where c constant, f
+        Global CPU energy computation is based on the well-known formula: P = c * f * V * V where c constant, f
         a frequency and
         V its associated voltage.
     </description>

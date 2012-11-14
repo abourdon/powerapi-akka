@@ -25,13 +25,13 @@ import fr.inria.powerapi.sensor.cpu.proc.CpuSensor
 import fr.inria.powerapi.core.Process
 import scalax.io.Resource
 import fr.inria.powerapi.library.PowerAPI
-import fr.inria.powerapi.formula.cpu.general.CpuFormula
 import akka.util.duration._
 import java.lang.management.ManagementFactory
 import scalax.file.Path
 import scalax.io.StandardOpenOption.WriteTruncate
 import java.util.Timer
 import java.util.TimerTask
+import fr.inria.powerapi.formula.cpu.dvfs.CpuFormula
 
 class DemoListener extends fr.inria.powerapi.example.adamdemo.full.DemoListener {
   override def init() {}

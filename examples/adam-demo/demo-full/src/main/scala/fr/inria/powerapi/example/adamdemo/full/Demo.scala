@@ -22,7 +22,6 @@ package fr.inria.powerapi.example.adamdemo.full
 
 import fr.inria.powerapi.sensor.cpu.proc.CpuSensor
 import fr.inria.powerapi.formula.cpu.api.CpuFormulaMessage
-import fr.inria.powerapi.formula.cpu.general.CpuFormula
 import fr.inria.powerapi.sensor.disk.proc.DiskSensor
 import fr.inria.powerapi.formula.disk.api.DiskFormulaMessage
 import fr.inria.powerapi.formula.disk.single.DiskFormula
@@ -36,6 +35,7 @@ import akka.actor.Cancellable
 import akka.actor.ActorSystem
 import java.util.Timer
 import java.util.TimerTask
+import fr.inria.powerapi.formula.cpu.dvfs.CpuFormula
 
 trait Scenario {
   def name(): String
