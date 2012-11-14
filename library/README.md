@@ -33,7 +33,7 @@ PowerAPI integrates a `Listener` using the [JFreeChart](http://www.jfree.org/jfr
 
 ``` scala
 PowerAPI.startMonitoring(
-    listener = classOf[fr.inria.powerapi.listener.jfreechart.CpuListener]
+    listener = classOf[fr.inria.powerapi.listener.cpu.jfreechart.CpuListener]
 )
 ```
 
