@@ -155,7 +155,7 @@ Array(
 PowerAPI.startMonitoring(
     Process(123),
     500 milliseconds,
-    classOf[fr.inria.powerapi.listener.console.CpuListener]
+    classOf[fr.inria.powerapi.listener.cpu.console.CpuListener]
 )
 ```
 
