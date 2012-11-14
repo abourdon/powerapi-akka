@@ -103,9 +103,9 @@ mvn <span class="nb">test</span>
 
 <p>As said above, configuration part is managed by the <a href="https://github.com/typesafehub/config" title="Typesafe Config">Typesafe Config</a>. Thus, be aware to properly configure each module from its <code>.conf</code> file(s).</p>
 
-<p>Let's take an example for the <code>fr.inria.powerapi.formula.formula-cpu-general</code> module, which implements the PowerAPI CPU <code>Formula</code> using the <a href="http://en.wikipedia.org/wiki/CMOS" title="CPU power formula">well-known formula</a>, <code>P = c * f * V * V</code>, where <code>c</code> constant, <code>f</code> a frequency and <code>V</code> its associated voltage.</p>
+<p>Let's take an example for the <code>fr.inria.powerapi.formula.formula-cpu-dvfs</code> module, which implements the PowerAPI CPU <code>Formula</code> using the <a href="http://en.wikipedia.org/wiki/CMOS" title="CPU power formula">well-known formula</a>, <code>P = c * f * V * V</code>, where <code>c</code> constant, <code>f</code> a frequency and <code>V</code> its associated voltage.</p>
 
-<p>To compute this formula, <code>fr.inria.powerapi.formula.formula-cpu-general</code> module has to know:</p>
+<p>To compute this formula, <code>fr.inria.powerapi.formula.formula-cpu-dvfs</code> module has to know:</p>
 
 <ul>
 <li>the CPU <a href="http://en.wikipedia.org/wiki/Thermal_design_power" title="Thermal Design Power">Thermal Design Power</a> value;</li>
@@ -167,13 +167,13 @@ A <code>Formula</code> may depend on the type of the monitored hardware resource
 <h3>What is the CPU energy spent by the 123 process? Please give me fresh results every 500 milliseconds</h3>
 
 <p>Assume that process run under Linux, using a <a href="http://en.wikipedia.org/wiki/Procfs" title="Procfs">procfs</a> file system on a <em>standard</em> CPU architecture.
-Thus, we need to use the <em>procfs</em> CPU <code>Sensor</code> implementation and the general CPU <code>Formula</code> implementation. Add to this the desire to display CPU energy spent by process into a console. So we need to:</p>
+Thus, we need to use the <em>procfs</em> CPU <code>Sensor</code> implementation and a given CPU <code>Formula</code> implementation, let's say the <a href="http://en.wikipedia.org/wiki/Voltage_and_frequency_scaling" title="DVFS">DVFS</a> version. Add to this the desire to display CPU energy spent by process into a console. So we need to:</p>
 
 <ol>
 <li>Activate the desired modules:</li>
 </ol><div class="highlight"><pre><span class="nc">Array</span><span class="o">(</span>
-    <span class="n">classOf</span><span class="o">[</span><span class="kt">fr.inria.powerapi.sensor.proc.CpuSensor</span><span class="o">],</span>
-    <span class="n">classOf</span><span class="o">[</span><span class="kt">fr.inria.powerapi.formula.general.CpuFormula</span><span class="o">]</span>
+    <span class="n">classOf</span><span class="o">[</span><span class="kt">fr.inria.powerapi.sensor.cpu.proc.CpuSensor</span><span class="o">],</span>
+    <span class="n">classOf</span><span class="o">[</span><span class="kt">fr.inria.powerapi.formula.cpu.dvfs.CpuFormula</span><span class="o">]</span>
 <span class="o">).</span><span class="n">foreach</span><span class="o">(</span><span class="nc">PowerAPI</span><span class="o">.</span><span class="n">startEnergyModule</span><span class="o">(</span><span class="k">_</span><span class="o">))</span>
 </pre></div>
 
