@@ -40,7 +40,6 @@ import fr.inria.powerapi.core.TickIt
 import fr.inria.powerapi.core.TickSubscription
 import fr.inria.powerapi.core.UnTickIt
 import fr.inria.powerapi.sensor.disk.api.DiskSensorMessage
-import fr.inria.powerapi.sensor.disk.proc.Configuration
 
 class DiskReceiverMock extends Actor {
   var receivedValues: Option[DiskSensorMessage] = None

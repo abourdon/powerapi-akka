@@ -33,7 +33,6 @@ import akka.util.duration.intToDurationInt
 import fr.inria.powerapi.core.Process
 import fr.inria.powerapi.core.Tick
 import fr.inria.powerapi.core.TickSubscription
-import fr.inria.powerapi.formula.cpu.dvfs.CpuFormula;
 import fr.inria.powerapi.sensor.cpu.api.CpuSensorMessage
 import fr.inria.powerapi.sensor.cpu.api.GlobalElapsedTime
 import fr.inria.powerapi.sensor.cpu.api.ProcessElapsedTime
@@ -94,7 +93,7 @@ class CpuFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
       ProcessElapsedTime(50),
       Tick(TickSubscription(Process(123), 500 milliseconds)))
     cpuformula.underlyingActor.refreshCache(old)
-    cpuformula.underlyingActor.cache getOrElse(TickSubscription(Process(123), 500 milliseconds), null) should equal(old)
+    cpuformula.underlyingActor.cache getOrElse (TickSubscription(Process(123), 500 milliseconds), null) should equal(old)
 
     val now = CpuSensorMessage(
       TimeInStates(Map[Int, Long]()),
@@ -102,9 +101,9 @@ class CpuFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
       ProcessElapsedTime(80),
       Tick(TickSubscription(Process(123), 500 milliseconds)))
     cpuformula.underlyingActor.refreshCache(now)
-    cpuformula.underlyingActor.cache getOrElse(TickSubscription(Process(123), 500 milliseconds), null) should equal(now)
+    cpuformula.underlyingActor.cache getOrElse (TickSubscription(Process(123), 500 milliseconds), null) should equal(now)
 
-    cpuformula.underlyingActor.cache getOrElse(TickSubscription(Process(123), 123 milliseconds), null) should be(null)
+    cpuformula.underlyingActor.cache getOrElse (TickSubscription(Process(123), 123 milliseconds), null) should be(null)
   }
 
   @Test

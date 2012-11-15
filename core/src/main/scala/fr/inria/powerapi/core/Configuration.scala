@@ -40,16 +40,19 @@ trait Configuration extends Component {
    * Default pattern to get information from configuration file.
    *
    * @param request: request to get information from configuration file.
+   * @param required: if the configuration entry is required or not.
    * @param default: default value returned in case of ConfigException.
    *
    * @see http://typesafehub.github.com/config/latest/api/com/typesafe/config/ConfigException.html
    */
-  def load[T](request: Config => T)(default: T): T =
+  def load[T](request: Config => T, required: Boolean = true)(default: T): T =
     try {
       request(conf)
     } catch {
       case ce: ConfigException => {
-        log.warning(ce.getMessage + " (using " + default + " as default value)")
+        if (required) {
+          log.warning(ce.getMessage + " (using " + default + " as default value)")
+        }
         default
       }
     }

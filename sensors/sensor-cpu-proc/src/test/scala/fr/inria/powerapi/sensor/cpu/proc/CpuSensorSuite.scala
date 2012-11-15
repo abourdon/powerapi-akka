@@ -21,17 +21,13 @@
 package fr.inria.powerapi.sensor.cpu.proc
 
 import java.net.URL
-
 import scala.util.Properties
-
 import org.junit.Test
-import org.scalatest.junit.JUnitSuite
 import org.scalatest.junit.ShouldMatchersForJUnit
-
+import akka.actor.actorRef2Scala
 import akka.actor.Actor
 import akka.actor.ActorSystem
 import akka.actor.Props
-import akka.actor.actorRef2Scala
 import akka.testkit.TestActorRef
 import akka.util.duration.intToDurationInt
 import fr.inria.powerapi.core.Clock
@@ -44,7 +40,7 @@ import fr.inria.powerapi.sensor.cpu.api.CpuSensorMessage
 import fr.inria.powerapi.sensor.cpu.api.GlobalElapsedTime
 import fr.inria.powerapi.sensor.cpu.api.ProcessElapsedTime
 import fr.inria.powerapi.sensor.cpu.api.TimeInStates
-
+import org.scalatest.junit.JUnitSuite
 
 class CpuSensorReceiver extends Actor {
   var receivedData: Option[CpuSensorMessage] = None
@@ -69,8 +65,13 @@ class CpuSensorSuite extends JUnitSuite with ShouldMatchersForJUnit {
   implicit val tick = Tick(TickSubscription(Process(123), 1 second))
   val cpuSensor = TestActorRef(new CpuSensor with ConfigurationMock)
 
+  @Test
+  def testTimeInStates() {
+    testTimeInStates(TimeInStates(cpuSensor.underlyingActor.timeInStates))
+  }
+
   private def testTimeInStates(timeInStates: TimeInStates) {
-    timeInStates.times.size should equal(4)
+    timeInStates.times should have size 4
     timeInStates.times(4000000) should equal(16)
     timeInStates.times(3000000) should equal(12)
     timeInStates.times(2000000) should equal(8)
@@ -78,12 +79,16 @@ class CpuSensorSuite extends JUnitSuite with ShouldMatchersForJUnit {
   }
 
   @Test
-  def testTimeInStates() {
-    testTimeInStates(TimeInStates(cpuSensor.underlyingActor.timeInStates))
+  def testTimeInStatesWhenNotEnabled() {
+    val cpuSensor = TestActorRef(new CpuSensor with ConfigurationMock {
+      override lazy val timeInStateEnabled = false
+    })
+    testTimeInStatesWhenNotEnabled(TimeInStates(cpuSensor.underlyingActor.timeInStates))
   }
 
-  private def testGlobalElapsedTime(globalElapsedTime: GlobalElapsedTime) {
-    globalElapsedTime.time should equal(441650 + 65 + 67586 + 3473742 + 31597 + 0 + 7703 + 0 + 0 + 0)
+  private def testTimeInStatesWhenNotEnabled(timeInStates: TimeInStates) {
+    timeInStates.times should have size 0
+
   }
 
   @Test
@@ -91,13 +96,17 @@ class CpuSensorSuite extends JUnitSuite with ShouldMatchersForJUnit {
     testGlobalElapsedTime(GlobalElapsedTime(cpuSensor.underlyingActor.elapsedTime))
   }
 
-  private def testProcessElapsedTime(processElapsedTime: ProcessElapsedTime) {
-    processElapsedTime.time should equal(2 + 2)
+  private def testGlobalElapsedTime(globalElapsedTime: GlobalElapsedTime) {
+    globalElapsedTime.time should equal(441650 + 65 + 67586 + 3473742 + 31597 + 0 + 7703 + 0 + 0 + 0)
   }
 
   @Test
   def testProcessElapsedTime() {
     testProcessElapsedTime(ProcessElapsedTime(cpuSensor.underlyingActor.elapsedTime(Process(123))))
+  }
+
+  private def testProcessElapsedTime(processElapsedTime: ProcessElapsedTime) {
+    processElapsedTime.time should equal(2 + 2)
   }
 
   @Test
@@ -119,6 +128,5 @@ class CpuSensorSuite extends JUnitSuite with ShouldMatchersForJUnit {
         testProcessElapsedTime(cpuSensorMessage.processElapsedTime)
       }
     }
-
   }
 }

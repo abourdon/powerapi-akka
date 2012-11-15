@@ -62,6 +62,13 @@ trait Configuration extends fr.inria.powerapi.core.Configuration {
    * @see http://www.kernel.org/pub/linux/utils/kernel/cpufreq/cpufreq-info.html
    */
   lazy val timeInStatePath = load { _.getString("powerapi.cpu.time-in-state") }("file:///sys/devices/system/cpu/cpu%?/cpufreq/stats/time_in_state")
+
+  /**
+   * [Optional] If the time in state feature is enabled or not. True as default.
+   *
+   * @see timeInStatePath
+   */
+  lazy val timeInStateEnabled = load({ _.getBoolean("powerapi.sensor.cpu-proc.time-in-state") }, required = false)(true)
 }
 
 /**
@@ -80,6 +87,8 @@ class CpuSensor extends fr.inria.powerapi.sensor.cpu.api.CpuSensor with Configur
   class Frequency {
     // time_in_state line format: frequency time
     lazy val TimeInStateFormat = """(\d+)\s+(\d+)""".r
+
+    lazy val mockedTimeInStates = Map[Int, Long]()
 
     def timeInStates = {
       val result = collection.mutable.HashMap[Int, Long]()
@@ -156,7 +165,7 @@ class CpuSensor extends fr.inria.powerapi.sensor.cpu.api.CpuSensor with Configur
 
   lazy val frequency = new Frequency
 
-  def timeInStates = frequency.timeInStates
+  def timeInStates = if (timeInStateEnabled) frequency.timeInStates else frequency.mockedTimeInStates
 
   lazy val time = new Time
 

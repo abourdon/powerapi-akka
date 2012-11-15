@@ -1,4 +1,4 @@
-# General implementation for the PowerAPI CPU Formula module
+# DVFS implementation of the PowerAPI CPU Formula module
 
 ## Presentation
 
