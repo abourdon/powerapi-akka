@@ -20,6 +20,10 @@
  */
 package fr.inria.powerapi.sensor.cpu.sigar
 
+import org.hyperic.sigar.Sigar
+import org.hyperic.sigar.SigarProxyCache
+
+import akka.util.duration.intToDurationInt
 import fr.inria.powerapi.core.Process
 import fr.inria.powerapi.core.Tick
 import fr.inria.powerapi.sensor.cpu.api.CpuSensorMessage
@@ -36,9 +40,21 @@ import fr.inria.powerapi.sensor.cpu.api.TimeInStates
  */
 class CpuSensor extends fr.inria.powerapi.sensor.cpu.api.CpuSensor {
 
+  val sigar = SigarProxyCache.newInstance(new Sigar(), (1 second).toMillis.intValue)
+
   def timeInStates = Map[Int, Long]()
 
-  def elapsedTime(implicit process: Process = Process(-1)) = 0L
+  def elapsedTime(implicit process: Process = Process(-1)) = {
+    def processElapsedTime = sigar.getProcCpu(process.pid).getTotal()
+
+    def globalElapsedTime = sigar.getCpu().getTotal()
+
+    if (process.pid == -1) {
+      globalElapsedTime
+    } else {
+      processElapsedTime
+    }
+  }
 
   def process(tick: Tick) {
     publish(
