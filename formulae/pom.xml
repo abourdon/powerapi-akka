@@ -16,6 +16,7 @@
     <modules>
         <module>formula-cpu-api</module>
         <module>formula-cpu-dvfs</module>
+        <module>formula-cpu-max</module>
         <module>formula-disk-api</module>
         <module>formula-disk-single</module>
     </modules>
