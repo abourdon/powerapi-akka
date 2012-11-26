@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>fr.inria.powerapi.sensor</groupId>
@@ -23,9 +24,10 @@
 	</repositories>
 
 	<properties>
-		<target.lib>${project.build.directory}/lib</target.lib>
 		<sigar.version>1.6.5.132</sigar.version>
-		<sigar.dir>${target.lib}/hyperic-sigar-1.6.5/sigar-bin/lib</sigar.dir>
+		<sigar-dist.version.output>1.6.5</sigar-dist.version.output>
+		<sigar-dist.unpack.directory>${project.build.directory}/dependency/sigar</sigar-dist.unpack.directory>
+		<sigar-dist.classpath.directory>/hyperic-sigar-${sigar-dist.version.output}/sigar-bin/lib</sigar-dist.classpath.directory>
 	</properties>
 
 	<dependencies>
@@ -45,52 +47,68 @@
 			<version>${sigar.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.hyperic</groupId>
-			<artifactId>sigar-dist</artifactId>
-			<version>${sigar.version}</version>
-			<type>zip</type>
+			<groupId>com.github.scala-incubator.io</groupId>
+			<artifactId>scala-io-core_${scala.version}</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.github.scala-incubator.io</groupId>
+			<artifactId>scala-io-file_${scala.version}</artifactId>
 		</dependency>
 	</dependencies>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>unpack-dependencies</id>
-						<phase>generate-sources</phase>
+						<id>unpack</id>
+						<phase>validate</phase>
 						<goals>
-							<goal>unpack-dependencies</goal>
+							<goal>unpack</goal>
 						</goals>
 						<configuration>
-							<includes>**/sigar-bin/lib/*</includes>
-							<excludes>**/sigar-bin/lib/*jar</excludes>
-							<includeGroupIds>org.hyperic</includeGroupIds>
-							<includeArtifactIds>sigar-dist</includeArtifactIds>
-							<outputDirectory>${target.lib}</outputDirectory>
+							<artifactItems>
+								<artifactItem>
+									<groupId>org.hyperic</groupId>
+									<artifactId>sigar-dist</artifactId>
+									<version>${sigar.version}</version>
+									<type>zip</type>
+									<includes>**/lib/*</includes>
+									<excludes>**/lib/*jar</excludes>
+									<outputDirectory>${sigar-dist.unpack.directory}</outputDirectory>
+								</artifactItem>
+							</artifactItems>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>org.scala-tools</groupId>
-				<artifactId>maven-scala-plugin</artifactId>
-				<configuration>
-					<jvmArgs>
-						<jvmArg>-Djava.library.path=${java.library.path}:${sigar.dir}</jvmArg>
-					</jvmArgs>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.12</version>
-				<configuration>
-					<forkMode>once</forkMode>
-					<argLine>-Djava.library.path=${java.library.path}:${sigar.dir}</argLine>
-				</configuration>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<id>add-resources</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>add-resource</goal>
+						</goals>
+						<configuration>
+							<resources>
+								<resource>
+									<directory>${sigar-dist.unpack.directory}</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 		<pluginManagement>
@@ -116,13 +134,11 @@
 											[2.1,)
 										</versionRange>
 										<goals>
-											<goal>
-												unpack-dependencies
-											</goal>
+											<goal>unpack</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore />
+										<ignore></ignore>
 									</action>
 								</pluginExecution>
 							</pluginExecutions>

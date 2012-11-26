@@ -20,16 +20,59 @@
  */
 package fr.inria.powerapi.sensor.cpu.sigar
 
-import org.hyperic.sigar.Sigar
-import org.hyperic.sigar.SigarProxyCache
+import java.io.File
 
-import akka.util.duration.intToDurationInt
+import scala.collection.JavaConversions
+
+import org.hyperic.sigar.Sigar
+import org.hyperic.sigar.SigarException
+
+import com.typesafe.config.ConfigFactory
+
 import fr.inria.powerapi.core.Process
 import fr.inria.powerapi.core.Tick
 import fr.inria.powerapi.sensor.cpu.api.CpuSensorMessage
 import fr.inria.powerapi.sensor.cpu.api.GlobalElapsedTime
 import fr.inria.powerapi.sensor.cpu.api.ProcessElapsedTime
 import fr.inria.powerapi.sensor.cpu.api.TimeInStates
+import scalax.file.PathMatcher.IsFile
+import scalax.file.Path
+import scalax.io.Resource
+
+/**
+ * Initializer utility object, copying SIGAR dynamic libraries to a readable directory
+ * for the java.library.path variable.
+ * 
+ * @see http://www.hyperic.com/products/sigar
+ * 
+ * @author abourdon
+ */
+trait Initializer {
+
+  /**
+   * Do the initialization process:
+   * 1. Read the powerapi.sensor-cpu-sigar.sigar-dist property value from the sigar-cpu-sigar property file
+   * 2. Iterate over library paths from the powerapi.sensor-cpu-sigar.sigar-dist property value
+   * 3. For each path, copy the related library to a readable directory
+   * 4. Set the java.library.path variable to this readable directory
+   *
+   * @return true if success, false otherwise
+   */
+  def init() = {
+    val conf = ConfigFactory.load("sensor-cpu-sigar")
+    val dir = Path.createTempDirectory(prefix = "sensor-cpu-sigar", deleteOnExit = false)
+    val libs = conf.getStringList("powerapi.sensor-cpu-sigar.sigar-dist")
+    for (lib <- JavaConversions.asScalaBuffer(libs)) {
+      Resource.fromInputStream(
+        getClass().getResourceAsStream(lib)).copyDataTo(
+          Path.fromString(dir.path + File.separatorChar + lib.substring(lib.lastIndexOf(File.separatorChar)))
+        )
+    }
+    System.setProperty("java.library.path", dir.path)
+    dir.children(IsFile).size.equals(libs.size)
+  }
+
+}
 
 /**
  * CPU sensor component using the Hyperic SIGAR API to get hardware information.
@@ -38,21 +81,31 @@ import fr.inria.powerapi.sensor.cpu.api.TimeInStates
  *
  * @author abourdon
  */
-class CpuSensor extends fr.inria.powerapi.sensor.cpu.api.CpuSensor {
+class CpuSensor extends fr.inria.powerapi.sensor.cpu.api.CpuSensor with Initializer {
 
-  val sigar = SigarProxyCache.newInstance(new Sigar(), (1 second).toMillis.intValue)
+  if (!init) {
+    log.warning("unable to initialize the sensor. 'java.library.path' variable may have not been correctly set")
+  }
 
-  def timeInStates = Map[Int, Long]()
+  lazy val emptyMap = Map[Int, Long]()
+  def timeInStates = emptyMap
 
+  lazy val sigar = new Sigar()
   def elapsedTime(implicit process: Process = Process(-1)) = {
     def processElapsedTime = sigar.getProcCpu(process.pid).getTotal()
 
     def globalElapsedTime = sigar.getCpu().getTotal()
 
-    if (process.pid == -1) {
-      globalElapsedTime
-    } else {
-      processElapsedTime
+    try {
+      if (process.pid == -1) {
+        globalElapsedTime
+      } else {
+        processElapsedTime
+      }
+    } catch {
+      case se: SigarException =>
+        log.warning(se.getMessage())
+        0
     }
   }
 

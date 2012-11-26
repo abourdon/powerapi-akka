@@ -20,54 +20,45 @@
  */
 package fr.inria.powerapi.sensor.cpu.sigar
 
-import org.junit.Test
-import org.scalatest.junit.JUnitSuite
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
 import org.scalatest.junit.ShouldMatchersForJUnit
+import org.scalatest.FlatSpec
+
 import akka.actor.ActorSystem
 import akka.testkit.TestActorRef
 import akka.util.duration.intToDurationInt
 import fr.inria.powerapi.core.Process
-import akka.actor.ActorLogging
-import akka.actor.Actor
 
-/**
- * Utility test class to use Akka actor logging
- */
-class Logger extends Actor with ActorLogging {
-  def receive = {
-    case _ => {}
-  }
-}
-
-class CpuSensorSuite extends JUnitSuite with ShouldMatchersForJUnit {
+@RunWith(classOf[JUnitRunner])
+class CpuSensorSpec extends FlatSpec with ShouldMatchersForJUnit {
 
   implicit val system = ActorSystem("cpu-sensor-sigar")
   val sensor = TestActorRef[CpuSensor]
-  val logger = TestActorRef[CpuSensor].underlyingActor
-  lazy val currentPid = java.lang.management.ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
 
-  @Test
-  def testTimeInState() {
+  "Initializer" should "define the java.library.path" in {
+    sensor.underlyingActor.init should equal(true)
+    System.getProperty("java.library.path") should not be null
+  }
+
+  "Time by frequencies data structure" should "be empty" in {
     sensor.underlyingActor.timeInStates should have size 0
   }
 
-  @Test
-  def testProcessElapsedTime() {
+  "Process elapsed time" should "increase as the duration time" in {
+    val currentPid = java.lang.management.ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
     val old = sensor.underlyingActor.elapsedTime(Process(currentPid))
     Thread.sleep((1 second).toMillis)
     val now = sensor.underlyingActor.elapsedTime(Process(currentPid))
 
-    logger.log.info("old: " + old + ", now: " + now)
     now should be >= old
   }
 
-  @Test
-  def testGlobalElapsedTime() {
+  "Global elapsed time" should "increase as the duration time" in {
     val old = sensor.underlyingActor.elapsedTime
     Thread.sleep((1 second).toMillis)
     val now = sensor.underlyingActor.elapsedTime
 
-    logger.log.info("old: " + old + ", now: " + now)
     now should be >= old
   }
 
