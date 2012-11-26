@@ -60,7 +60,7 @@ trait Initializer {
    */
   def init() = {
     val conf = ConfigFactory.load("sensor-cpu-sigar")
-    val dir = Path.createTempDirectory(prefix = "sensor-cpu-sigar", deleteOnExit = false)
+    val dir = Path.createTempDirectory()
     val libs = conf.getStringList("powerapi.sensor-cpu-sigar.sigar-dist")
     for (lib <- JavaConversions.asScalaBuffer(libs)) {
       Resource.fromInputStream(
