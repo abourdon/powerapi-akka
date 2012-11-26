@@ -20,12 +20,15 @@
  */
 package fr.inria.powerapi.example.cpumonitor
 
-import akka.util.duration.intToDurationInt
+import scala.collection.JavaConversions
+
 import com.typesafe.config.ConfigFactory
+
+import akka.util.duration.intToDurationInt
 import fr.inria.powerapi.core.Process
 import fr.inria.powerapi.library.PowerAPI
+import fr.inria.powerapi.listener.cpu.file.CpuListener
 import fr.inria.powerapi.listener.cpu.jfreechart.CpuListener
-import scala.collection.JavaConversions
 import scalax.io.Resource
 
 /**
@@ -41,27 +44,51 @@ object Processes {
    * Process CPU monitoring using information given by the configuration file.
    */
   def fromConf() {
-    pids.foreach(pid => PowerAPI.startMonitoring(Process(pid), 500 milliseconds, classOf[CpuListener]))
+    pids.foreach(pid => PowerAPI.startMonitoring(
+      Process(pid),
+      500 milliseconds,
+      classOf[fr.inria.powerapi.listener.cpu.jfreechart.CpuListener])
+    )
     Thread.sleep((5 minutes).toMillis)
-    pids.foreach(pid => PowerAPI.stopMonitoring(Process(pid), 500 milliseconds, classOf[CpuListener]))
+    pids.foreach(pid => PowerAPI.stopMonitoring(
+      Process(pid),
+      500 milliseconds,
+      classOf[fr.inria.powerapi.listener.cpu.jfreechart.CpuListener])
+    )
   }
 
   /**
    * CPU monitoring which hardly specifying the monitored process.
    */
   def perso() {
-    PowerAPI.startMonitoring(Process(16617), 500 milliseconds, classOf[CpuListener])
+    PowerAPI.startMonitoring(
+      Process(16463),
+      2000 milliseconds,
+      classOf[fr.inria.powerapi.listener.cpu.jfreechart.CpuListener]
+    )
     Thread.sleep((5 minutes).toMillis)
-    PowerAPI.stopMonitoring(Process(16617), 500 milliseconds, classOf[CpuListener])
+    PowerAPI.stopMonitoring(
+      Process(16463),
+      2000 milliseconds,
+      classOf[fr.inria.powerapi.listener.cpu.jfreechart.CpuListener]
+    )
   }
 
   /**
    * CPU monitoring wich hardly specifying the monitored process and write results into a file.
    */
   def persoFile() {
-    pids.foreach(pid => PowerAPI.startMonitoring(Process(pid), 500 milliseconds, classOf[fr.inria.powerapi.listener.cpu.file.CpuListener]))
+    pids.foreach(pid => PowerAPI.startMonitoring(
+      Process(pid),
+      500 milliseconds,
+      classOf[fr.inria.powerapi.listener.cpu.file.CpuListener])
+    )
     Thread.sleep((5 minutes).toMillis)
-    pids.foreach(pid => PowerAPI.stopMonitoring(Process(pid), 500 milliseconds, classOf[fr.inria.powerapi.listener.cpu.file.CpuListener]))
+    pids.foreach(pid => PowerAPI.stopMonitoring(
+      Process(pid),
+      500 milliseconds,
+      classOf[fr.inria.powerapi.listener.cpu.file.CpuListener])
+    )
   }
 
   /**
@@ -69,9 +96,17 @@ object Processes {
    */
   def current() {
     val currentPid = java.lang.management.ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
-    PowerAPI.startMonitoring(Process(currentPid), 500 milliseconds, classOf[CpuListener])
+    PowerAPI.startMonitoring(
+      Process(currentPid),
+      500 milliseconds,
+      classOf[fr.inria.powerapi.listener.cpu.jfreechart.CpuListener]
+    )
     Thread.sleep((5 minutes).toMillis)
-    PowerAPI.stopMonitoring(Process(currentPid), 500 milliseconds, classOf[CpuListener])
+    PowerAPI.stopMonitoring(
+      Process(currentPid),
+      500 milliseconds,
+      classOf[fr.inria.powerapi.listener.cpu.jfreechart.CpuListener]
+    )
   }
 
   /**

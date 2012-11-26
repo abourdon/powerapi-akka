@@ -21,8 +21,44 @@
 package fr.inria.powerapi.example.cpumonitor
 
 import fr.inria.powerapi.library.PowerAPI
-import fr.inria.powerapi.sensor.cpu.proc.CpuSensor
-import fr.inria.powerapi.formula.cpu.dvfs.CpuFormula
+
+trait Initalizer {
+  def beforeStart()
+  def beforeEnd()
+}
+
+object ProcDVFSInitializer extends Initalizer {
+  def beforeStart() {
+    Array(
+      classOf[fr.inria.powerapi.sensor.cpu.proc.CpuSensor],
+      classOf[fr.inria.powerapi.formula.cpu.dvfs.CpuFormula]
+    ).foreach(PowerAPI.startEnergyModule(_))
+  }
+
+  def beforeEnd() {
+    Array(
+      classOf[fr.inria.powerapi.sensor.cpu.proc.CpuSensor],
+      classOf[fr.inria.powerapi.formula.cpu.dvfs.CpuFormula]
+    ).foreach(PowerAPI.stopEnergyModule(_))
+  }
+}
+
+object SigarMaxInitializer extends Initalizer {
+
+  def beforeStart() {
+    Array(
+      classOf[fr.inria.powerapi.sensor.cpu.sigar.CpuSensor],
+      classOf[fr.inria.powerapi.formula.cpu.max.CpuFormula]
+    ).foreach(PowerAPI.startEnergyModule(_))
+  }
+
+  def beforeEnd() {
+    Array(
+      classOf[fr.inria.powerapi.sensor.cpu.sigar.CpuSensor],
+      classOf[fr.inria.powerapi.formula.cpu.max.CpuFormula]
+    ).foreach(PowerAPI.stopEnergyModule(_))
+  }
+}
 
 /**
  * CPU monitoring example that deals with different use cases.
@@ -32,17 +68,10 @@ import fr.inria.powerapi.formula.cpu.dvfs.CpuFormula
  * @author abourdon
  */
 object CpuMonitor {
-  private def beforeStart() {
-    Array(classOf[CpuSensor], classOf[CpuFormula]).foreach(PowerAPI.startEnergyModule(_))
-  }
-
-  private def beforeEnd() {
-    Array(classOf[CpuSensor], classOf[CpuFormula]).foreach(PowerAPI.stopEnergyModule(_))
-  }
 
   def main(args: Array[String]) {
-    beforeStart()
-    Processes.current()
-    beforeEnd()
+    SigarMaxInitializer.beforeStart()
+    Processes.perso()
+    SigarMaxInitializer.beforeEnd()
   }
 }
