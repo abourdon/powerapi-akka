@@ -42,9 +42,9 @@ import scalax.io.Resource
 /**
  * Initializer utility object, copying SIGAR dynamic libraries to a readable directory
  * for the java.library.path variable.
- * 
+ *
  * @see http://www.hyperic.com/products/sigar
- * 
+ *
  * @author abourdon
  */
 trait Initializer {
@@ -62,12 +62,12 @@ trait Initializer {
     val conf = ConfigFactory.load("sensor-cpu-sigar")
     val dir = Path.createTempDirectory()
     val libs = conf.getStringList("powerapi.sensor-cpu-sigar.sigar-dist")
-    for (lib <- JavaConversions.asScalaBuffer(libs)) {
+    JavaConversions.asScalaBuffer(libs).foreach(lib =>
       Resource.fromInputStream(
         getClass().getResourceAsStream(lib)).copyDataTo(
           Path.fromString(dir.path + File.separatorChar + lib.substring(lib.lastIndexOf(File.separatorChar)))
         )
-    }
+    )
     System.setProperty("java.library.path", dir.path)
     dir.children(IsFile).size.equals(libs.size)
   }
