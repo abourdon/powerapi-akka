@@ -65,7 +65,7 @@ trait Initializer {
     JavaConversions.asScalaBuffer(libs).foreach(lib =>
       Resource.fromInputStream(
         getClass().getResourceAsStream(lib)).copyDataTo(
-          Path.fromString(dir.path + File.separatorChar + lib.substring(lib.lastIndexOf(File.separatorChar)))
+          Path.fromString(dir.path + '/' + lib.substring(lib.lastIndexOf('/')))
         )
     )
     System.setProperty("java.library.path", dir.path)
