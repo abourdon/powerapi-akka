@@ -15,8 +15,9 @@
 	</parent>
 
 	<modules>
-		<module>example-cpumonitor</module>
-    	<module>adam-demo</module>
+    <module>example-cpumonitor-linux</module>
+    <module>example-cpumonitor-windows</module>
+    <module>adam-demo</module>
   </modules>
 
 </project>
