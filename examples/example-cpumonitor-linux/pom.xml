@@ -2,9 +2,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.inria.powerapi.example</groupId>
-	<artifactId>example-cpumonitor</artifactId>
+	<artifactId>example-cpumonitor-linux</artifactId>
 	<name>${project.artifactId}</name>
-	<description>Set of CPU monitoring use cases.</description>
+	<description>Set of CPU monitoring use cases for the Linux environment.</description>
 	<inceptionYear>2012</inceptionYear>
 
 	<parent>
@@ -71,7 +71,7 @@
 				<groupId>org.scala-tools</groupId>
 				<artifactId>maven-scala-plugin</artifactId>
 				<configuration>
-					<mainClass>fr.inria.powerapi.example.cpumonitor.CpuMonitor</mainClass>
+					<mainClass>fr.inria.powerapi.example.cpumonitor.linux.CpuMonitor</mainClass>
 				</configuration>
 			</plugin>
 		</plugins>

@@ -18,7 +18,7 @@
  *
  * Contact: powerapi-user-list@googlegroups.com.
  */
-package fr.inria.powerapi.example.cpumonitor
+package fr.inria.powerapi.example.cpumonitor.linux
 
 import scala.collection.JavaConversions
 

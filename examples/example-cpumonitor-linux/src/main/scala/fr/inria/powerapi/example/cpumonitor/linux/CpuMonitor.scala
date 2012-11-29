@@ -18,7 +18,7 @@
  *
  * Contact: powerapi-user-list@googlegroups.com.
  */
-package fr.inria.powerapi.example.cpumonitor
+package fr.inria.powerapi.example.cpumonitor.linux
 
 import fr.inria.powerapi.library.PowerAPI
 
@@ -70,8 +70,8 @@ object SigarMaxInitializer extends Initalizer {
 object CpuMonitor {
 
   def main(args: Array[String]) {
-    SigarMaxInitializer.beforeStart()
+    ProcDVFSInitializer.beforeStart()
     Processes.current()
-    SigarMaxInitializer.beforeEnd()
+    ProcDVFSInitializer.beforeEnd()
   }
 }

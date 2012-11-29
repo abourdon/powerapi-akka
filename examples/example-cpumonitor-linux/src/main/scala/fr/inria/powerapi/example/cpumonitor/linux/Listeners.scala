@@ -18,7 +18,7 @@
  *
  * Contact: powerapi-user-list@googlegroups.com.
  */
-package fr.inria.powerapi.example.cpumonitor
+package fr.inria.powerapi.example.cpumonitor.linux
 
 import fr.inria.powerapi.core.Energy
 import fr.inria.powerapi.core.Process
