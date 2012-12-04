@@ -84,19 +84,41 @@ trait Initializer {
  */
 class CpuSensor extends fr.inria.powerapi.sensor.cpu.api.CpuSensor with Initializer {
 
+  /**
+   * SIGAR's proxy instance.
+   */
+  lazy val sigar = SigarProxyCache.newInstance(new Sigar(), 100)
+
+  /**
+   * CPU cores number.
+   */
+  lazy val cores = sigar.getCpuInfoList()(0).getTotalCores()
+
+  /**
+   * OS specifications.
+   */
+  lazy val os = OperatingSystem.getInstance()
+
   if (!init) {
     log.warning("unable to initialize the sensor. 'java.library.path' variable may have not been correctly set")
   }
 
-  lazy val sigar = SigarProxyCache.newInstance(new Sigar(), 1000)
-  lazy val cores = sigar.getCpuInfoList()(0).getTotalCores()
-  lazy val os = OperatingSystem.getInstance()
   def processPercent(process: Process) = {
     try {
-      if (OperatingSystem.isWin32(os.getName())) {
-        sigar.getProcCpu(process.pid).getPercent()
-      } else {
+      /*
+       * Under Windows operating system, the process CPU percent is given including all cores.
+       * On the other hand, under Linux system, process CPU percent is given according to one core (the core the process is running on).
+       * For instance, under a 4-cores CPU, when SIGAR provides a process CPU percent to 100%, it represents:
+       *   - Full CPU load under the Windows system, so each core is at 100%.
+       *   - 1/4 CPU load under Linux system, so just one core is at 100%.
+       * That's why we need to divide by the number of cores when we are under Linux platforms.
+       * 
+       * TODO: the same for each of Linux kernels (see OperatingSystem.NAME_*)?
+       */
+      if (os.getName().equals(OperatingSystem.NAME_LINUX)) {
         sigar.getProcCpu(process.pid).getPercent() / cores
+      } else {
+        sigar.getProcCpu(process.pid).getPercent()
       }
     } catch {
       case se: SigarException =>
