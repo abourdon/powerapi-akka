@@ -174,9 +174,11 @@ class CpuSensor extends fr.inria.powerapi.sensor.cpu.api.CpuSensor with Configur
   def process(tick: Tick) {
     publish(
       CpuSensorMessage(
-        TimeInStates(timeInStates),
-        GlobalElapsedTime(elapsedTime),
-        ProcessElapsedTime(elapsedTime(tick.subscription.process)),
-        tick))
+        timeInStates = TimeInStates(timeInStates),
+        globalElapsedTime = GlobalElapsedTime(elapsedTime),
+        processElapsedTime = ProcessElapsedTime(elapsedTime(tick.subscription.process)),
+        tick = tick
+      )
+    )
   }
 }

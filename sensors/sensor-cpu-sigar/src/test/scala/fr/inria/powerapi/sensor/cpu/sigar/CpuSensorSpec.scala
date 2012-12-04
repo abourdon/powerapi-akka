@@ -41,25 +41,4 @@ class CpuSensorSpec extends FlatSpec with ShouldMatchersForJUnit {
     System.getProperty("java.library.path") should not be null
   }
 
-  "Time by frequencies data structure" should "be empty" in {
-    sensor.underlyingActor.timeInStates should have size 0
-  }
-
-  "Process elapsed time" should "increase as the duration time" in {
-    val currentPid = java.lang.management.ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
-    val old = sensor.underlyingActor.elapsedTime(Process(currentPid))
-    Thread.sleep((1 second).toMillis)
-    val now = sensor.underlyingActor.elapsedTime(Process(currentPid))
-
-    now should be >= old
-  }
-
-  "Global elapsed time" should "increase as the duration time" in {
-    val old = sensor.underlyingActor.elapsedTime
-    Thread.sleep((1 second).toMillis)
-    val now = sensor.underlyingActor.elapsedTime
-
-    now should be >= old
-  }
-
 }

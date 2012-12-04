@@ -21,14 +21,10 @@
 package fr.inria.powerapi.sensor.cpu.sigar
 
 import java.io.File
-
 import scala.collection.JavaConversions
-
 import org.hyperic.sigar.Sigar
 import org.hyperic.sigar.SigarException
-
 import com.typesafe.config.ConfigFactory
-
 import fr.inria.powerapi.core.Process
 import fr.inria.powerapi.core.Tick
 import fr.inria.powerapi.sensor.cpu.api.CpuSensorMessage
@@ -38,6 +34,11 @@ import fr.inria.powerapi.sensor.cpu.api.TimeInStates
 import scalax.file.PathMatcher.IsFile
 import scalax.file.Path
 import scalax.io.Resource
+import org.hyperic.sigar.SigarProxyCache
+import org.hyperic.sigar.CpuPerc
+import fr.inria.powerapi.sensor.cpu.api.ProcessPercent
+import org.hyperic.sigar.OperatingSystem
+import org.hyperic.sigar.cmd.CpuInfo
 
 /**
  * Initializer utility object, copying SIGAR dynamic libraries to a readable directory
@@ -87,20 +88,15 @@ class CpuSensor extends fr.inria.powerapi.sensor.cpu.api.CpuSensor with Initiali
     log.warning("unable to initialize the sensor. 'java.library.path' variable may have not been correctly set")
   }
 
-  lazy val emptyMap = Map[Int, Long]()
-  def timeInStates = emptyMap
-
-  lazy val sigar = new Sigar()
-  def elapsedTime(implicit process: Process = Process(-1)) = {
-    def processElapsedTime = sigar.getProcCpu(process.pid).getTotal()
-
-    def globalElapsedTime = sigar.getCpu().getTotal()
-
+  lazy val sigar = SigarProxyCache.newInstance(new Sigar(), 1000)
+  lazy val cores = sigar.getCpuInfoList()(0).getTotalCores()
+  lazy val os = OperatingSystem.getInstance()
+  def processPercent(process: Process) = {
     try {
-      if (process.pid == -1) {
-        globalElapsedTime
+      if (OperatingSystem.isWin32(os.getName())) {
+        sigar.getProcCpu(process.pid).getPercent()
       } else {
-        processElapsedTime
+        sigar.getProcCpu(process.pid).getPercent() / cores
       }
     } catch {
       case se: SigarException =>
@@ -112,10 +108,9 @@ class CpuSensor extends fr.inria.powerapi.sensor.cpu.api.CpuSensor with Initiali
   def process(tick: Tick) {
     publish(
       CpuSensorMessage(
-        TimeInStates(timeInStates),
-        GlobalElapsedTime(elapsedTime),
-        ProcessElapsedTime(elapsedTime(tick.subscription.process)),
-        tick))
+        processPercent = ProcessPercent(processPercent(tick.subscription.process)),
+        tick = tick)
+    )
   }
 
 }

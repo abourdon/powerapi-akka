@@ -55,7 +55,7 @@ object CpuMonitor {
 
   def main(args: Array[String]) {
     SigarMaxInitializer.beforeStart()
-    Processes.current()
+    Processes.perso()
     SigarMaxInitializer.beforeEnd()
   }
 }

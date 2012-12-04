@@ -61,13 +61,13 @@ object Processes {
    */
   def perso() {
     PowerAPI.startMonitoring(
-      Process(16463),
+      Process(3869),
       2000 milliseconds,
       classOf[fr.inria.powerapi.listener.cpu.jfreechart.CpuListener]
     )
     Thread.sleep((5 minutes).toMillis)
     PowerAPI.stopMonitoring(
-      Process(16463),
+      Process(3869),
       2000 milliseconds,
       classOf[fr.inria.powerapi.listener.cpu.jfreechart.CpuListener]
     )

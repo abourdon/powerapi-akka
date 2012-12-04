@@ -40,6 +40,8 @@ import fr.inria.powerapi.sensor.cpu.api.TimeInStates
 import fr.inria.powerapi.formula.cpu.api.CpuFormulaMessage
 import akka.util.Timeout
 import akka.dispatch.Await
+import fr.inria.powerapi.sensor.cpu.api.ProcessPercent
+import fr.inria.powerapi.sensor.cpu.api.ProcessPercent
 
 @RunWith(classOf[JUnitRunner])
 class CpuFormulaSpec extends FlatSpec with ShouldMatchersForJUnit {
@@ -59,25 +61,13 @@ class CpuFormulaSpec extends FlatSpec with ShouldMatchersForJUnit {
       override lazy val tdp = 35
     })
 
-    cpuFormula.underlyingActor.process(
-      CpuSensorMessage(
-        TimeInStates(Map[Int, Long]()),
-        GlobalElapsedTime(2),
-        ProcessElapsedTime(1),
-        Tick(
-          TickSubscription(Process(123), 1 second),
-          1234567890))
-    )
-
     cpuFormula.underlyingActor.compute(
       CpuSensorMessage(
-        TimeInStates(Map[Int, Long]()),
-        GlobalElapsedTime(5),
-        ProcessElapsedTime(2),
-        Tick(
-          TickSubscription(Process(123), 1 second),
-          1234567890))
-    ) should equal(Energy.fromPower((35 * 0.7) * ((2.0 - 1.0) / (5.0 - 2.0))))
+        processPercent = ProcessPercent(0.1),
+        tick = null
+      )
+    ) should equal(Energy.fromPower((35 * 0.7) * 0.1))
+
   }
 
 }

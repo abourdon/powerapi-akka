@@ -50,30 +50,13 @@ trait Configuration extends fr.inria.powerapi.core.Configuration {
  */
 class CpuFormula extends fr.inria.powerapi.formula.cpu.api.CpuFormula with Configuration {
   lazy val power = tdp * 0.7
-  lazy val cache = mutable.HashMap[TickSubscription, CpuSensorMessage]()
-
-  def usage(now: CpuSensorMessage, old: CpuSensorMessage) = {
-    val processUsage = (now.processElapsedTime.time - old.processElapsedTime.time).toDouble
-    val globalUsage = (now.globalElapsedTime.time - old.globalElapsedTime.time).toDouble
-    if (globalUsage == 0) {
-      0.0
-    } else {
-      math.max(0.0, processUsage / globalUsage)
-    }
-  }
 
   def compute(now: CpuSensorMessage) = {
-    val old = cache.getOrElse(now.tick.subscription, now)
-    Energy.fromPower(power * usage(now, old))
-  }
-
-  def refreshCache(now: CpuSensorMessage) {
-    cache += (now.tick.subscription -> now)
+    Energy.fromPower(power * now.processPercent.percent)
   }
 
   def process(cpuSensorMessage: CpuSensorMessage) {
     publish(CpuFormulaMessage(compute(cpuSensorMessage), cpuSensorMessage.tick))
-    refreshCache(cpuSensorMessage)
   }
 
 }

@@ -88,18 +88,16 @@ class CpuFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
   @Test
   def testRefreshCache() {
     val old = CpuSensorMessage(
-      TimeInStates(Map[Int, Long]()),
-      GlobalElapsedTime(100),
-      ProcessElapsedTime(50),
-      Tick(TickSubscription(Process(123), 500 milliseconds)))
+      globalElapsedTime = GlobalElapsedTime(100),
+      processElapsedTime = ProcessElapsedTime(50),
+      tick = Tick(TickSubscription(Process(123), 500 milliseconds)))
     cpuformula.underlyingActor.refreshCache(old)
     cpuformula.underlyingActor.cache getOrElse (TickSubscription(Process(123), 500 milliseconds), null) should equal(old)
 
     val now = CpuSensorMessage(
-      TimeInStates(Map[Int, Long]()),
-      GlobalElapsedTime(300),
-      ProcessElapsedTime(80),
-      Tick(TickSubscription(Process(123), 500 milliseconds)))
+      globalElapsedTime = GlobalElapsedTime(300),
+      processElapsedTime = ProcessElapsedTime(80),
+      tick = Tick(TickSubscription(Process(123), 500 milliseconds)))
     cpuformula.underlyingActor.refreshCache(now)
     cpuformula.underlyingActor.cache getOrElse (TickSubscription(Process(123), 500 milliseconds), null) should equal(now)
 
@@ -109,16 +107,14 @@ class CpuFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
   @Test
   def testUsage() {
     val old = CpuSensorMessage(
-      TimeInStates(Map[Int, Long]()),
-      GlobalElapsedTime(100),
-      ProcessElapsedTime(50),
-      null)
+      globalElapsedTime = GlobalElapsedTime(100),
+      processElapsedTime = ProcessElapsedTime(50),
+      tick = null)
 
     val now = CpuSensorMessage(
-      TimeInStates(Map[Int, Long]()),
-      GlobalElapsedTime(300),
-      ProcessElapsedTime(80),
-      null)
+      globalElapsedTime = GlobalElapsedTime(300),
+      processElapsedTime = ProcessElapsedTime(80),
+      tick = null)
 
     cpuformula.underlyingActor.usage(old, now) should equal((80.0 - 50) / (300.0 - 100))
   }
@@ -127,17 +123,17 @@ class CpuFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
   def testPower() {
     val oldTimeInStates = TimeInStates(Map[Int, Long](1800002 -> 10, 2100002 -> 20, 2400003 -> 30))
     val old = CpuSensorMessage(
-      oldTimeInStates,
-      GlobalElapsedTime(100),
-      ProcessElapsedTime(50),
-      null)
+      timeInStates = oldTimeInStates,
+      globalElapsedTime = GlobalElapsedTime(100),
+      processElapsedTime = ProcessElapsedTime(50),
+      tick = null)
 
     val nowTimInStates = TimeInStates(Map[Int, Long](1800002 -> 100, 2100002 -> 200, 2400003 -> 300))
     val now = CpuSensorMessage(
-      nowTimInStates,
-      GlobalElapsedTime(300),
-      ProcessElapsedTime(80),
-      null)
+      timeInStates = nowTimInStates,
+      globalElapsedTime = GlobalElapsedTime(300),
+      processElapsedTime = ProcessElapsedTime(80),
+      tick = null)
 
     val diffTimeInStates = nowTimInStates - oldTimeInStates
     val totalPowers = diffTimeInStates.times.foldLeft(0: Double) {
@@ -155,18 +151,18 @@ class CpuFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
     val tick = Tick(TickSubscription(Process(123), 10 seconds))
     val oldTimeInStates = TimeInStates(Map[Int, Long](1800002 -> 10, 2100002 -> 20, 2400003 -> 30))
     val old = CpuSensorMessage(
-      oldTimeInStates,
-      GlobalElapsedTime(100),
-      ProcessElapsedTime(50),
-      tick)
+      timeInStates = oldTimeInStates,
+      globalElapsedTime = GlobalElapsedTime(100),
+      processElapsedTime = ProcessElapsedTime(50),
+      tick = tick)
     cpuformula.underlyingActor.refreshCache(old)
 
     val nowTimInStates = TimeInStates(Map[Int, Long](1800002 -> 100, 2100002 -> 200, 2400003 -> 300))
     val now = CpuSensorMessage(
-      nowTimInStates,
-      GlobalElapsedTime(300),
-      ProcessElapsedTime(80),
-      tick)
+      timeInStates = nowTimInStates,
+      globalElapsedTime = GlobalElapsedTime(300),
+      processElapsedTime = ProcessElapsedTime(80),
+      tick = tick)
 
     val diffTimeInStates = nowTimInStates - oldTimeInStates
     val totalPowers = diffTimeInStates.times.foldLeft(0: Double) {
