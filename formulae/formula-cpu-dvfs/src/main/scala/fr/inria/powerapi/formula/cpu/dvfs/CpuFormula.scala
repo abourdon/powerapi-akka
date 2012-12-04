@@ -44,11 +44,6 @@ trait Configuration extends fr.inria.powerapi.core.Configuration {
   lazy val tdp = load { _.getDouble("powerapi.cpu.tdp") }(0)
 
   /**
-   * CPU cores number.
-   */
-  lazy val cores = load { _.getDouble("powerapi.cpu.cores") }(1)
-
-  /**
    * Map of frequencies and their associated voltages.
    */
   lazy val frequencies = load {
@@ -66,9 +61,6 @@ trait Configuration extends fr.inria.powerapi.core.Configuration {
  * This formula operates for an unique frequency/variable but many frequencies can be used by CPU during a time period (e.g using DVFS [2]).
  * Thus, this implementation weights each frequency by the time spent by CPU in working under it.
  *
- * Process CPU usage is computed in making the ratio between global and process CPU time usage.
- * Thus processUsage = processTimeUsage / globalTimeUsage.
- *
  * @see [1] "Frequency–Voltage Cooperative CPU Power Control: A Design Rule and Its Application by Feedback Prediction" by Toyama & al.
  * @see [2] http://en.wikipedia.org/wiki/Voltage_and_frequency_scaling.
  *
@@ -81,29 +73,11 @@ class CpuFormula extends fr.inria.powerapi.formula.cpu.api.CpuFormula with Confi
   lazy val constant = (0.7 * tdp) / (frequencies.max._1 * math.pow(frequencies.max._2, 2))
   lazy val powers = frequencies.map(frequency => (frequency._1, (constant * frequency._1 * math.pow(frequency._2, 2))))
 
-  lazy val cache = mutable.HashMap[TickSubscription, CpuSensorMessage]()
-
-  def process(cpuSensorMessage: CpuSensorMessage) {
-    publish(compute(cpuSensorMessage))
-    refreshCache(cpuSensorMessage)
-  }
-
-  def usage(old: CpuSensorMessage, now: CpuSensorMessage) = {
-    val processUsage = (now.processElapsedTime.time - old.processElapsedTime.time).toDouble
-    val globalUsage = (now.globalElapsedTime.time - old.globalElapsedTime.time).toDouble
-    if (globalUsage == 0) {
-      0.0
-    } else {
-      math.max(0.0, processUsage / globalUsage)
-    }
-  }
-
-  def power(old: CpuSensorMessage, now: CpuSensorMessage) = {
-    val timeInStates = now.timeInStates - old.timeInStates
+  def power(cpuSensorMessage: CpuSensorMessage) = {
     val totalPower = powers.foldLeft(0: Double) {
-      (acc, power) => acc + (power._2 * timeInStates.times.getOrElse(power._1, 0: Long))
+      (acc, power) => acc + (power._2 * cpuSensorMessage.timeInStates.times.getOrElse(power._1, 0: Long))
     }
-    val time = timeInStates.times.foldLeft(0: Long) {
+    val time = cpuSensorMessage.timeInStates.times.foldLeft(0: Long) {
       (acc, time) => acc + time._2
     }
     if (time == 0) {
@@ -114,12 +88,14 @@ class CpuFormula extends fr.inria.powerapi.formula.cpu.api.CpuFormula with Confi
 
   }
 
-  def compute(now: CpuSensorMessage): CpuFormulaMessage = {
-    val old = cache getOrElse (now.tick.subscription, now)
-    CpuFormulaMessage(Energy.fromPower(power(old, now) * usage(old, now)), now.tick)
+  def compute(cpuSensorMessage: CpuSensorMessage): CpuFormulaMessage = {
+    CpuFormulaMessage(
+      Energy.fromPower(power(cpuSensorMessage) * cpuSensorMessage.processPercent.percent),
+      cpuSensorMessage.tick
+    )
   }
 
-  def refreshCache(now: CpuSensorMessage) {
-    cache += (now.tick.subscription -> now)
+  def process(cpuSensorMessage: CpuSensorMessage) {
+    publish(compute(cpuSensorMessage))
   }
 }

@@ -29,6 +29,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>fr.inria.powerapi.sensor</groupId>
+            <artifactId>sensor-cpu-sigar</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.github.scala-incubator.io</groupId>
             <artifactId>scala-io-core_${scala.version}</artifactId>
         </dependency>

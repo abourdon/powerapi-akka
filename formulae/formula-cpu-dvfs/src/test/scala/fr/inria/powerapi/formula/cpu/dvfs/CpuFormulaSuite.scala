@@ -29,13 +29,11 @@ import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.ActorSystem
 import akka.testkit.TestActorRef
-import akka.util.duration.intToDurationInt
-import fr.inria.powerapi.core.Process
+import fr.inria.powerapi.core.Energy
 import fr.inria.powerapi.core.Tick
-import fr.inria.powerapi.core.TickSubscription
+import fr.inria.powerapi.formula.cpu.api.CpuFormulaMessage
 import fr.inria.powerapi.sensor.cpu.api.CpuSensorMessage
-import fr.inria.powerapi.sensor.cpu.api.GlobalElapsedTime
-import fr.inria.powerapi.sensor.cpu.api.ProcessElapsedTime
+import fr.inria.powerapi.sensor.cpu.api.ProcessPercent
 import fr.inria.powerapi.sensor.cpu.api.TimeInStates
 
 case object Timestamps
@@ -67,114 +65,80 @@ class CpuFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
   @Test
   def testVoltages() {
-    cpuformula.underlyingActor.frequencies should have size (3)
-    cpuformula.underlyingActor.frequencies(1800002) should equal(1.31)
-    cpuformula.underlyingActor.frequencies(2100002) should equal(1.41)
-    cpuformula.underlyingActor.frequencies(2400003) should equal(1.5)
+    cpuformula.underlyingActor.frequencies should equal(Map(
+      1800002 -> 1.31,
+      2100002 -> 1.41,
+      2400003 -> 1.5
+    ))
   }
 
   @Test
   def testConstant() {
-    cpuformula.underlyingActor.constant should equal((0.7 * cpuformula.underlyingActor.tdp) / (cpuformula.underlyingActor.frequencies.max._1 * math.pow(cpuformula.underlyingActor.frequencies.max._2, 2)))
+    cpuformula.underlyingActor.constant should equal((0.7 * 105) / (2400003 * math.pow(1.5, 2)))
   }
 
   @Test
   def testPowers() {
-    cpuformula.underlyingActor.powers should have size (3)
-    cpuformula.underlyingActor.powers.foreach(power => power._2 should equal(
-      cpuformula.underlyingActor.constant * power._1 * math.pow(cpuformula.underlyingActor.frequencies(power._1), 2)))
-  }
-
-  @Test
-  def testRefreshCache() {
-    val old = CpuSensorMessage(
-      globalElapsedTime = GlobalElapsedTime(100),
-      processElapsedTime = ProcessElapsedTime(50),
-      tick = Tick(TickSubscription(Process(123), 500 milliseconds)))
-    cpuformula.underlyingActor.refreshCache(old)
-    cpuformula.underlyingActor.cache getOrElse (TickSubscription(Process(123), 500 milliseconds), null) should equal(old)
-
-    val now = CpuSensorMessage(
-      globalElapsedTime = GlobalElapsedTime(300),
-      processElapsedTime = ProcessElapsedTime(80),
-      tick = Tick(TickSubscription(Process(123), 500 milliseconds)))
-    cpuformula.underlyingActor.refreshCache(now)
-    cpuformula.underlyingActor.cache getOrElse (TickSubscription(Process(123), 500 milliseconds), null) should equal(now)
-
-    cpuformula.underlyingActor.cache getOrElse (TickSubscription(Process(123), 123 milliseconds), null) should be(null)
-  }
-
-  @Test
-  def testUsage() {
-    val old = CpuSensorMessage(
-      globalElapsedTime = GlobalElapsedTime(100),
-      processElapsedTime = ProcessElapsedTime(50),
-      tick = null)
-
-    val now = CpuSensorMessage(
-      globalElapsedTime = GlobalElapsedTime(300),
-      processElapsedTime = ProcessElapsedTime(80),
-      tick = null)
-
-    cpuformula.underlyingActor.usage(old, now) should equal((80.0 - 50) / (300.0 - 100))
+    cpuformula.underlyingActor.powers should equal(Map(
+      1800002 -> cpuformula.underlyingActor.constant * 1800002 * math.pow(1.31, 2),
+      2100002 -> cpuformula.underlyingActor.constant * 2100002 * math.pow(1.41, 2),
+      2400003 -> cpuformula.underlyingActor.constant * 2400003 * math.pow(1.5, 2)
+    ))
   }
 
   @Test
   def testPower() {
-    val oldTimeInStates = TimeInStates(Map[Int, Long](1800002 -> 10, 2100002 -> 20, 2400003 -> 30))
-    val old = CpuSensorMessage(
-      timeInStates = oldTimeInStates,
-      globalElapsedTime = GlobalElapsedTime(100),
-      processElapsedTime = ProcessElapsedTime(50),
-      tick = null)
+    val timeInStates = TimeInStates(Map(
+      1800002 -> 1,
+      2100002 -> 2,
+      2400003 -> 3
+    ))
 
-    val nowTimInStates = TimeInStates(Map[Int, Long](1800002 -> 100, 2100002 -> 200, 2400003 -> 300))
-    val now = CpuSensorMessage(
-      timeInStates = nowTimInStates,
-      globalElapsedTime = GlobalElapsedTime(300),
-      processElapsedTime = ProcessElapsedTime(80),
-      tick = null)
-
-    val diffTimeInStates = nowTimInStates - oldTimeInStates
-    val totalPowers = diffTimeInStates.times.foldLeft(0: Double) {
-      (acc, time) => acc + (cpuformula.underlyingActor.powers(time._1) * time._2)
-    }
-    val totalTimes = diffTimeInStates.times.foldLeft(0: Long) {
-      (acc, time) => acc + time._2
-    }
-
-    cpuformula.underlyingActor.power(old, now) should equal(totalPowers / totalTimes)
+    cpuformula.underlyingActor.power(
+      CpuSensorMessage(
+        timeInStates = timeInStates,
+        tick = null
+      )
+    ) should equal(
+        (
+          (
+            (cpuformula.underlyingActor.powers(1800002) * 1) +
+            (cpuformula.underlyingActor.powers(2100002) * 2) +
+            (cpuformula.underlyingActor.powers(2400003) * 3)
+          ) / (1 + 2 + 3)
+        )
+      )
   }
 
   @Test
   def testCompute() {
-    val tick = Tick(TickSubscription(Process(123), 10 seconds))
-    val oldTimeInStates = TimeInStates(Map[Int, Long](1800002 -> 10, 2100002 -> 20, 2400003 -> 30))
-    val old = CpuSensorMessage(
-      timeInStates = oldTimeInStates,
-      globalElapsedTime = GlobalElapsedTime(100),
-      processElapsedTime = ProcessElapsedTime(50),
-      tick = tick)
-    cpuformula.underlyingActor.refreshCache(old)
+    val timeInStates = TimeInStates(Map(
+      1800002 -> 1,
+      2100002 -> 2,
+      2400003 -> 3
+    ))
 
-    val nowTimInStates = TimeInStates(Map[Int, Long](1800002 -> 100, 2100002 -> 200, 2400003 -> 300))
-    val now = CpuSensorMessage(
-      timeInStates = nowTimInStates,
-      globalElapsedTime = GlobalElapsedTime(300),
-      processElapsedTime = ProcessElapsedTime(80),
-      tick = tick)
+    val processPercent = ProcessPercent(0.5)
 
-    val diffTimeInStates = nowTimInStates - oldTimeInStates
-    val totalPowers = diffTimeInStates.times.foldLeft(0: Double) {
-      (acc, time) => acc + (cpuformula.underlyingActor.powers(time._1) * time._2)
-    }
-    val totalTimes = diffTimeInStates.times.foldLeft(0: Long) {
-      (acc, time) => acc + time._2
-    }
-
-    val power = totalPowers / totalTimes
-    val usage = (80.toDouble - 50) / (300 - 100)
-
-    cpuformula.underlyingActor.compute(now).energy.power should equal(power * usage)
+    cpuformula.underlyingActor.compute(
+      CpuSensorMessage(
+        timeInStates = timeInStates,
+        processPercent = processPercent,
+        tick = null
+      )
+    ) should equal(CpuFormulaMessage(
+        energy = Energy.fromPower(
+          (
+            (
+              (cpuformula.underlyingActor.powers(1800002) * 1) +
+              (cpuformula.underlyingActor.powers(2100002) * 2) +
+              (cpuformula.underlyingActor.powers(2400003) * 3)
+            ) / (1 + 2 + 3)
+          ) * processPercent.percent
+        ),
+        device = "cpu",
+        tick = null)
+      )
   }
+
 }

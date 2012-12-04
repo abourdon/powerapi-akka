@@ -56,7 +56,7 @@ class CpuFormulaSpec extends FlatSpec with ShouldMatchersForJUnit {
     cpuFormula.underlyingActor.tdp should equal(35)
   }
 
-  "A CpuFormula" should "be able to compute the CPU energy of an application" in {
+  "A CpuFormula" should "be able to compute the CPU energy of a given process" in {
     val cpuFormula = TestActorRef(new CpuFormula() with Configuration {
       override lazy val tdp = 35
     })
