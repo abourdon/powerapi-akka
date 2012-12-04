@@ -66,9 +66,7 @@ trait Initializer {
     JavaConversions.asScalaBuffer(libs).foreach(lib =>
       Resource.fromInputStream(
         getClass().getResourceAsStream(lib)).copyDataTo(
-          Path.fromString(dir.path + '/' + lib.substring(lib.lastIndexOf('/')))
-        )
-    )
+          Path.fromString(dir.path + '/' + lib.substring(lib.lastIndexOf('/')))))
     System.setProperty("java.library.path", dir.path)
     dir.children(IsFile).size.equals(libs.size)
   }
@@ -94,32 +92,13 @@ class CpuSensor extends fr.inria.powerapi.sensor.cpu.api.CpuSensor with Initiali
    */
   lazy val cores = sigar.getCpuInfoList()(0).getTotalCores()
 
-  /**
-   * OS specifications.
-   */
-  lazy val os = OperatingSystem.getInstance()
-
   if (!init) {
     log.warning("unable to initialize the sensor. 'java.library.path' variable may have not been correctly set")
   }
 
   def processPercent(process: Process) = {
     try {
-      /*
-       * Under Windows operating system, the process CPU percent is given including all cores.
-       * On the other hand, under Linux system, process CPU percent is given according to one core (the core the process is running on).
-       * For instance, under a 4-cores CPU, when SIGAR provides a process CPU percent to 100%, it represents:
-       *   - Full CPU load under the Windows system, so each core is at 100%.
-       *   - 1/4 CPU load under Linux system, so just one core is at 100%.
-       * That's why we need to divide by the number of cores when we are under Linux platforms.
-       * 
-       * TODO: the same for each of Linux kernels (see OperatingSystem.NAME_*)?
-       */
-      if (os.getName().equals(OperatingSystem.NAME_LINUX)) {
-        sigar.getProcCpu(process.pid).getPercent() / cores
-      } else {
-        sigar.getProcCpu(process.pid).getPercent()
-      }
+      sigar.getProcCpu(process.pid).getPercent() / cores
     } catch {
       case se: SigarException =>
         log.warning(se.getMessage())
@@ -131,8 +110,7 @@ class CpuSensor extends fr.inria.powerapi.sensor.cpu.api.CpuSensor with Initiali
     publish(
       CpuSensorMessage(
         processPercent = ProcessPercent(processPercent(tick.subscription.process)),
-        tick = tick)
-    )
+        tick = tick))
   }
 
 }
