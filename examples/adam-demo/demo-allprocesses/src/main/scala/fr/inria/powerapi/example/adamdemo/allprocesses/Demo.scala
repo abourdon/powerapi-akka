@@ -66,11 +66,11 @@ object Demo extends App {
     val currentPids = scala.collection.mutable.Set[Int](getPids: _*)
 
     val oldPids = pids -- currentPids
-    oldPids.foreach(pid => PowerAPI.stopMonitoring(process = Process(pid), duration = 1 second))
+    oldPids.foreach(pid => PowerAPI.stopMonitoring(process = Process(pid), duration = 2 seconds))
     pids --= oldPids
 
     val newPids = currentPids -- pids
-    newPids.foreach(pid => PowerAPI.startMonitoring(process = Process(pid), duration = 1 second))
+    newPids.foreach(pid => PowerAPI.startMonitoring(process = Process(pid), duration = 2 seconds))
     pids ++= newPids
   }
 

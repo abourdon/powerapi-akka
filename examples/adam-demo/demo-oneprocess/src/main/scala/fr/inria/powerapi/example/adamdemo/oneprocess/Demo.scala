@@ -53,9 +53,9 @@ object Demo extends App {
       }
   })
 
-  pids.foreach(pid => PowerAPI.startMonitoring(Process(pid), 1 second, classOf[CpuListener]))
+  pids.foreach(pid => PowerAPI.startMonitoring(Process(pid), 2 seconds, classOf[CpuListener]))
   Thread.sleep((2 hours).toMillis)
-  pids.foreach(pid => PowerAPI.stopMonitoring(Process(pid), 1 second, classOf[CpuListener]))
+  pids.foreach(pid => PowerAPI.stopMonitoring(Process(pid), 2 seconds, classOf[CpuListener]))
 
   Array(
     classOf[CpuSensor],
