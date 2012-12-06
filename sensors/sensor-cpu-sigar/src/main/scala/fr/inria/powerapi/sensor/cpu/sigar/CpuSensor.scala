@@ -20,25 +20,21 @@
  */
 package fr.inria.powerapi.sensor.cpu.sigar
 
-import java.io.File
 import scala.collection.JavaConversions
+
 import org.hyperic.sigar.Sigar
 import org.hyperic.sigar.SigarException
+import org.hyperic.sigar.SigarProxyCache
+
 import com.typesafe.config.ConfigFactory
+
 import fr.inria.powerapi.core.Process
 import fr.inria.powerapi.core.Tick
 import fr.inria.powerapi.sensor.cpu.api.CpuSensorMessage
-import fr.inria.powerapi.sensor.cpu.api.GlobalElapsedTime
-import fr.inria.powerapi.sensor.cpu.api.ProcessElapsedTime
-import fr.inria.powerapi.sensor.cpu.api.TimeInStates
+import fr.inria.powerapi.sensor.cpu.api.ProcessPercent
 import scalax.file.PathMatcher.IsFile
 import scalax.file.Path
 import scalax.io.Resource
-import org.hyperic.sigar.SigarProxyCache
-import org.hyperic.sigar.CpuPerc
-import fr.inria.powerapi.sensor.cpu.api.ProcessPercent
-import org.hyperic.sigar.OperatingSystem
-import org.hyperic.sigar.cmd.CpuInfo
 
 /**
  * Initializer utility object, copying SIGAR dynamic libraries to a readable directory

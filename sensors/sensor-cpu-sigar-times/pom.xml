@@ -1,0 +1,43 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>fr.inria.powerapi.sensor</groupId>
+	<artifactId>sensor-cpu-sigar-times</artifactId>
+	<name>${project.artifactId}</name>
+	<description>Extends the `fr.inria.powerapi.sensor.cpu.sensor-cpu-sigar` module in providing time spent for each CPU frequency, useful for computation taking into account the DVFS.
+
+This `Sensor` module use information provided by the [cpufreq-info](http://linux.die.net/man/1/cpufreq-info &quot;cpufreq-info&quot;) tool under the procfs/sysfs virtual filesystems, typically used by standard Linux distributions.
+
+See also: [Man proc](http://linux.die.net/man/5/proc &quot;proc manual&quot;).
+</description>
+	<inceptionYear>2012</inceptionYear>
+
+	<parent>
+		<groupId>fr.inria.powerapi</groupId>
+		<artifactId>sensors</artifactId>
+		<version>1.4-SNAPSHOT</version>
+	</parent>
+
+	<dependencies>
+		<dependency>
+			<groupId>fr.inria.powerapi</groupId>
+			<artifactId>core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>fr.inria.powerapi.sensor</groupId>
+			<artifactId>sensor-cpu-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>fr.inria.powerapi.sensor</groupId>
+			<artifactId>sensor-cpu-sigar</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.scala-incubator.io</groupId>
+			<artifactId>scala-io-core_${scala.version}</artifactId>
+		</dependency>
+	</dependencies>
+</project>

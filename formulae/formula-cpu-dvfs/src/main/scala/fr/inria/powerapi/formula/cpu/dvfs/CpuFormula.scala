@@ -85,7 +85,6 @@ class CpuFormula extends fr.inria.powerapi.formula.cpu.api.CpuFormula with Confi
     } else {
       totalPower / time
     }
-
   }
 
   def compute(cpuSensorMessage: CpuSensorMessage): CpuFormulaMessage = {
