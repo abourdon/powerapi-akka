@@ -13,7 +13,7 @@
 	<parent>
 		<groupId>fr.inria.powerapi</groupId>
 		<artifactId>sensors</artifactId>
-		<version>1.4-SNAPSHOT</version>
+		<version>1.4</version>
 	</parent>
 
 	<dependencies>
