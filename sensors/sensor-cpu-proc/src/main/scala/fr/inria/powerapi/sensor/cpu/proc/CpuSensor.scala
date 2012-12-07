@@ -23,12 +23,12 @@ package fr.inria.powerapi.sensor.cpu.proc
 import java.io.FileInputStream
 import java.io.IOException
 import java.net.URL
-import scala.collection.mutable
+
+import fr.inria.powerapi.core.Process
 import fr.inria.powerapi.core.Tick
 import fr.inria.powerapi.core.TickSubscription
 import fr.inria.powerapi.sensor.cpu.api.CpuSensorMessage
 import fr.inria.powerapi.sensor.cpu.api.ProcessPercent
-import fr.inria.powerapi.sensor.cpu.api.TimeInStates
 import scalax.io.Resource
 
 /**
@@ -38,12 +38,16 @@ import scalax.io.Resource
  */
 trait Configuration extends fr.inria.powerapi.core.Configuration {
   /**
-   * Time in state file, giving information about how many time CPU spent under each frequency.
-   * This information is typically given by the cpufrequtils utils.
-   *
-   * @see http://www.kernel.org/pub/linux/utils/kernel/cpufreq/cpufreq-info.html
+   * Global stat file, giving global information of the system itself.
+   * Typically presents under /proc/stat.
    */
-  lazy val timeInStatePath = load { _.getString("powerapi.cpu.time-in-state") }("file:///sys/devices/system/cpu/cpu%?/cpufreq/stats/time_in_state")
+  lazy val globalStatPath = load { _.getString("powerapi.cpu.global-stat") }("file:///proc/stat")
+
+  /**
+   * Process stat file, giving information about the process itself.
+   * Typically presents under /proc/[pid]/stat.
+   */
+  lazy val processStatPath = load { _.getString("powerapi.cpu.process-stat") }("file:///proc/%?/stat")
 }
 
 /**
@@ -54,60 +58,68 @@ trait Configuration extends fr.inria.powerapi.core.Configuration {
  *
  * @author abourdon
  */
-class CpuSensor extends fr.inria.powerapi.sensor.cpu.sigar.CpuSensor with Configuration {
+class CpuSensor extends fr.inria.powerapi.sensor.cpu.api.CpuSensor with Configuration {
 
   /**
-   * Delegate class to deal with time spent within each CPU frequencies.
+   * Delegate class collecting time information contained into both globalStatPath and processStatPath files
+   * and providing the process CPU percent usage.
    */
-  class Frequencies {
-    lazy val cache = mutable.HashMap[TickSubscription, TimeInStates]()
-
-    // time_in_state line format: frequency time
-    lazy val TimeInStateFormat = """(\d+)\s+(\d+)""".r
-    def timeInStates = {
-      val result = collection.mutable.HashMap[Int, Long]()
-
-      (for (core <- 0 until cores) yield (timeInStatePath replace ("%?", core.toString))).foreach(timeInStateFile => {
-        try {
-          // FIXME: Due to Java JDK bug #7132461, there is no way to apply buffer to procfs files and thus, directly open stream from the given URL.
-          // Then, we simply read these files thanks to a FileInputStream in getting those local path
-          Resource.fromInputStream(new FileInputStream(new URL(timeInStateFile).getPath)).lines().foreach(f = line => {
-            line match {
-              case TimeInStateFormat(freq, t) => result += (freq.toInt -> (t.toLong + (result getOrElse (freq.toInt, 0: Long))))
-              case _ => log.warning("unable to parse line \"" + line + "\" from file \"" + timeInStateFile)
-            }
-          })
-        } catch {
-          case ioe: IOException => {
-            log.warning("i/o exception: " + ioe.getMessage)
+  class ProcessPercent {
+    lazy val GlobalStatFormat = """cpu\s+([\d\s]+)""".r
+    def globalElapsedTime: Long = {
+      try {
+        // FIXME: Due to Java JDK bug #7132461, there is no way to apply buffer to procfs files and thus, directly open stream from the given URL.
+        // Then, we simply read these files thanks to a FileInputStream in getting those local path
+        Resource.fromInputStream(new FileInputStream(new URL(globalStatPath).getPath)).lines().toIndexedSeq(0) match {
+          case GlobalStatFormat(times) => times.split(' ').foldLeft(0: Long) {
+            (acc, x) => (acc + x.toLong)
+          }
+          case _ => {
+            log.warning("unable to parse line from file \"" + globalStatPath)
+            0l
           }
         }
-      })
-
-      result.toMap[Int, Long]
+      } catch {
+        case ioe: IOException =>
+          log.warning("i/o exception: " + ioe.getMessage)
+          0l
+      }
     }
 
-    def refreshCache(subscription: TickSubscription, now: TimeInStates) {
+    def processElapsedTime(implicit process: Process): Long = {
+      try {
+        // FIXME: Due to Java JDK bug #7132461, there is no way to apply buffer to procfs files and thus, directly open stream from the given URL.
+        // Then, we simply read these files thanks to a FileInputStream in getting those local path
+        val line = Resource.fromInputStream(new FileInputStream(new URL(processStatPath replace ("%?", process.pid.toString)).getPath)).lines().toIndexedSeq(0).toString.split("\\s")
+        // User time + System time
+        line(13).toLong + line(14).toLong
+      } catch {
+        case ioe: IOException => {
+          log.warning("i/o exception: " + ioe.getMessage)
+          0l
+        }
+      }
+    }
+
+    lazy val cache = collection.mutable.Map[TickSubscription, (Long, Long)]()
+    def refrechCache(subscription: TickSubscription, now: (Long, Long)) {
       cache += (subscription -> now)
     }
 
     def process(subscription: TickSubscription) = {
-      val old = cache getOrElse (subscription, TimeInStates(Map[Int, Long]()))
-      val now = TimeInStates(timeInStates)
-      refreshCache(subscription, now)
-      now - old
+      val now = (processElapsedTime(subscription.process), globalElapsedTime)
+      val old = cache.getOrElse(subscription, now)
+      refrechCache(subscription, now)
+      ProcessPercent((now._1 - old._1).doubleValue() / (now._2 - old._2))
     }
   }
 
-  lazy val frequencies = new Frequencies
+  lazy val processPercent = new ProcessPercent
 
-  override def process(tick: Tick) {
+  def process(tick: Tick) {
     publish(
       CpuSensorMessage(
-        timeInStates = frequencies.process(tick.subscription),
-        processPercent = ProcessPercent(processPercent(tick.subscription.process)),
-        tick = tick
-      )
-    )
+        processPercent = processPercent.process(tick.subscription),
+        tick = tick))
   }
 }

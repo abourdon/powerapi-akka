@@ -28,7 +28,7 @@ import java.lang.management.ManagementFactory
 import org.junit.{ Test, Ignore, Before, After }
 import org.scalatest.junit.{ ShouldMatchersForJUnit, JUnitSuite }
 import scalax.io.Resource
-import fr.inria.powerapi.formula.cpu.dvfs.CpuFormula
+import fr.inria.powerapi.formula.cpu.max.CpuFormula
 
 class CpuListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
   @Before

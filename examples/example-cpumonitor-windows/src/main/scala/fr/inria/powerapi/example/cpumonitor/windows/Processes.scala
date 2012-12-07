@@ -45,13 +45,13 @@ object Processes {
   def fromConf() {
     pids.foreach(pid => PowerAPI.startMonitoring(
       Process(pid),
-      500 milliseconds,
+      1 second,
       classOf[fr.inria.powerapi.listener.cpu.jfreechart.CpuListener])
     )
     Thread.sleep((5 minutes).toMillis)
     pids.foreach(pid => PowerAPI.stopMonitoring(
       Process(pid),
-      500 milliseconds,
+      1 second,
       classOf[fr.inria.powerapi.listener.cpu.jfreechart.CpuListener])
     )
   }
@@ -61,14 +61,14 @@ object Processes {
    */
   def perso() {
     PowerAPI.startMonitoring(
-      Process(3869),
-      2000 milliseconds,
+      Process(12758),
+      1 second,
       classOf[fr.inria.powerapi.listener.cpu.jfreechart.CpuListener]
     )
     Thread.sleep((5 minutes).toMillis)
     PowerAPI.stopMonitoring(
-      Process(3869),
-      2000 milliseconds,
+      Process(12758),
+      1 second,
       classOf[fr.inria.powerapi.listener.cpu.jfreechart.CpuListener]
     )
   }
@@ -79,13 +79,13 @@ object Processes {
   def persoFile() {
     pids.foreach(pid => PowerAPI.startMonitoring(
       Process(pid),
-      500 milliseconds,
+      1 second,
       classOf[fr.inria.powerapi.listener.cpu.file.CpuListener])
     )
     Thread.sleep((5 minutes).toMillis)
     pids.foreach(pid => PowerAPI.stopMonitoring(
       Process(pid),
-      500 milliseconds,
+      1 second,
       classOf[fr.inria.powerapi.listener.cpu.file.CpuListener])
     )
   }
@@ -97,13 +97,13 @@ object Processes {
     val currentPid = java.lang.management.ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
     PowerAPI.startMonitoring(
       Process(currentPid),
-      500 milliseconds,
+      1 second,
       classOf[fr.inria.powerapi.listener.cpu.jfreechart.CpuListener]
     )
     Thread.sleep((5 minutes).toMillis)
     PowerAPI.stopMonitoring(
       Process(currentPid),
-      500 milliseconds,
+      1 second,
       classOf[fr.inria.powerapi.listener.cpu.jfreechart.CpuListener]
     )
   }

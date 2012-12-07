@@ -62,8 +62,6 @@ class CpuSensor extends fr.inria.powerapi.sensor.cpu.sigar.CpuSensor with Config
    * Delegate class to deal with time spent within each CPU frequencies.
    */
   class Frequencies {
-    lazy val cache = mutable.HashMap[TickSubscription, TimeInStates]()
-
     // time_in_state line format: frequency time
     lazy val TimeInStateFormat = """(\d+)\s+(\d+)""".r
     def timeInStates = {
@@ -89,13 +87,14 @@ class CpuSensor extends fr.inria.powerapi.sensor.cpu.sigar.CpuSensor with Config
       result.toMap[Int, Long]
     }
 
+    lazy val cache = mutable.HashMap[TickSubscription, TimeInStates]()
     def refreshCache(subscription: TickSubscription, now: TimeInStates) {
       cache += (subscription -> now)
     }
 
     def process(subscription: TickSubscription) = {
-      val old = cache getOrElse (subscription, TimeInStates(Map[Int, Long]()))
       val now = TimeInStates(timeInStates)
+      val old = cache getOrElse (subscription, now)
       refreshCache(subscription, now)
       now - old
     }
@@ -107,7 +106,7 @@ class CpuSensor extends fr.inria.powerapi.sensor.cpu.sigar.CpuSensor with Config
     publish(
       CpuSensorMessage(
         timeInStates = frequencies.process(tick.subscription),
-        processPercent = ProcessPercent(processPercent(tick.subscription.process)),
+        processPercent = processPercent(tick.subscription.process),
         tick = tick
       )
     )

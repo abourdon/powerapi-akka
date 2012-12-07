@@ -27,17 +27,33 @@ trait Initalizer {
   def beforeEnd()
 }
 
-object ProcDVFSInitializer extends Initalizer {
+object ProcMaxInitializer extends Initalizer {
   def beforeStart() {
     Array(
       classOf[fr.inria.powerapi.sensor.cpu.proc.CpuSensor],
-      classOf[fr.inria.powerapi.formula.cpu.dvfs.CpuFormula]
+      classOf[fr.inria.powerapi.formula.cpu.max.CpuFormula]
     ).foreach(PowerAPI.startEnergyModule(_))
   }
 
   def beforeEnd() {
     Array(
       classOf[fr.inria.powerapi.sensor.cpu.proc.CpuSensor],
+      classOf[fr.inria.powerapi.formula.cpu.max.CpuFormula]
+    ).foreach(PowerAPI.stopEnergyModule(_))
+  }
+}
+
+object ProcDVFSInitializer extends Initalizer {
+  def beforeStart() {
+    Array(
+      classOf[fr.inria.powerapi.sensor.cpu.proc.times.CpuSensor],
+      classOf[fr.inria.powerapi.formula.cpu.dvfs.CpuFormula]
+    ).foreach(PowerAPI.startEnergyModule(_))
+  }
+
+  def beforeEnd() {
+    Array(
+      classOf[fr.inria.powerapi.sensor.cpu.proc.times.CpuSensor],
       classOf[fr.inria.powerapi.formula.cpu.dvfs.CpuFormula]
     ).foreach(PowerAPI.stopEnergyModule(_))
   }
@@ -70,8 +86,8 @@ object SigarMaxInitializer extends Initalizer {
 object CpuMonitor {
 
   def main(args: Array[String]) {
-    ProcDVFSInitializer.beforeStart()
+    ProcMaxInitializer.beforeStart()
     Processes.current()
-    ProcDVFSInitializer.beforeEnd()
+    ProcMaxInitializer.beforeEnd()
   }
 }

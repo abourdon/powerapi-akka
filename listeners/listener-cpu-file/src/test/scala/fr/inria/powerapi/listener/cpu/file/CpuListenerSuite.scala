@@ -28,7 +28,7 @@ import java.lang.management.ManagementFactory
 import org.junit.{ Test, Before, After }
 import org.scalatest.junit.{ ShouldMatchersForJUnit, JUnitSuite }
 import scalax.file.Path
-import fr.inria.powerapi.formula.cpu.dvfs.CpuFormula
+import fr.inria.powerapi.formula.cpu.max.CpuFormula
 
 trait ConfigurationMock extends Configuration {
   override lazy val filePath = Path.createTempFile(

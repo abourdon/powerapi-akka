@@ -22,13 +22,13 @@ package fr.inria.powerapi.library
 
 import akka.actor.ActorLogging
 import akka.util.duration._
-import fr.inria.powerapi.core.{Listener, Process}
+import fr.inria.powerapi.core.{ Listener, Process }
 import fr.inria.powerapi.formula.cpu.api.CpuFormulaMessage
 import fr.inria.powerapi.sensor.cpu.proc.CpuSensor
 import java.lang.management.ManagementFactory
 import org.junit.Test
-import org.scalatest.junit.{ShouldMatchersForJUnit, JUnitSuite}
-import fr.inria.powerapi.formula.cpu.dvfs.CpuFormula
+import org.scalatest.junit.{ ShouldMatchersForJUnit, JUnitSuite }
+import fr.inria.powerapi.formula.cpu.max.CpuFormula
 
 class SimpleCpuListener extends Listener with ActorLogging {
   def acquire = {

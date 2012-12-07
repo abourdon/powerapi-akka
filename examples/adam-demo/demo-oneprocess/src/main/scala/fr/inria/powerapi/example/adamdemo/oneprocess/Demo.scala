@@ -29,7 +29,7 @@ import akka.util.duration._
 import java.lang.management.ManagementFactory
 import scalax.file.Path
 import scalax.io.StandardOpenOption.WriteTruncate
-import fr.inria.powerapi.formula.cpu.dvfs.CpuFormula
+import fr.inria.powerapi.formula.cpu.max.CpuFormula
 
 class CpuListener extends fr.inria.powerapi.listener.cpu.console.CpuListener {
   override def process(cpuFormulaMessage: CpuFormulaMessage) {
@@ -53,9 +53,9 @@ object Demo extends App {
       }
   })
 
-  pids.foreach(pid => PowerAPI.startMonitoring(Process(pid), 2 seconds, classOf[CpuListener]))
+  pids.foreach(pid => PowerAPI.startMonitoring(Process(pid), 1 second, classOf[CpuListener]))
   Thread.sleep((2 hours).toMillis)
-  pids.foreach(pid => PowerAPI.stopMonitoring(Process(pid), 2 seconds, classOf[CpuListener]))
+  pids.foreach(pid => PowerAPI.stopMonitoring(Process(pid), 1 second, classOf[CpuListener]))
 
   Array(
     classOf[CpuSensor],

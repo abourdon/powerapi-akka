@@ -1,4 +1,4 @@
-# Time in states implementation of the PowerAPI CPU Sensor module
+# Time in states implementation of the PowerAPI CPU Sensor module (based on sensor-cpu-sigar)
 
 ## Presentation
 

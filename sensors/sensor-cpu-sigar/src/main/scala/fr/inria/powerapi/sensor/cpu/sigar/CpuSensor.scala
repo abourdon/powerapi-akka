@@ -94,18 +94,18 @@ class CpuSensor extends fr.inria.powerapi.sensor.cpu.api.CpuSensor with Initiali
 
   def processPercent(process: Process) = {
     try {
-      sigar.getProcCpu(process.pid).getPercent() / cores
+      ProcessPercent(sigar.getProcCpu(process.pid).getPercent() / cores)
     } catch {
       case se: SigarException =>
         log.warning(se.getMessage())
-        0
+        ProcessPercent(0)
     }
   }
 
   def process(tick: Tick) {
     publish(
       CpuSensorMessage(
-        processPercent = ProcessPercent(processPercent(tick.subscription.process)),
+        processPercent = processPercent(tick.subscription.process),
         tick = tick))
   }
 

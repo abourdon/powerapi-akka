@@ -144,7 +144,7 @@ Thus, we need to use the _procfs_ CPU `Sensor` implementation and a given CPU `F
 
 ```scala
 Array(
-    classOf[fr.inria.powerapi.sensor.cpu.proc.CpuSensor],
+    classOf[fr.inria.powerapi.sensor.cpu.proc.times.CpuSensor],
     classOf[fr.inria.powerapi.formula.cpu.dvfs.CpuFormula]
 ).foreach(PowerAPI.startEnergyModule(_))
 ```

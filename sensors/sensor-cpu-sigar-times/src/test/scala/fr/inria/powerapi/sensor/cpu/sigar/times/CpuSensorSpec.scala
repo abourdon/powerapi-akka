@@ -62,16 +62,13 @@ class CpuSensorSpec extends FlatSpec with ShouldMatchersForJUnit {
 
   "Frequencies' cache" should "be correctly updated during process phase" in {
     cpuSensor.underlyingActor.frequencies.cache should have size 0
-
     cpuSensor.underlyingActor.frequencies.process(tick.subscription)
-    cpuSensor.underlyingActor.frequencies.cache should have size 1
-    cpuSensor.underlyingActor.frequencies.cache should contain key tick.subscription
-    cpuSensor.underlyingActor.frequencies.cache.get(tick.subscription).get should equal(TimeInStates(Map(
+    cpuSensor.underlyingActor.frequencies.cache should equal(Map(tick.subscription -> TimeInStates(Map(
       4000000 -> 16,
       3000000 -> 12,
       2000000 -> 8,
-      1000000 -> 4
-    )))
+      1000000 -> 4)))
+    )
   }
 
 }

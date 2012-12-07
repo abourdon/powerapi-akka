@@ -31,7 +31,7 @@ import scalax.file.Path
 import scalax.io.StandardOpenOption.WriteTruncate
 import java.util.Timer
 import java.util.TimerTask
-import fr.inria.powerapi.formula.cpu.dvfs.CpuFormula
+import fr.inria.powerapi.formula.cpu.max.CpuFormula
 
 class DemoListener extends fr.inria.powerapi.example.adamdemo.full.DemoListener {
   override def init() {}
@@ -46,7 +46,8 @@ object Demo extends App {
 
   Array(
     classOf[CpuSensor],
-    classOf[CpuFormula]).foreach(PowerAPI.startEnergyModule(_))
+    classOf[CpuFormula]
+  ).foreach(PowerAPI.startEnergyModule(_))
 
   val pids = scala.collection.mutable.Set[Int]()
   val timer = new Timer()
@@ -66,11 +67,11 @@ object Demo extends App {
     val currentPids = scala.collection.mutable.Set[Int](getPids: _*)
 
     val oldPids = pids -- currentPids
-    oldPids.foreach(pid => PowerAPI.stopMonitoring(process = Process(pid), duration = 2 seconds))
+    oldPids.foreach(pid => PowerAPI.stopMonitoring(process = Process(pid), duration = 1 second))
     pids --= oldPids
 
     val newPids = currentPids -- pids
-    newPids.foreach(pid => PowerAPI.startMonitoring(process = Process(pid), duration = 2 seconds))
+    newPids.foreach(pid => PowerAPI.startMonitoring(process = Process(pid), duration = 1 second))
     pids ++= newPids
   }
 

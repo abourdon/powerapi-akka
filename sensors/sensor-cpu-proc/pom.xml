@@ -1,41 +1,34 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
-    <groupId>fr.inria.powerapi.sensor</groupId>
-    <artifactId>sensor-cpu-proc</artifactId>
-    <name>${project.artifactId}</name>
-    <description>Implements the PowerAPI CPU Sensor module for systems based on a procfs/sysfs virtual filesystems,
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>fr.inria.powerapi.sensor</groupId>
+	<artifactId>sensor-cpu-proc</artifactId>
+	<name>${project.artifactId}</name>
+	<description>Implements the PowerAPI CPU Sensor module for systems based on a procfs/sysfs virtual filesystems,
         typically used by standard Linux distributions.
 
         See also: http://linux.die.net/man/5/proc.
     </description>
-    <inceptionYear>2012</inceptionYear>
-
-    <parent>
-        <groupId>fr.inria.powerapi</groupId>
-        <artifactId>sensors</artifactId>
-        <version>1.4-SNAPSHOT</version>
-    </parent>
-
-    <dependencies>
-        <dependency>
-            <groupId>fr.inria.powerapi</groupId>
-            <artifactId>core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>fr.inria.powerapi.sensor</groupId>
-            <artifactId>sensor-cpu-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>fr.inria.powerapi.sensor</groupId>
-            <artifactId>sensor-cpu-sigar</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.scala-incubator.io</groupId>
-            <artifactId>scala-io-core_${scala.version}</artifactId>
-        </dependency>
-    </dependencies>
+	<inceptionYear>2012</inceptionYear>
+	<parent>
+		<groupId>fr.inria.powerapi</groupId>
+		<artifactId>sensors</artifactId>
+		<version>1.4-SNAPSHOT</version>
+	</parent>
+	<dependencies>
+		<dependency>
+			<groupId>fr.inria.powerapi</groupId>
+			<artifactId>core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>fr.inria.powerapi.sensor</groupId>
+			<artifactId>sensor-cpu-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.scala-incubator.io</groupId>
+			<artifactId>scala-io-core_${scala.version}</artifactId>
+		</dependency>
+	</dependencies>
 </project>

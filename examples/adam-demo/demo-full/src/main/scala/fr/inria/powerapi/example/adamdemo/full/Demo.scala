@@ -35,7 +35,7 @@ import akka.actor.Cancellable
 import akka.actor.ActorSystem
 import java.util.Timer
 import java.util.TimerTask
-import fr.inria.powerapi.formula.cpu.dvfs.CpuFormula
+import fr.inria.powerapi.formula.cpu.max.CpuFormula
 
 trait Scenario {
   def name(): String
@@ -66,11 +66,11 @@ class OneProcessScenario extends Scenario {
           case _ => 1
         }
     })
-    pids.foreach(pid => PowerAPI.startMonitoring(process = Process(pid), duration = 2 seconds))
+    pids.foreach(pid => PowerAPI.startMonitoring(process = Process(pid), duration = 1 second))
   }
 
   def stop() {
-    pids.foreach(pid => PowerAPI.stopMonitoring(process = Process(pid), duration = 2 seconds))
+    pids.foreach(pid => PowerAPI.stopMonitoring(process = Process(pid), duration = 1 second))
     Demo.clear()
   }
 
@@ -112,16 +112,16 @@ class OverheadWithOneProcessScenario extends Scenario {
           case _ => 1
         }
     })
-    pids.foreach(pid => PowerAPI.startMonitoring(process = Process(pid), duration = 2 seconds))
+    pids.foreach(pid => PowerAPI.startMonitoring(process = Process(pid), duration = 1 second))
 
     externalPid = Resource.fromFile("/tmp/powerapi.demo-oneprocess.pid").lines().mkString.toInt
     DemoListener.pidName(externalPid, "powerapi")
-    PowerAPI.startMonitoring(process = Process(externalPid), duration = 2 seconds)
+    PowerAPI.startMonitoring(process = Process(externalPid), duration = 1 second)
   }
 
   def stop() {
-    pids.foreach(pid => PowerAPI.stopMonitoring(process = Process(pid), duration = 2 seconds))
-    PowerAPI.stopMonitoring(process = Process(externalPid), duration = 2 seconds)
+    pids.foreach(pid => PowerAPI.stopMonitoring(process = Process(pid), duration = 1 second))
+    PowerAPI.stopMonitoring(process = Process(externalPid), duration = 1 second)
     externalProcess.destroy()
     Demo.clear()
   }
@@ -159,11 +159,11 @@ class GranularityScenario extends Scenario {
           case _ => 1
         }
     })
-    pids.foreach(pid => PowerAPI.startMonitoring(process = Process(pid), duration = 2 seconds))
+    pids.foreach(pid => PowerAPI.startMonitoring(process = Process(pid), duration = 1 second))
   }
 
   def stop() {
-    pids.foreach(pid => PowerAPI.stopMonitoring(process = Process(pid), duration = 2 seconds))
+    pids.foreach(pid => PowerAPI.stopMonitoring(process = Process(pid), duration = 1 second))
     Demo.clear()
   }
 
@@ -199,11 +199,11 @@ class AllProcessesScenario extends Scenario {
     val currentPids = scala.collection.mutable.Set[Int](getPids: _*)
 
     val oldPids = pids -- currentPids
-    oldPids.foreach(pid => PowerAPI.stopMonitoring(process = Process(pid), duration = 2 seconds))
+    oldPids.foreach(pid => PowerAPI.stopMonitoring(process = Process(pid), duration = 1 second))
     pids --= oldPids
 
     val newPids = currentPids -- pids
-    newPids.foreach(pid => PowerAPI.startMonitoring(process = Process(pid), duration = 2 seconds))
+    newPids.foreach(pid => PowerAPI.startMonitoring(process = Process(pid), duration = 1 second))
     pids ++= newPids
   }
 
@@ -225,7 +225,7 @@ class AllProcessesScenario extends Scenario {
 
   def stop() {
     timer.cancel()
-    pids.foreach(pid => PowerAPI.stopMonitoring(process = Process(pid), duration = 2 seconds))
+    pids.foreach(pid => PowerAPI.stopMonitoring(process = Process(pid), duration = 1 second))
     pids.clear()
     Demo.clear()
   }
@@ -250,11 +250,11 @@ class OverheadWithAllProcessesScenario extends Scenario {
   def start() {
     externalPid = Resource.fromFile("/tmp/powerapi.demo-allprocesses.pid").lines().mkString.toInt
 
-    PowerAPI.startMonitoring(process = Process(externalPid), duration = 2 seconds)
+    PowerAPI.startMonitoring(process = Process(externalPid), duration = 1 second)
   }
 
   def stop() {
-    PowerAPI.stopMonitoring(process = Process(externalPid), duration = 2 seconds)
+    PowerAPI.stopMonitoring(process = Process(externalPid), duration = 1 second)
     externalProcess.destroy()
     Demo.clear()
   }

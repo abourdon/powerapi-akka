@@ -35,7 +35,7 @@
     </dependency>
     <dependency>
       <groupId>fr.inria.powerapi.formula</groupId>
-      <artifactId>formula-cpu-dvfs</artifactId>
+      <artifactId>formula-cpu-max</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

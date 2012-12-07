@@ -18,6 +18,7 @@
 	<modules>
 		<module>sensor-cpu-api</module>
 		<module>sensor-cpu-proc</module>
+		<module>sensor-cpu-proc-times</module>
 		<module>sensor-cpu-sigar</module>
 		<module>sensor-cpu-sigar-times</module>
 		<module>sensor-disk-api</module>

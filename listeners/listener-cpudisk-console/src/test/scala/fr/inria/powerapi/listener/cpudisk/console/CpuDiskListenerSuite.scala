@@ -143,7 +143,7 @@ class CpuDiskListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
   def testPid() {
     Array(
       classOf[fr.inria.powerapi.sensor.cpu.proc.CpuSensor],
-      classOf[fr.inria.powerapi.formula.cpu.dvfs.CpuFormula],
+      classOf[fr.inria.powerapi.formula.cpu.max.CpuFormula],
       classOf[fr.inria.powerapi.sensor.disk.proc.DiskSensor],
       classOf[fr.inria.powerapi.formula.disk.single.DiskFormula]).foreach(PowerAPI.startEnergyModule(_))
 
@@ -153,7 +153,7 @@ class CpuDiskListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
     Array(
       classOf[fr.inria.powerapi.sensor.cpu.proc.CpuSensor],
-      classOf[fr.inria.powerapi.formula.cpu.dvfs.CpuFormula],
+      classOf[fr.inria.powerapi.formula.cpu.max.CpuFormula],
       classOf[fr.inria.powerapi.sensor.disk.proc.DiskSensor],
       classOf[fr.inria.powerapi.formula.disk.single.DiskFormula]).foreach(PowerAPI.stopEnergyModule(_))
   }
@@ -163,7 +163,7 @@ class CpuDiskListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
   def testCurrentPid() {
     Array(
       classOf[fr.inria.powerapi.sensor.cpu.proc.CpuSensor],
-      classOf[fr.inria.powerapi.formula.cpu.dvfs.CpuFormula],
+      classOf[fr.inria.powerapi.formula.cpu.max.CpuFormula],
       classOf[fr.inria.powerapi.sensor.disk.proc.DiskSensor],
       classOf[fr.inria.powerapi.formula.disk.single.DiskFormula]).foreach(PowerAPI.startEnergyModule(_))
 
@@ -174,7 +174,7 @@ class CpuDiskListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
     Array(
       classOf[fr.inria.powerapi.sensor.cpu.proc.CpuSensor],
-      classOf[fr.inria.powerapi.formula.cpu.dvfs.CpuFormula],
+      classOf[fr.inria.powerapi.formula.cpu.max.CpuFormula],
       classOf[fr.inria.powerapi.sensor.disk.proc.DiskSensor],
       classOf[fr.inria.powerapi.formula.disk.single.DiskFormula]).foreach(PowerAPI.stopEnergyModule(_))
   }
@@ -183,7 +183,7 @@ class CpuDiskListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
   def testAllPids() {
     Array(
       classOf[fr.inria.powerapi.sensor.cpu.proc.CpuSensor],
-      classOf[fr.inria.powerapi.formula.cpu.dvfs.CpuFormula],
+      classOf[fr.inria.powerapi.formula.cpu.max.CpuFormula],
       classOf[fr.inria.powerapi.sensor.disk.proc.DiskSensor],
       classOf[fr.inria.powerapi.formula.disk.single.DiskFormula]).foreach(PowerAPI.startEnergyModule(_))
 
@@ -224,7 +224,7 @@ class CpuDiskListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
     Array(
       classOf[fr.inria.powerapi.sensor.cpu.proc.CpuSensor],
-      classOf[fr.inria.powerapi.formula.cpu.dvfs.CpuFormula],
+      classOf[fr.inria.powerapi.formula.cpu.max.CpuFormula],
       classOf[fr.inria.powerapi.sensor.disk.proc.DiskSensor],
       classOf[fr.inria.powerapi.formula.disk.single.DiskFormula]).foreach(PowerAPI.stopEnergyModule(_))
   }
