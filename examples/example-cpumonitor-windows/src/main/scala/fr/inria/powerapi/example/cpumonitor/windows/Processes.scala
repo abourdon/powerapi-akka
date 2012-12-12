@@ -21,14 +21,13 @@
 package fr.inria.powerapi.example.cpumonitor.windows
 
 import scala.collection.JavaConversions
-
 import com.typesafe.config.ConfigFactory
-
 import akka.util.duration.intToDurationInt
 import fr.inria.powerapi.core.Process
 import fr.inria.powerapi.library.PowerAPI
 import fr.inria.powerapi.listener.cpu.file.CpuListener
 import fr.inria.powerapi.listener.cpu.jfreechart.CpuListener
+import scalax.io.Resource
 
 /**
  * Set of different use cases of CPU energy monitoring.
@@ -106,6 +105,46 @@ object Processes {
       1 second,
       classOf[fr.inria.powerapi.listener.cpu.jfreechart.CpuListener]
     )
+  }
+
+  /**
+   * Intensive process CPU monitoring in periodically scanning all current processes.
+   */
+  def intensive() {
+    def getPids = {
+      val PSFormat = """^\s*(\d+).*""".r
+      Resource.fromInputStream(Runtime.getRuntime.exec(Array("ps", "-A")).getInputStream).lines().toList.map({
+        pid =>
+          pid match {
+            case PSFormat(id) => id.toInt
+            case _ => 1
+          }
+      })
+    }
+
+    val pids = scala.collection.mutable.Set[Int]()
+    val dur = 1 second
+    def udpateMonitoredPids() {
+      val currentPids = scala.collection.mutable.Set[Int](getPids: _*)
+
+      val oldPids = pids -- currentPids
+      oldPids.foreach(pid => PowerAPI.stopMonitoring(process = Process(pid), duration = dur))
+      pids --= oldPids
+
+      val newPids = currentPids -- pids
+      newPids.foreach(pid => PowerAPI.startMonitoring(process = Process(pid), duration = dur))
+      pids ++= newPids
+    }
+
+    PowerAPI.startMonitoring(listenerType = classOf[GatheredChart])
+
+    val startingTime = System.currentTimeMillis
+    while (System.currentTimeMillis - startingTime < (1 hour).toMillis) {
+      udpateMonitoredPids()
+      Thread.sleep((250 milliseconds).toMillis)
+    }
+
+    PowerAPI.stopMonitoring(listenerType = classOf[GatheredChart])
   }
 
 }
