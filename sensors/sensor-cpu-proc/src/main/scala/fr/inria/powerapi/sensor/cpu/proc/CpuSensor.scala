@@ -110,7 +110,14 @@ class CpuSensor extends fr.inria.powerapi.sensor.cpu.api.CpuSensor with Configur
       val now = (processElapsedTime(subscription.process), globalElapsedTime)
       val old = cache.getOrElse(subscription, now)
       refrechCache(subscription, now)
-      ProcessPercent((now._1 - old._1).doubleValue() / (now._2 - old._2))
+
+      val globalDiff = now._2 - old._2
+      if (globalDiff == 0) {
+        ProcessPercent(0)
+      } else {
+        ProcessPercent((now._1 - old._1).doubleValue() / globalDiff)
+      }
+
     }
   }
 
