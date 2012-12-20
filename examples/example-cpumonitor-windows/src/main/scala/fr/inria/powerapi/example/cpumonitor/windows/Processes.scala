@@ -128,11 +128,10 @@ object Processes {
         pid =>
           pid match {
             case PSFormat(id) => id.toInt
-            case other => -1
+            case _ => -1
           }
       })
-      pids.drop(-1)
-      pids
+      pids.filter(elt => elt != -1)
     }
 
     val pids = scala.collection.mutable.Set[Int]()
