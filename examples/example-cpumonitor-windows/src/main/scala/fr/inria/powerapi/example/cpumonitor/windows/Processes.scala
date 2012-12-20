@@ -20,9 +20,15 @@
  */
 package fr.inria.powerapi.example.cpumonitor.windows
 
+import java.util.Timer
+import java.util.TimerTask
+
 import scala.collection.JavaConversions
+
 import com.typesafe.config.ConfigFactory
+
 import akka.util.duration.intToDurationInt
+import akka.util.Duration
 import fr.inria.powerapi.core.Process
 import fr.inria.powerapi.library.PowerAPI
 import fr.inria.powerapi.listener.cpu.file.CpuListener
@@ -45,14 +51,14 @@ object Processes {
     pids.foreach(pid => PowerAPI.startMonitoring(
       Process(pid),
       1 second,
-      classOf[fr.inria.powerapi.listener.cpu.jfreechart.CpuListener])
-    )
+      classOf[fr.inria.powerapi.listener.cpu.jfreechart.CpuListener]
+    ))
     Thread.sleep((5 minutes).toMillis)
     pids.foreach(pid => PowerAPI.stopMonitoring(
       Process(pid),
       1 second,
-      classOf[fr.inria.powerapi.listener.cpu.jfreechart.CpuListener])
-    )
+      classOf[fr.inria.powerapi.listener.cpu.jfreechart.CpuListener]
+    ))
   }
 
   /**
@@ -79,14 +85,14 @@ object Processes {
     pids.foreach(pid => PowerAPI.startMonitoring(
       Process(pid),
       1 second,
-      classOf[fr.inria.powerapi.listener.cpu.file.CpuListener])
-    )
+      classOf[fr.inria.powerapi.listener.cpu.file.CpuListener]
+    ))
     Thread.sleep((5 minutes).toMillis)
     pids.foreach(pid => PowerAPI.stopMonitoring(
       Process(pid),
       1 second,
-      classOf[fr.inria.powerapi.listener.cpu.file.CpuListener])
-    )
+      classOf[fr.inria.powerapi.listener.cpu.file.CpuListener]
+    ))
   }
 
   /**
@@ -112,14 +118,21 @@ object Processes {
    */
   def intensive() {
     def getPids = {
-      val PSFormat = """^\s*(\d+).*""".r
-      Resource.fromInputStream(Runtime.getRuntime.exec(Array("ps", "-A")).getInputStream).lines().toList.map({
+      val PSFormat = """^PID:\s*(\d+).*""".r
+      val pids = Resource.fromInputStream(Runtime.getRuntime.exec(Array(
+        "TASKLIST",
+        //"/FI", "\"USERNAME ne NT AUTHORITY\\SYSTEM\"",
+        //"/FI", "\"STATUS eq running\"",
+        "/FO", "\"LIST\"")
+      ).getInputStream).lines().toList.map({
         pid =>
           pid match {
             case PSFormat(id) => id.toInt
-            case _ => 1
+            case other => -1
           }
       })
+      pids.drop(-1)
+      pids
     }
 
     val pids = scala.collection.mutable.Set[Int]()
@@ -137,13 +150,15 @@ object Processes {
     }
 
     PowerAPI.startMonitoring(listenerType = classOf[GatheredChart])
+    val timer = new Timer
+    timer.scheduleAtFixedRate(new TimerTask() {
+      def run() {
+        udpateMonitoredPids
+      }
+    }, Duration.Zero.toMillis, (250 milliseconds).toMillis)
 
-    val startingTime = System.currentTimeMillis
-    while (System.currentTimeMillis - startingTime < (1 hour).toMillis) {
-      udpateMonitoredPids()
-      Thread.sleep((250 milliseconds).toMillis)
-    }
-
+    Thread.sleep((1 hour).toMillis)
+    timer.cancel
     PowerAPI.stopMonitoring(listenerType = classOf[GatheredChart])
   }
 
