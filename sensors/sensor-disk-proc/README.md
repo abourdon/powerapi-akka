@@ -17,7 +17,7 @@ __Note that this implementation does not take into account the presence of multi
 
 ## Configuration part
 
-To provide CPU information, this module has to know the URL of the process io file, basically `file:///proc/%?/io`, where `%?` is at runtime replaced by the _Process IDentifier_, or PID.
+To provide disk information, this module has to know the URL of the process io file, basically `file:///proc/%?/io`, where `%?` is at runtime replaced by the _Process IDentifier_, or PID.
 
 For example:
 ```

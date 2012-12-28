@@ -1,0 +1,39 @@
+Name:	foo
+State:	S (sleeping)
+Tgid:	15412
+Pid:	15412
+PPid:	14916
+TracerPid:	0
+Uid:	1000	1000	1000	1000
+Gid:	1000	1000	1000	1000
+FDSize:	32
+Groups:	4 24 27 30 46 109 124 1000 
+VmPeak:	  195196 kB
+VmSize:	  191640 kB
+VmLck:	       0 kB
+VmPin:	       0 kB
+VmHWM:	   52032 kB
+VmRSS:	   48788 kB
+VmData:	   66868 kB
+VmStk:	     136 kB
+VmExe:	   67596 kB
+VmLib:	   45756 kB
+VmPTE:	     372 kB
+VmSwap:	       0 kB
+Threads:	4
+SigQ:	0/31493
+SigPnd:	0000000000000000
+ShdPnd:	0000000000000000
+SigBlk:	0000000000000000
+SigIgn:	0000000004001002
+SigCgt:	00000001c0010000
+CapInh:	0000000000000000
+CapPrm:	0000000000000000
+CapEff:	0000000000000000
+CapBnd:	ffffffffffffffff
+Cpus_allowed:	ff
+Cpus_allowed_list:	0-7
+Mems_allowed:	1
+Mems_allowed_list:	0
+voluntary_ctxt_switches:	1324
+nonvoluntary_ctxt_switches:	258

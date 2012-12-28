@@ -1,0 +1,29 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>fr.inria.powerapi.formula</groupId>
+	<artifactId>formula-mem-api</artifactId>
+	<name>${project.artifactId}</name>
+	<description>Base types for each memory Formula module implementation.</description>
+	<inceptionYear>2012</inceptionYear>
+
+	<parent>
+		<groupId>fr.inria.powerapi</groupId>
+		<artifactId>formulae</artifactId>
+		<version>1.5-SNAPSHOT</version>
+	</parent>
+
+	<dependencies>
+		<dependency>
+			<groupId>fr.inria.powerapi</groupId>
+			<artifactId>core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>fr.inria.powerapi.sensor</groupId>
+			<artifactId>sensor-mem-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+</project>

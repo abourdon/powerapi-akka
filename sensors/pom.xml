@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>sensors</artifactId>
@@ -15,11 +16,15 @@
 	</parent>
 
 	<modules>
+		<module>sensor-sigar</module>
 		<module>sensor-cpu-api</module>
 		<module>sensor-cpu-proc</module>
 		<module>sensor-cpu-proc-times</module>
 		<module>sensor-cpu-sigar</module>
 		<module>sensor-cpu-sigar-times</module>
+		<module>sensor-mem-api</module>
+		<module>sensor-mem-proc</module>
+		<module>sensor-mem-sigar</module>
 		<module>sensor-disk-api</module>
 		<module>sensor-disk-proc</module>
 		<module>sensor-disk-atop</module>

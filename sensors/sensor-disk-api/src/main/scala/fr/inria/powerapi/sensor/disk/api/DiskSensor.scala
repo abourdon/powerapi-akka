@@ -23,6 +23,7 @@ package fr.inria.powerapi.sensor.disk.api
 import fr.inria.powerapi.core.Sensor
 import fr.inria.powerapi.core.Tick
 import fr.inria.powerapi.core.Message
+import fr.inria.powerapi.core.SensorMessage
 
 /**
  * DiskSensor's results values.
@@ -34,7 +35,7 @@ import fr.inria.powerapi.core.Message
  *
  * @author abourdon
  */
-case class DiskSensorMessage(rw: Map[String, (Long, Long)], tick: Tick) extends Message
+case class DiskSensorMessage(rw: Map[String, (Long, Long)], tick: Tick) extends SensorMessage
 
 /**
  * Base trait for disk sensor modules.

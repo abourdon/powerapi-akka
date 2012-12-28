@@ -1,0 +1,163 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>fr.inria.powerapi.sensor</groupId>
+	<artifactId>sensor-sigar</artifactId>
+	<name>${project.artifactId}</name>
+	<inceptionYear>2012</inceptionYear>
+	<description>Base for each sensor using the Hyperic SIGAR API (http://www.hyperic.com/products/sigar).</description>
+
+	<parent>
+		<groupId>fr.inria.powerapi</groupId>
+		<artifactId>sensors</artifactId>
+		<version>1.5-SNAPSHOT</version>
+	</parent>
+
+	<repositories>
+		<repository>
+			<id>JBoss Thirdparty Uploads</id>
+			<url>https://repository.jboss.org/nexus/content/repositories/thirdparty-uploads</url>
+		</repository>
+	</repositories>
+
+	<properties>
+		<sigar.version>1.6.5.132</sigar.version>
+		<sigar-dist.version.output>1.6.5</sigar-dist.version.output>
+		<sigar-dist.unpack.directory>${project.build.directory}/dependency/sigar</sigar-dist.unpack.directory>
+		<sigar-dist.classpath.directory>/hyperic-sigar-${sigar-dist.version.output}/sigar-bin/lib</sigar-dist.classpath.directory>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>fr.inria.powerapi</groupId>
+			<artifactId>core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hyperic</groupId>
+			<artifactId>sigar</artifactId>
+			<version>${sigar.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.scala-incubator.io</groupId>
+			<artifactId>scala-io-core_${scala.version}</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.github.scala-incubator.io</groupId>
+			<artifactId>scala-io-file_${scala.version}</artifactId>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>unpack</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>org.hyperic</groupId>
+									<artifactId>sigar-dist</artifactId>
+									<version>${sigar.version}</version>
+									<type>zip</type>
+									<includes>**/lib/*</includes>
+									<excludes>**/lib/*jar</excludes>
+									<outputDirectory>${sigar-dist.unpack.directory}</outputDirectory>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<id>add-resources</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>add-resource</goal>
+						</goals>
+						<configuration>
+							<resources>
+								<resource>
+									<directory>${sigar-dist.unpack.directory}</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.apache.maven.plugins
+										</groupId>
+										<artifactId>
+											maven-dependency-plugin
+										</artifactId>
+										<versionRange>
+											[2.1,)
+										</versionRange>
+										<goals>
+											<goal>unpack</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.codehaus.mojo
+										</groupId>
+										<artifactId>
+											build-helper-maven-plugin
+										</artifactId>
+										<versionRange>
+											[1.7,)
+										</versionRange>
+										<goals>
+											<goal>add-resource</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+</project>

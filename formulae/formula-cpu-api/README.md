@@ -13,7 +13,7 @@ This module reacts to `CPUSensorMessage` messages, typically sent by `fr.inria.p
 This module provide the result of CPU formula computation which is represented by the `CPUFormulaMessage` type, and gather:
 * the energy value;
 * the `Tick` responsible to this computation result
-* the string device name, thus "cpu"
+* the string device name, thus `cpu`
 
 ## Configuration part
 
