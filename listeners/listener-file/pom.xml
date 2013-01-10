@@ -1,10 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.inria.powerapi.listener</groupId>
 	<name>${project.artifactId}</name>
-	<description>Listen to CPU Formula results and display it into the configured file.</description>
-	<artifactId>listener-cpu-file</artifactId>
+	<description>Listen to aggregated FormulaMessage and display them into a file.</description>
+	<artifactId>listener-file</artifactId>
 	<inceptionYear>2012</inceptionYear>
 
 	<parent>
@@ -20,8 +21,13 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>fr.inria.powerapi.formula</groupId>
-			<artifactId>formula-cpu-api</artifactId>
+			<groupId>fr.inria.powerapi</groupId>
+			<artifactId>library</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>fr.inria.powerapi.listener</groupId>
+			<artifactId>listener-aggregator</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
@@ -36,26 +42,26 @@
 		<!-- Test scope -->
 
 		<dependency>
-			<groupId>fr.inria.powerapi</groupId>
-			<artifactId>library</artifactId>
-			<version>${project.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>fr.inria.powerapi.listener</groupId>
-			<artifactId>listener-aggregator</artifactId>
-			<version>${project.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>fr.inria.powerapi.sensor</groupId>
-			<artifactId>sensor-cpu-proc</artifactId>
+			<artifactId>sensor-cpu-sigar</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>fr.inria.powerapi.formula</groupId>
 			<artifactId>formula-cpu-max</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>fr.inria.powerapi.sensor</groupId>
+			<artifactId>sensor-mem-sigar</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>fr.inria.powerapi.formula</groupId>
+			<artifactId>formula-mem-single</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>

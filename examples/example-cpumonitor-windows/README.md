@@ -1,3 +1,3 @@
 # PowerAPI CPU monitoring examples
 
-Set of CPU monitoring use cases for the Windows environment.
+Set of CPU monitoring use cases under the Windows environment.

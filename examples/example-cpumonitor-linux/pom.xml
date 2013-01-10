@@ -3,7 +3,7 @@
 	<groupId>fr.inria.powerapi.example</groupId>
 	<artifactId>example-cpumonitor-linux</artifactId>
 	<name>${project.artifactId}</name>
-	<description>Set of CPU monitoring use cases for the Linux environment.</description>
+	<description>Set of CPU monitoring use cases under the Linux environment.</description>
 	<inceptionYear>2012</inceptionYear>
 
 	<parent>

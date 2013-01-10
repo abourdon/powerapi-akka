@@ -78,5 +78,5 @@ trait SensorMessage extends TickedMessage
  * Base trait for each Formula message.
  */
 trait FormulaMessage extends TickedMessage with DevicedMessage {
-  val energy: Energy
+  def energy: Energy
 }

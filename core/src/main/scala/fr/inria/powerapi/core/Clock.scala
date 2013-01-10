@@ -62,7 +62,6 @@ trait ClockConfiguration extends Configuration {
 class Clock extends Component with ClockConfiguration {
   val subscriptions = new mutable.HashMap[Duration, Set[TickSubscription]] with mutable.SynchronizedMap[Duration, Set[TickSubscription]]
   val schedulers = new mutable.HashMap[Duration, Cancellable]
-  val system = context.system
 
   def makeItTick(implicit tickIt: TickIt) {
     def subscribe(implicit tickIt: TickIt) {
@@ -78,7 +77,7 @@ class Clock extends Component with ClockConfiguration {
         tickIt.subscription.duration
       }
       if (!(schedulers contains duration)) {
-        schedulers += (duration -> system.scheduler.schedule(Duration.Zero, duration)({
+        schedulers += (duration -> context.system.scheduler.schedule(Duration.Zero, duration)({
           if (subscriptions contains duration) {
             val timestamp = System.currentTimeMillis
             subscriptions(duration).foreach(subscription => publish(Tick(subscription, timestamp)))

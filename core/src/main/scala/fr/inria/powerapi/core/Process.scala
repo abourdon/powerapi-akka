@@ -27,11 +27,4 @@ package fr.inria.powerapi.core
  * 
  * @author abourdon
  */
-case class Process(pid: Int) extends Ordered[Process] {
-  def compare(that: Process): Int =
-    if (pid < that.pid)
-      -1
-    else if (pid > that.pid)
-      1
-    else 0
-}
+case class Process(pid: Int)

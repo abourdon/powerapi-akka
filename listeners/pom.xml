@@ -1,26 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 
-    <artifactId>listeners</artifactId>
-    <packaging>pom</packaging>
-    <name>${project.artifactId}</name>
-    <description>PowerAPI's listeners.</description>
-    <inceptionYear>2012</inceptionYear>
+	<artifactId>listeners</artifactId>
+	<packaging>pom</packaging>
+	<name>${project.artifactId}</name>
+	<description>PowerAPI's listeners.</description>
+	<inceptionYear>2012</inceptionYear>
 
-    <parent>
-        <groupId>fr.inria.powerapi</groupId>
-        <artifactId>powerapi</artifactId>
-        <version>1.5-SNAPSHOT</version>
-    </parent>
+	<parent>
+		<groupId>fr.inria.powerapi</groupId>
+		<artifactId>powerapi</artifactId>
+		<version>1.5-SNAPSHOT</version>
+	</parent>
 
-    <modules>
-        <module>listener-cpu-console</module>
-        <module>listener-cpu-file</module>
-        <module>listener-cpu-jfreechart</module>
-        <module>listener-disk-console</module>
-        <module>listener-cpudisk-console</module>
-        <module>listener-cpudisk-jfreechart</module>
+	<modules>
+		<module>listener-aggregator</module>
+		<module>listener-cpu-console</module>
+		<module>listener-cpu-file</module>
+		<module>listener-cpu-jfreechart</module>
+		<module>listener-disk-console</module>
+		<module>listener-cpudisk-console</module>
+		<module>listener-cpudisk-jfreechart</module>
+    <module>listener-file</module>
   </modules>
 
 </project>
