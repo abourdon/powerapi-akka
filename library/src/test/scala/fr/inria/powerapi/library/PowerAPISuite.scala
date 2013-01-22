@@ -44,9 +44,9 @@ class PowerAPISuite extends JUnitSuite with ShouldMatchersForJUnit {
     Array(classOf[CpuSensor], classOf[CpuFormula]).foreach(PowerAPI.startEnergyModule(_))
 
     val currentPid = ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
-    PowerAPI.startMonitoring(Process(currentPid), 500 milliseconds, classOf[SimpleCpuListener])
+    PowerAPI.startMonitoring(process = Process(currentPid), duration = 500 milliseconds, listener = classOf[SimpleCpuListener])
     Thread.sleep((10 seconds).toMillis)
-    PowerAPI.stopMonitoring(Process(currentPid), 500 milliseconds, classOf[SimpleCpuListener])
+    PowerAPI.stopMonitoring(process = Process(currentPid), duration = 500 milliseconds, listener = classOf[SimpleCpuListener])
 
     Array(classOf[CpuSensor], classOf[CpuFormula]).foreach(PowerAPI.stopEnergyModule(_))
   }

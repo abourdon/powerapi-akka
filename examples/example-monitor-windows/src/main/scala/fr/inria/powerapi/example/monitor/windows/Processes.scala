@@ -49,19 +49,19 @@ object Processes {
    * Values are aggregating by devices.
    */
   def fromConf() {
-    PowerAPI.startMonitoring(listenerType = classOf[fr.inria.powerapi.listener.aggregator.DeviceAggregator])
+    PowerAPI.startMonitoring(listener = classOf[fr.inria.powerapi.listener.aggregator.DeviceAggregator])
     pids.foreach(pid => PowerAPI.startMonitoring(
-      Process(pid),
-      1 second,
-      classOf[fr.inria.powerapi.listener.file.FileListener]
+      process = Process(pid),
+      duration = 1 second,
+      listener = classOf[fr.inria.powerapi.listener.file.FileListener]
     ))
     Thread.sleep((5 minutes).toMillis)
     pids.foreach(pid => PowerAPI.stopMonitoring(
-      Process(pid),
-      1 second,
-      classOf[fr.inria.powerapi.listener.file.FileListener]
+      process = Process(pid),
+      duration = 1 second,
+      listener = classOf[fr.inria.powerapi.listener.file.FileListener]
     ))
-    PowerAPI.stopMonitoring(listenerType = classOf[fr.inria.powerapi.listener.aggregator.DeviceAggregator])
+    PowerAPI.stopMonitoring(listener = classOf[fr.inria.powerapi.listener.aggregator.DeviceAggregator])
   }
 
   /**
@@ -69,19 +69,19 @@ object Processes {
    * Values are aggregating by devices.
    */
   def perso() {
-    PowerAPI.startMonitoring(listenerType = classOf[fr.inria.powerapi.listener.aggregator.DeviceAggregator])
+    PowerAPI.startMonitoring(listener = classOf[fr.inria.powerapi.listener.aggregator.DeviceAggregator])
     PowerAPI.startMonitoring(
-      Process(12758),
-      1 second,
-      classOf[fr.inria.powerapi.listener.file.FileListener]
+      process = Process(12758),
+      duration = 1 second,
+      listener = classOf[fr.inria.powerapi.listener.file.FileListener]
     )
     Thread.sleep((5 minutes).toMillis)
     PowerAPI.stopMonitoring(
-      Process(12758),
-      1 second,
-      classOf[fr.inria.powerapi.listener.file.FileListener]
+      process = Process(12758),
+      duration = 1 second,
+      listener = classOf[fr.inria.powerapi.listener.file.FileListener]
     )
-    PowerAPI.stopMonitoring(listenerType = classOf[fr.inria.powerapi.listener.aggregator.DeviceAggregator])
+    PowerAPI.stopMonitoring(listener = classOf[fr.inria.powerapi.listener.aggregator.DeviceAggregator])
   }
 
   /**
@@ -89,19 +89,19 @@ object Processes {
    * Values are aggregating by devices.
    */
   def persoFile() {
-    PowerAPI.startMonitoring(listenerType = classOf[fr.inria.powerapi.listener.aggregator.DeviceAggregator])
+    PowerAPI.startMonitoring(listener = classOf[fr.inria.powerapi.listener.aggregator.DeviceAggregator])
     pids.foreach(pid => PowerAPI.startMonitoring(
-      Process(pid),
-      1 second,
-      classOf[fr.inria.powerapi.listener.file.FileListener]
+      process = Process(pid),
+      duration = 1 second,
+      listener = classOf[fr.inria.powerapi.listener.file.FileListener]
     ))
     Thread.sleep((5 minutes).toMillis)
     pids.foreach(pid => PowerAPI.stopMonitoring(
-      Process(pid),
-      1 second,
-      classOf[fr.inria.powerapi.listener.file.FileListener]
+      process = Process(pid),
+      duration = 1 second,
+      listener = classOf[fr.inria.powerapi.listener.file.FileListener]
     ))
-    PowerAPI.stopMonitoring(listenerType = classOf[fr.inria.powerapi.listener.aggregator.DeviceAggregator])
+    PowerAPI.stopMonitoring(listener = classOf[fr.inria.powerapi.listener.aggregator.DeviceAggregator])
   }
 
   /**
@@ -110,19 +110,19 @@ object Processes {
    */
   def current() {
     val currentPid = java.lang.management.ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
-    PowerAPI.startMonitoring(listenerType = classOf[fr.inria.powerapi.listener.aggregator.DeviceAggregator])
+    PowerAPI.startMonitoring(listener = classOf[fr.inria.powerapi.listener.aggregator.DeviceAggregator])
     PowerAPI.startMonitoring(
-      Process(currentPid),
-      1 second,
-      classOf[fr.inria.powerapi.listener.file.FileListener]
+      process = Process(currentPid),
+      duration = 1 second,
+      listener = classOf[fr.inria.powerapi.listener.file.FileListener]
     )
     Thread.sleep((5 minutes).toMillis)
     PowerAPI.stopMonitoring(
-      Process(currentPid),
-      1 second,
-      classOf[fr.inria.powerapi.listener.file.FileListener]
+      process = Process(currentPid),
+      duration = 1 second,
+      listener = classOf[fr.inria.powerapi.listener.file.FileListener]
     )
-    PowerAPI.stopMonitoring(listenerType = classOf[fr.inria.powerapi.listener.aggregator.DeviceAggregator])
+    PowerAPI.stopMonitoring(listener = classOf[fr.inria.powerapi.listener.aggregator.DeviceAggregator])
   }
 
   /**
@@ -161,8 +161,8 @@ object Processes {
       pids ++= newPids
     }
 
-    PowerAPI.startMonitoring(listenerType = classOf[fr.inria.powerapi.listener.aggregator.ProcessAggregator])
-    PowerAPI.startMonitoring(listenerType = classOf[fr.inria.powerapi.listener.file.FileListener])
+    PowerAPI.startMonitoring(listener = classOf[fr.inria.powerapi.listener.aggregator.ProcessAggregator])
+    PowerAPI.startMonitoring(listener = classOf[fr.inria.powerapi.listener.file.FileListener])
     val timer = new Timer
     timer.scheduleAtFixedRate(new TimerTask() {
       def run() {
@@ -172,8 +172,8 @@ object Processes {
 
     Thread.sleep((1 hour).toMillis)
     timer.cancel
-    PowerAPI.stopMonitoring(listenerType = classOf[fr.inria.powerapi.listener.file.FileListener])
-    PowerAPI.stopMonitoring(listenerType = classOf[fr.inria.powerapi.listener.aggregator.ProcessAggregator])
+    PowerAPI.stopMonitoring(listener = classOf[fr.inria.powerapi.listener.file.FileListener])
+    PowerAPI.stopMonitoring(listener = classOf[fr.inria.powerapi.listener.aggregator.ProcessAggregator])
   }
 
 }

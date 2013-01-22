@@ -47,20 +47,20 @@ class FileListenerTest extends JUnitSuite with ShouldMatchersForJUnit {
   @Before
   def setUp() {
     Array(classOf[CpuSensor], classOf[CpuFormula], classOf[MemSensor], classOf[MemFormula]).foreach(PowerAPI.startEnergyModule(_))
-    PowerAPI.startMonitoring(listenerType = classOf[DeviceAggregator])
+    PowerAPI.startMonitoring(listener = classOf[DeviceAggregator])
   }
 
   @Test
   def testRun() {
     val currentPid = ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
-    PowerAPI.startMonitoring(Process(currentPid), 1 second, classOf[FileListener])
+    PowerAPI.startMonitoring(process = Process(currentPid), duration = 1 second, listener = classOf[FileListener])
     Thread.sleep((5 seconds).toMillis)
-    PowerAPI.stopMonitoring(Process(currentPid), 1 second, classOf[FileListener])
+    PowerAPI.stopMonitoring(process = Process(currentPid), duration = 1 second, listener = classOf[FileListener])
   }
 
   @After
   def tearDown() {
-    PowerAPI.stopMonitoring(listenerType = classOf[DeviceAggregator])
+    PowerAPI.stopMonitoring(listener = classOf[DeviceAggregator])
     Array(classOf[CpuSensor], classOf[CpuFormula], classOf[MemSensor], classOf[MemFormula]).foreach(PowerAPI.stopEnergyModule(_))
   }
 

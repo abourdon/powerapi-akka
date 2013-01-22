@@ -39,9 +39,9 @@ class CpuListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
   @Test
   def testCurrentPid() {
     val currentPid = ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
-    PowerAPI.startMonitoring(Process(currentPid), 500 milliseconds, classOf[CpuListener])
+    PowerAPI.startMonitoring(process = Process(currentPid), duration = 500 milliseconds, listener = classOf[CpuListener])
     Thread.sleep((10 seconds).toMillis)
-    PowerAPI.stopMonitoring(Process(currentPid), 500 milliseconds, classOf[CpuListener])
+    PowerAPI.stopMonitoring(process = Process(currentPid), duration = 500 milliseconds, listener = classOf[CpuListener])
   }
 
   @Ignore
@@ -55,13 +55,13 @@ class CpuListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
           case _ => 1
         }
     })
-    PowerAPI.startMonitoring(listenerType = classOf[CpuListener])
+    PowerAPI.startMonitoring(listener = classOf[CpuListener])
     pids.foreach(pid => PowerAPI.startMonitoring(process = Process(pid), duration = 500 milliseconds))
 
     Thread.sleep((5 minutes).toMillis)
 
-    PowerAPI.stopMonitoring(listenerType = classOf[CpuListener])
-    pids.foreach(pid => PowerAPI.stopMonitoring(Process(pid), 500 milliseconds, classOf[CpuListener]))
+    PowerAPI.stopMonitoring(listener = classOf[CpuListener])
+    pids.foreach(pid => PowerAPI.stopMonitoring(process = Process(pid), duration = 500 milliseconds))
   }
 
   @After

@@ -20,14 +20,16 @@
  */
 package fr.inria.powerapi.library
 
-import akka.actor.{Props, ActorSystem, ActorPath}
+import akka.actor.{ Props, ActorSystem, ActorPath }
 import akka.dispatch.Await
 import akka.pattern.ask
 import akka.util.duration._
-import akka.util.{Timeout, Duration}
+import akka.util.{ Timeout, Duration }
 import fr.inria.powerapi.core.Clock
 import fr.inria.powerapi.core.EnergyModule
-import fr.inria.powerapi.core.{Message, MessagesToListen, Listener, Component, TickIt, UnTickIt, TickSubscription, Process}
+import fr.inria.powerapi.core.{ Message, MessagesToListen, Listener, Component, TickIt, UnTickIt, TickSubscription, Process }
+import fr.inria.powerapi.core.Processor
+import fr.inria.powerapi.core.Reporter
 
 /**
  * PowerAPI's messages definition
@@ -35,18 +37,17 @@ import fr.inria.powerapi.core.{Message, MessagesToListen, Listener, Component, T
  * @author abourdon
  */
 case class StartComponent(componentType: Class[_ <: Component]) extends Message
-
 case class StopComponent(componentType: Class[_ <: Component]) extends Message
-
 case class StartMonitoring(
-                            process: Process = Process(-1),
-                            duration: Duration = Duration.Zero,
-                            listenerType: Class[_ <: Listener] = null) extends Message
-
+  process: Process = Process(-1),
+  duration: Duration = Duration.Zero,
+  processor: Class[_ <: Processor] = null,
+  listener: Class[_ <: Listener] = null) extends Message
 case class StopMonitoring(
-                           process: Process = Process(-1),
-                           duration: Duration = Duration.Zero,
-                           listenerType: Class[_ <: Listener] = null) extends Message
+  process: Process = Process(-1),
+  duration: Duration = Duration.Zero,
+  processor: Class[_ <: Processor] = null,
+  listener: Class[_ <: Listener] = null) extends Message
 
 /**
  * PowerAPI engine which start/stop every PowerAPI components such as Listener or Energy Module.
@@ -126,40 +127,48 @@ class PowerAPI extends Component {
     /**
      * Starts the monitoring of a process during a certain duration a listened by a given listener.
      *
-     * @param proc: process to monitor.
-     * @param duration: monitoring duration period.
-     * @param listenerType: type of listener that wants to be aware by monitoring.
+     * @param process: process to monitor.
+     * @param duration: duration period monitoring.
+     * @param processor: processor type which will be aware by monitoring results.
+     * @param listener: listener type which will be aware by processor messages and display final results.
      */
-    def start(proc: Process, duration: Duration, listenerType: Class[_ <: Listener]) {
-      if (listenerType != null) {
-        process(StartComponent(listenerType))
+    def start(proc: Process, duration: Duration, processor: Class[_ <: Processor], listener: Class[_ <: Listener]) {
+      if (processor != null) {
+        process(StartComponent(processor))
+      }
+      if (listener != null) {
+        process(StartComponent(listener))
       }
       if (proc != Process(-1) && duration != Duration.Zero) {
         context.system.eventStream.publish(TickIt(TickSubscription(proc, duration)))
       }
     }
 
-    start(startMonitoring.process, startMonitoring.duration, startMonitoring.listenerType)
+    start(startMonitoring.process, startMonitoring.duration, startMonitoring.processor, startMonitoring.listener)
   }
 
   def process(stopMonitoring: StopMonitoring) {
     /**
      * Stops the monitoring of a process during a certain duration and listened by a given listener.
      *
-     * @param proc: process to monitor.
-     * @param duration: monitoring duration period.
-     * @param listenerType: type of listener that wants to be unaware by monitoring.
+     * @param process: process to stop to monitor.
+     * @param duration: duration period monitoring.
+     * @param processor : processor type which will be unaware by monitoring results.
+     * @param listener: listener type which will be unaware by processor messages.
      */
-    def stop(proc: Process, duration: Duration, listenerType: Class[_ <: Listener]) {
-      if (listenerType != null) {
-        process(StopComponent(listenerType))
+    def stop(proc: Process, duration: Duration, processor: Class[_ <: Processor], listener: Class[_ <: Listener]) {
+      if (processor != null) {
+        process(StopComponent(processor))
+      }
+      if (listener != null) {
+        process(StopComponent(listener))
       }
       if (proc != Process(-1) && duration != Duration.Zero) {
         context.system.eventStream.publish(UnTickIt(TickSubscription(proc, duration)))
       }
     }
 
-    stop(stopMonitoring.process, stopMonitoring.duration, stopMonitoring.listenerType)
+    stop(stopMonitoring.process, stopMonitoring.duration, stopMonitoring.processor, stopMonitoring.listener)
   }
 }
 
@@ -192,25 +201,27 @@ object PowerAPI {
 
   /**
    * Starts the monitoring of the given process during the given duration period.
-   * Results are listened by the given listener.
+   * Results are then processed by the given processor and displayed by the given listener.
    *
    * @param process: process to monitor.
    * @param duration: duration period monitoring.
-   * @param listenerType: listener type which will be aware by monitoring results.
+   * @param processor: processor type which will be aware by monitoring results.
+   * @param reporter: reporter type which will be aware by processor messages and display final results.
    */
-  def startMonitoring(process: Process = Process(-1), duration: Duration = Duration.Zero, listenerType: Class[_ <: Listener] = null) {
-    engine ! StartMonitoring(process, duration, listenerType)
+  def startMonitoring(process: Process = Process(-1), duration: Duration = Duration.Zero, processor: Class[_ <: Processor] = null, listener: Class[_ <: Listener] = null) {
+    engine ! StartMonitoring(process, duration, processor, listener)
   }
 
   /**
    * Stops the monitoring of the given process during the given duration period.
-   * An associated listener can also be stopped.
+   * Processors and listeners can also be stopped.
    *
    * @param process: process to stop to monitor.
    * @param duration: duration period monitoring.
-   * @param listenerType: listener type which will be unaware by monitoring results.
+   * @param processor : processor type which will be unaware by monitoring results.
+   * @param reporter: reporter type which will be unaware by processor messages.
    */
-  def stopMonitoring(process: Process = Process(-1), duration: Duration = Duration.Zero, listenerType: Class[_ <: Listener] = null) {
-    engine ! StopMonitoring(process, duration, listenerType)
+  def stopMonitoring(process: Process = Process(-1), duration: Duration = Duration.Zero, processor: Class[_ <: Processor] = null, listener: Class[_ <: Listener] = null) {
+    engine ! StopMonitoring(process, duration, processor, listener)
   }
 }

@@ -147,9 +147,9 @@ class CpuDiskListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
       classOf[fr.inria.powerapi.sensor.disk.proc.DiskSensor],
       classOf[fr.inria.powerapi.formula.disk.single.DiskFormula]).foreach(PowerAPI.startEnergyModule(_))
 
-    PowerAPI.startMonitoring(Process(27623), 1 second, classOf[CpuDiskListener])
+    PowerAPI.startMonitoring(process = Process(27623), duration = 1 second, listener = classOf[CpuDiskListener])
     Thread.sleep((1 minute).toMillis)
-    PowerAPI.stopMonitoring(Process(27623), 1 second, classOf[CpuDiskListener])
+    PowerAPI.stopMonitoring(process = Process(27623), duration = 1 second, listener = classOf[CpuDiskListener])
 
     Array(
       classOf[fr.inria.powerapi.sensor.cpu.proc.CpuSensor],
@@ -168,9 +168,9 @@ class CpuDiskListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
       classOf[fr.inria.powerapi.formula.disk.single.DiskFormula]).foreach(PowerAPI.startEnergyModule(_))
 
     val currentPid = ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
-    PowerAPI.startMonitoring(Process(currentPid), 500 milliseconds, classOf[CpuDiskListener])
+    PowerAPI.startMonitoring(process = Process(currentPid), duration = 500 milliseconds, listener = classOf[CpuDiskListener])
     Thread.sleep((10 seconds).toMillis)
-    PowerAPI.stopMonitoring(Process(currentPid), 500 milliseconds, classOf[CpuDiskListener])
+    PowerAPI.stopMonitoring(process = Process(currentPid), duration = 500 milliseconds, listener = classOf[CpuDiskListener])
 
     Array(
       classOf[fr.inria.powerapi.sensor.cpu.proc.CpuSensor],
@@ -212,7 +212,7 @@ class CpuDiskListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
       pids ++= newPids
     }
 
-    PowerAPI.startMonitoring(listenerType = classOf[CpuDiskListener])
+    PowerAPI.startMonitoring(listener = classOf[CpuDiskListener])
 
     val startingTime = System.currentTimeMillis
     while (System.currentTimeMillis - startingTime < (10 seconds).toMillis) {
@@ -220,7 +220,7 @@ class CpuDiskListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
       Thread.sleep((250 milliseconds).toMillis)
     }
 
-    PowerAPI.stopMonitoring(listenerType = classOf[CpuDiskListener])
+    PowerAPI.stopMonitoring(listener = classOf[CpuDiskListener])
 
     Array(
       classOf[fr.inria.powerapi.sensor.cpu.proc.CpuSensor],

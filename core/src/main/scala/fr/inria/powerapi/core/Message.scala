@@ -80,3 +80,10 @@ trait SensorMessage extends TickedMessage
 trait FormulaMessage extends TickedMessage with DevicedMessage {
   def energy: Energy
 }
+
+/**
+ * Base trait for each ProcessedMessage
+ */
+trait ProcessedMessage extends TickedMessage with DevicedMessage {
+  def energy: Energy
+}

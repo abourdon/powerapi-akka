@@ -54,8 +54,8 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>fr.inria.powerapi.listener</groupId>
-			<artifactId>listener-aggregator</artifactId>
+			<groupId>fr.inria.powerapi.processor</groupId>
+			<artifactId>device-aggregator</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

@@ -270,7 +270,7 @@ object Demo {
 
   Runtime.getRuntime().exec("firefox")
   Array(classOf[CpuSensor], classOf[CpuFormula], classOf[DiskSensor], classOf[DiskFormula]).foreach(PowerAPI.startEnergyModule(_))
-  PowerAPI.startMonitoring(listenerType = classOf[DemoListener])
+  PowerAPI.startMonitoring(listener = classOf[DemoListener])
 
   Thread.sleep((5 seconds).toMillis)
 

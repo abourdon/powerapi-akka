@@ -64,11 +64,11 @@ class MemFormulaSpec extends FlatSpec with ShouldMatchersForJUnit {
     val currentPid = java.lang.management.ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
 
     Array(classOf[MemSensor], classOf[MemFormula]).foreach(PowerAPI.startEnergyModule(_))
-    PowerAPI.startMonitoring(Process(currentPid), 1 second, classOf[MemFormulaListener])
+    PowerAPI.startMonitoring(process = Process(currentPid), duration = 1 second, listener = classOf[MemFormulaListener])
 
     Thread.sleep((5 seconds).toMillis)
 
-    PowerAPI.stopMonitoring(Process(currentPid), 1 second, classOf[MemFormulaListener])
+    PowerAPI.stopMonitoring(process = Process(currentPid), duration = 1 second, listener = classOf[MemFormulaListener])
     Array(classOf[MemSensor], classOf[MemFormula]).foreach(PowerAPI.stopEnergyModule(_))
   }
 

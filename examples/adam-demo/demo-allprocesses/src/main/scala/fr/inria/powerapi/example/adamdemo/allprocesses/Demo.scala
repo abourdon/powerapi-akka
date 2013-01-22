@@ -75,7 +75,7 @@ object Demo extends App {
     pids ++= newPids
   }
 
-  PowerAPI.startMonitoring(listenerType = classOf[DemoListener])
+  PowerAPI.startMonitoring(listener = classOf[DemoListener])
   timer.schedule(new TimerTask() {
     def run() {
       update()
@@ -85,7 +85,7 @@ object Demo extends App {
   Thread.sleep((2 hours).toMillis)
 
   timer.cancel()
-  PowerAPI.stopMonitoring(listenerType = classOf[DemoListener])
+  PowerAPI.stopMonitoring(listener = classOf[DemoListener])
 
   Array(
     classOf[CpuSensor],

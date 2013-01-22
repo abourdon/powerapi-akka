@@ -24,10 +24,9 @@ import akka.util.duration.intToDurationInt
 import fr.inria.powerapi.core.Energy
 import fr.inria.powerapi.core.Listener
 import fr.inria.powerapi.library.PowerAPI
-import fr.inria.powerapi.listener.aggregator.AggregatedMessage
-import fr.inria.powerapi.listener.aggregator.DeviceAggregator
 import scalax.io.Resource
 import scalax.file.Path
+import fr.inria.powerapi.core.ProcessedMessage
 
 /**
  * FileListener's configuration part.
@@ -49,12 +48,12 @@ trait Configuration extends fr.inria.powerapi.core.Configuration {
  */
 class FileListener extends Listener with Configuration {
 
-  case class Line(aggregatedMessage: AggregatedMessage) {
+  case class Line(processedMessage: ProcessedMessage) {
     override def toString() =
-      "timestamp=" + aggregatedMessage.tick.timestamp + ";" +
-        "process=" + aggregatedMessage.tick.subscription.process + ";" +
-        "device=" + aggregatedMessage.device + ";" +
-        "power=" + aggregatedMessage.energy.power + scalax.io.Line.Terminators.NewLine.sep
+      "timestamp=" + processedMessage.tick.timestamp + ";" +
+        "process=" + processedMessage.tick.subscription.process + ";" +
+        "device=" + processedMessage.device + ";" +
+        "power=" + processedMessage.energy.power + scalax.io.Line.Terminators.NewLine.sep
   }
 
   lazy val output = {
@@ -62,13 +61,13 @@ class FileListener extends Listener with Configuration {
     Resource.fromFile(filePath)
   }
 
-  def messagesToListen = Array(classOf[AggregatedMessage])
+  def messagesToListen = Array(classOf[ProcessedMessage])
 
-  def process(aggregatedMessage: AggregatedMessage) {
-    output.append(Line(aggregatedMessage).toString)
+  def process(processedMessage: ProcessedMessage) {
+    output.append(Line(processedMessage).toString)
   }
 
   def acquire = {
-    case aggreagatedMessage: AggregatedMessage => process(aggreagatedMessage)
+    case processedMessage: ProcessedMessage => process(processedMessage)
   }
 }

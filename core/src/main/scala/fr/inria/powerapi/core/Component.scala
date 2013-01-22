@@ -95,5 +95,26 @@ trait Formula extends EnergyModule
 
 /**
  * Base trait for each PowerAPI listener.
+ *
+ * @deprecated
  */
+@deprecated
 trait Listener extends Component
+
+/**
+ * Base trait for each PowerAPI processor.
+ */
+trait Processor extends Component {
+  def messagesToListen = Array(classOf[FormulaMessage])
+
+  def process(formulaMessage: FormulaMessage)
+
+  def acquire = {
+    case formulaMessage: FormulaMessage => process(formulaMessage)
+  }
+}
+
+/**
+ * Base trait for each PowerAPI reporter.
+ */
+trait Reporter extends Component

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>processors</artifactId>
+	<packaging>pom</packaging>
+	<name>${project.artifactId}</name>
+	<description>PowerAPI's processors.</description>
+	<inceptionYear>2013</inceptionYear>
+
+	<parent>
+		<groupId>fr.inria.powerapi</groupId>
+		<artifactId>powerapi</artifactId>
+		<version>1.5-SNAPSHOT</version>
+	</parent>
+
+	<modules>
+		<module>timestamp-aggregator</module>
+		<module>device-aggregator</module>
+		<module>process-aggregator</module>
+	</modules>
+
+</project>

@@ -47,17 +47,17 @@ class DiskListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
   @Ignore
   @Test
   def testPid {
-    PowerAPI.startMonitoring(Process(31658), 5 seconds, classOf[DiskListener])
+    PowerAPI.startMonitoring(process = Process(31658), duration = 5 seconds, listener = classOf[DiskListener])
     Thread.sleep((10 minutes).toMillis)
-    PowerAPI.stopMonitoring(Process(31658), 5 seconds, classOf[DiskListener])
+    PowerAPI.stopMonitoring(process = Process(31658), duration = 5 seconds, listener = classOf[DiskListener])
   }
 
   @Test
   def testCurrentPid {
     val currentPid = java.lang.management.ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
-    PowerAPI.startMonitoring(Process(currentPid), 500 milliseconds, classOf[DiskListener])
+    PowerAPI.startMonitoring(process = Process(currentPid), duration = 500 milliseconds, listener = classOf[DiskListener])
     Thread.sleep((10 seconds).toMillis)
-    PowerAPI.stopMonitoring(Process(currentPid), 500 milliseconds, classOf[DiskListener])
+    PowerAPI.stopMonitoring(process = Process(currentPid), duration = 500 milliseconds, listener = classOf[DiskListener])
   }
 
   @Ignore
@@ -72,12 +72,12 @@ class DiskListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
         }
     })
 
-    PowerAPI.startMonitoring(listenerType = classOf[DiskListener])
+    PowerAPI.startMonitoring(listener = classOf[DiskListener])
     pids.foreach(pid => PowerAPI.startMonitoring(process = Process(pid), duration = 500 milliseconds))
 
     Thread.sleep((10 seconds).toMillis)
 
-    PowerAPI.stopMonitoring(listenerType = classOf[DiskListener])
-    pids.foreach(pid => PowerAPI.stopMonitoring(Process(pid), 500 milliseconds, classOf[DiskListener]))
+    PowerAPI.stopMonitoring(listener = classOf[DiskListener])
+    pids.foreach(pid => PowerAPI.stopMonitoring(process = Process(pid), duration = 500 milliseconds))
   }
 }

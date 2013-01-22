@@ -20,16 +20,22 @@
  */
 package fr.inria.powerapi.core
 
-import akka.actor.{ActorSystem, ActorLogging}
+import scala.collection.mutable.HashMap
+import scala.collection.mutable.SynchronizedMap
+
+import org.junit.Ignore
+import org.junit.Test
+import org.scalatest.junit.JUnitSuite
+import org.scalatest.junit.ShouldMatchersForJUnit
+
+import akka.actor.ActorLogging
+import akka.actor.ActorSystem
+import akka.actor.actorRef2Scala
 import akka.dispatch.Await
 import akka.pattern.ask
 import akka.testkit.TestActorRef
 import akka.util.Timeout
-import akka.util.duration._
-import org.junit.{Test, Ignore}
-import org.scalatest.junit.{ShouldMatchersForJUnit, JUnitSuite}
-import scala.collection.mutable.{SynchronizedMap, HashMap}
-
+import akka.util.duration.intToDurationInt
 
 case object Result
 

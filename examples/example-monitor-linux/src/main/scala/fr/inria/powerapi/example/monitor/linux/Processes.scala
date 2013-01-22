@@ -23,8 +23,8 @@ package fr.inria.powerapi.example.monitor.linux
 import akka.util.duration.intToDurationInt
 import fr.inria.powerapi.core.Process
 import fr.inria.powerapi.library.PowerAPI
-import fr.inria.powerapi.listener.aggregator.DeviceAggregator
 import fr.inria.powerapi.listener.file.FileListener
+import fr.inria.powerapi.processor.aggregator.device.DeviceAggregator
 
 /**
  * Set of different use cases of energy monitoring.
@@ -38,18 +38,18 @@ object Processes {
    */
   def current() {
     val currentPid = java.lang.management.ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
-    PowerAPI.startMonitoring(listenerType = classOf[fr.inria.powerapi.listener.aggregator.DeviceAggregator])
     PowerAPI.startMonitoring(
-      Process(currentPid),
-      1 second,
-      classOf[fr.inria.powerapi.listener.file.FileListener]
+      process = Process(currentPid),
+      duration = 1 second,
+      processor = classOf[DeviceAggregator],
+      listener = classOf[FileListener]
     )
     Thread.sleep((5 minutes).toMillis)
     PowerAPI.stopMonitoring(
-      Process(currentPid),
-      1 second,
-      classOf[fr.inria.powerapi.listener.file.FileListener]
+      process = Process(currentPid),
+      duration = 1 second,
+      processor = classOf[DeviceAggregator],
+      listener = classOf[FileListener]
     )
-    PowerAPI.stopMonitoring(listenerType = classOf[fr.inria.powerapi.listener.aggregator.DeviceAggregator])
   }
 }
