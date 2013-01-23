@@ -49,7 +49,7 @@ trait SigarInitializer {
    */
   def init() = {
     val conf = ConfigFactory.load("sigar")
-    val dir = Path.createTempDirectory()
+    val dir = Path.createTempDirectory(prefix = "powerapi-sensor-sigar")
     val libs = conf.getStringList("sigar.sigar-dist")
     JavaConversions.asScalaBuffer(libs).foreach(lib =>
       Resource.fromInputStream(
