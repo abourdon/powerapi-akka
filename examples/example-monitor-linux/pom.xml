@@ -59,8 +59,8 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>fr.inria.powerapi.listener</groupId>
-			<artifactId>listener-file</artifactId>
+			<groupId>fr.inria.powerapi.reporter</groupId>
+			<artifactId>reporter-file</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>

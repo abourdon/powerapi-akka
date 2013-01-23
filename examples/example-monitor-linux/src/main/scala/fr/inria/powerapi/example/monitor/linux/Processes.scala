@@ -23,8 +23,8 @@ package fr.inria.powerapi.example.monitor.linux
 import akka.util.duration.intToDurationInt
 import fr.inria.powerapi.core.Process
 import fr.inria.powerapi.library.PowerAPI
-import fr.inria.powerapi.listener.file.FileListener
 import fr.inria.powerapi.processor.aggregator.device.DeviceAggregator
+import fr.inria.powerapi.reporter.file.FileReporter
 
 /**
  * Set of different use cases of energy monitoring.
@@ -42,14 +42,14 @@ object Processes {
       process = Process(currentPid),
       duration = 1 second,
       processor = classOf[DeviceAggregator],
-      listener = classOf[FileListener]
+      listener = classOf[FileReporter]
     )
     Thread.sleep((5 minutes).toMillis)
     PowerAPI.stopMonitoring(
       process = Process(currentPid),
       duration = 1 second,
       processor = classOf[DeviceAggregator],
-      listener = classOf[FileListener]
+      listener = classOf[FileReporter]
     )
   }
 }

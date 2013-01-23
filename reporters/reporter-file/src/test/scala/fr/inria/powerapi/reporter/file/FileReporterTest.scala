@@ -18,7 +18,7 @@
  *
  * Contact: powerapi-user-list@googlegroups.com.
  */
-package fr.inria.powerapi.listener.file
+package fr.inria.powerapi.reporter.file
 
 import org.scalatest.junit.ShouldMatchersForJUnit
 import akka.actor.ActorSystem
@@ -36,32 +36,62 @@ import org.scalatest.junit.JUnitSuite
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import fr.inria.powerapi.listener.aggregator.DeviceAggregator
+import fr.inria.powerapi.processor.aggregator.device.DeviceAggregator
 
-trait FileListenerMock extends Configuration {
-  override lazy val filePath = Path.createTempFile(prefix = "powerapi.listener.file.prefix", deleteOnExit = false).path
+object ConfigurationMock {
+  val testPath = "powerapi-listener-file-test"
 }
 
-class FileListenerTest extends JUnitSuite with ShouldMatchersForJUnit {
+trait ConfigurationMock extends Configuration {
+  override lazy val filePath = ConfigurationMock.testPath
+}
+
+class FileReporterMock extends FileReporter with ConfigurationMock
+
+class FileReporterTest extends JUnitSuite with ShouldMatchersForJUnit {
 
   @Before
   def setUp() {
-    Array(classOf[CpuSensor], classOf[CpuFormula], classOf[MemSensor], classOf[MemFormula]).foreach(PowerAPI.startEnergyModule(_))
-    PowerAPI.startMonitoring(listener = classOf[DeviceAggregator])
+    Array(
+      classOf[CpuSensor],
+      classOf[CpuFormula],
+      classOf[MemSensor],
+      classOf[MemFormula]
+    ).foreach(PowerAPI.startEnergyModule(_))
   }
 
   @Test
   def testRun() {
     val currentPid = ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
-    PowerAPI.startMonitoring(process = Process(currentPid), duration = 1 second, listener = classOf[FileListener])
-    Thread.sleep((5 seconds).toMillis)
-    PowerAPI.stopMonitoring(process = Process(currentPid), duration = 1 second, listener = classOf[FileListener])
+    PowerAPI.startMonitoring(
+      process = Process(currentPid),
+      duration = 1 second,
+      processor = classOf[DeviceAggregator],
+      listener = classOf[FileReporterMock]
+    )
+    Thread.sleep((6 seconds).toMillis)
+    PowerAPI.stopMonitoring(
+      process = Process(currentPid),
+      duration = 1 second,
+      processor = classOf[DeviceAggregator],
+      listener = classOf[FileReporterMock]
+    )
+
+    val testFile = Path.fromString(ConfigurationMock.testPath)
+    testFile.isFile should be (true)
+    testFile.size.get should be > 0L
+    testFile.lines().size should be >= (5 * 2) // greater than 5 * 2 lines of monitoring result during 6 seconds of 1 second monitoring.
+    testFile.delete(true)
   }
 
   @After
   def tearDown() {
-    PowerAPI.stopMonitoring(listener = classOf[DeviceAggregator])
-    Array(classOf[CpuSensor], classOf[CpuFormula], classOf[MemSensor], classOf[MemFormula]).foreach(PowerAPI.stopEnergyModule(_))
+    Array(
+      classOf[CpuSensor],
+      classOf[CpuFormula],
+      classOf[MemSensor],
+      classOf[MemFormula]
+    ).foreach(PowerAPI.stopEnergyModule(_))
   }
 
 }

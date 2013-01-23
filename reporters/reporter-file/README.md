@@ -1,4 +1,4 @@
-# PowerAPI file listener
+# PowerAPI file reporter
 
 Display `AggregatedMessage` into a file.
 

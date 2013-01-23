@@ -94,14 +94,6 @@ trait Sensor extends EnergyModule
 trait Formula extends EnergyModule
 
 /**
- * Base trait for each PowerAPI listener.
- *
- * @deprecated
- */
-@deprecated
-trait Listener extends Component
-
-/**
  * Base trait for each PowerAPI processor.
  */
 trait Processor extends Component {
@@ -115,6 +107,23 @@ trait Processor extends Component {
 }
 
 /**
- * Base trait for each PowerAPI reporter.
+ * Base trait for each PowerAPI listener.
+ *
+ * TODO: stop using the Listener type in favor of the Reporter type which listen to Processor's messages.
  */
-trait Reporter extends Component
+trait Listener extends Component
+
+/**
+ * Base trait for each PowerAPI reporter.
+ *
+ * TODO: stop Listener inheritance (now kept for compatibility issues).
+ */
+trait Reporter extends Listener {
+  def messagesToListen = Array(classOf[ProcessedMessage])
+
+  def process(processedMessage: ProcessedMessage)
+
+  def acquire = {
+    case processedMessage: ProcessedMessage => process(processedMessage)
+  }
+}

@@ -18,7 +18,7 @@
  *
  * Contact: powerapi-user-list@googlegroups.com.
  */
-package fr.inria.powerapi.listener.file
+package fr.inria.powerapi.reporter.file
 
 import akka.util.duration.intToDurationInt
 import fr.inria.powerapi.core.Energy
@@ -27,6 +27,7 @@ import fr.inria.powerapi.library.PowerAPI
 import scalax.io.Resource
 import scalax.file.Path
 import fr.inria.powerapi.core.ProcessedMessage
+import fr.inria.powerapi.core.Reporter
 
 /**
  * FileListener's configuration part.
@@ -46,7 +47,7 @@ trait Configuration extends fr.inria.powerapi.core.Configuration {
  *
  * @author abourdon
  */
-class FileListener extends Listener with Configuration {
+class FileReporter extends Reporter with Configuration {
 
   case class Line(processedMessage: ProcessedMessage) {
     override def toString() =
@@ -61,13 +62,8 @@ class FileListener extends Listener with Configuration {
     Resource.fromFile(filePath)
   }
 
-  def messagesToListen = Array(classOf[ProcessedMessage])
-
   def process(processedMessage: ProcessedMessage) {
     output.append(Line(processedMessage).toString)
   }
 
-  def acquire = {
-    case processedMessage: ProcessedMessage => process(processedMessage)
-  }
 }

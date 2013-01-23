@@ -61,6 +61,7 @@
 		<module>library</module>
 		<module>processors</module>
 		<module>listeners</module>
+		<module>reporters</module>
 		<module>examples</module>
 	</modules>
 
