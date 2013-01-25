@@ -44,6 +44,14 @@ trait Configuration extends fr.inria.powerapi.core.Configuration {
   lazy val tdp = load { _.getDouble("powerapi.cpu.tdp") }(0)
 
   /**
+   * CPU Thermal Design Power (TDP) factor.
+   * Not required but 0.7 as default [1].
+   *
+   * @see [1], JouleSort: A Balanced Energy-Efﬁciency Benchmark, by Rivoire et al.
+   */
+  lazy val tdpFactor = load (_.getDouble("powerapi.cpu.tdp-factor"), false) (0.7)
+
+  /**
    * Map of frequencies and their associated voltages.
    */
   lazy val frequencies = load {
@@ -70,7 +78,7 @@ class CpuFormula extends fr.inria.powerapi.formula.cpu.api.CpuFormula with Confi
 
   import collection.mutable
 
-  lazy val constant = (0.7 * tdp) / (frequencies.max._1 * math.pow(frequencies.max._2, 2))
+  lazy val constant = (tdp * tdpFactor) / (frequencies.max._1 * math.pow(frequencies.max._2, 2))
   lazy val powers = frequencies.map(frequency => (frequency._1, (constant * frequency._1 * math.pow(frequency._2, 2))))
 
   def power(cpuSensorMessage: CpuSensorMessage) = {

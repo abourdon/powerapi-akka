@@ -74,7 +74,7 @@ class CpuFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
   @Test
   def testConstant() {
-    cpuformula.underlyingActor.constant should equal((0.7 * 105) / (2400003 * math.pow(1.5, 2)))
+    cpuformula.underlyingActor.constant should equal((105 * 0.7) / (2400003 * math.pow(1.5, 2)))
   }
 
   @Test

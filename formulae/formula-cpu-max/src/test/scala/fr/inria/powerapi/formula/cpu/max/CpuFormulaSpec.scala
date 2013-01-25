@@ -51,6 +51,7 @@ class CpuFormulaSpec extends FlatSpec with ShouldMatchersForJUnit {
   "A CpuFormula" should "be configured with a given TDP" in {
     val cpuFormula = TestActorRef(new CpuFormula() with Configuration {
       override lazy val tdp = 35
+      override lazy val tdpFactor = 0.7
     })
 
     cpuFormula.underlyingActor.tdp should equal(35)

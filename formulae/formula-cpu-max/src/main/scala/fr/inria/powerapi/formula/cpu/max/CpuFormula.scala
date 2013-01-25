@@ -38,18 +38,25 @@ trait Configuration extends fr.inria.powerapi.core.Configuration {
    * @see http://en.wikipedia.org/wiki/Thermal_design_power
    */
   lazy val tdp = load { _.getInt("powerapi.cpu.tdp") }(0)
+
+  /**
+   * CPU Thermal Design Power (TDP) factor.
+   * Not required but 0.7 as default [1].
+   *
+   * @see [1], JouleSort: A Balanced Energy-Efﬁciency Benchmark, by Rivoire et al.
+   */
+  lazy val tdpFactor = load (_.getDouble("powerapi.cpu.tdp-factor"), false) (0.7)
 }
 
 /**
  * Implements a CpuFormula in making the ratio between maximum CPU power (obtained by multiplying
- * its Thermal Design Power (TDP) value by 0.7 [1]) and the process CPU usage obtained from
+ * its Thermal Design Power (TDP) value by a specific factor) and the process CPU usage obtained from
  * the received CpuSensorMessage.
  *
  * @see http://en.wikipedia.org/wiki/Thermal_design_power
- * @see [1], JouleSort: A Balanced Energy-Efﬁciency Benchmark, by Rivoire et al.
  */
 class CpuFormula extends fr.inria.powerapi.formula.cpu.api.CpuFormula with Configuration {
-  lazy val power = tdp * 0.7
+  lazy val power = tdp * tdpFactor
 
   def compute(now: CpuSensorMessage) = {
     Energy.fromPower(power * now.processPercent.percent)
