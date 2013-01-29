@@ -75,13 +75,13 @@ class CpuSensor extends fr.inria.powerapi.sensor.cpu.api.CpuSensor with Configur
             (acc, x) => (acc + x.toLong)
           }
           case _ => {
-            log.warning("unable to parse line from file \"" + globalStatPath)
+            if (log.isWarningEnabled) log.warning("unable to parse line from file \"" + globalStatPath)
             0l
           }
         }
       } catch {
         case ioe: IOException =>
-          log.warning("i/o exception: " + ioe.getMessage)
+          if (log.isWarningEnabled) log.warning("i/o exception: " + ioe.getMessage)
           0l
       }
     }
@@ -95,7 +95,7 @@ class CpuSensor extends fr.inria.powerapi.sensor.cpu.api.CpuSensor with Configur
         line(13).toLong + line(14).toLong
       } catch {
         case ioe: IOException => {
-          log.warning("i/o exception: " + ioe.getMessage)
+          if (log.isWarningEnabled) log.warning("i/o exception: " + ioe.getMessage)
           0l
         }
       }

@@ -47,9 +47,10 @@ class MemSensor extends fr.inria.powerapi.sensor.mem.api.MemSensor with SigarSen
     try {
       sigar.getProcMem(process.pid).getResident().doubleValue / sigar.getMem().getTotal()
     } catch {
-      case se: SigarException =>
-        log.warning(se.getMessage())
+      case se: SigarException => {
+        if (log.isWarningEnabled) log.warning(se.getMessage())
         0
+      }
     }
 
   def process(tick: Tick) {

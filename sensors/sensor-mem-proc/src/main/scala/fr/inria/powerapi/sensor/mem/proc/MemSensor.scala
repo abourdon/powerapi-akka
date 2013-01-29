@@ -69,9 +69,10 @@ class MemSensor extends fr.inria.powerapi.sensor.mem.api.MemSensor with Configur
             case _ => throw new IOException("unable to find total memory value from " + meminfoPath + " file")
           }
       } catch {
-        case ioe: IOException =>
-          log.warning("i/o exception: " + ioe.getMessage)
+        case ioe: IOException => {
+          if (log.isWarningEnabled) log.warning("i/o exception: " + ioe.getMessage)
           0
+        }
       }
 
     lazy val VmRSSPattern = """(?s).*VmRSS:\s*(\d+).*""".r
@@ -83,9 +84,10 @@ class MemSensor extends fr.inria.powerapi.sensor.mem.api.MemSensor with Configur
             case _ => throw new IOException("unable to find process resident memory value from " + statusPath + " file for the process " + process.pid)
           }
       } catch {
-        case ioe: IOException =>
-          log.warning("i/o exception: " + ioe.getMessage)
+        case ioe: IOException => {
+          if (log.isWarningEnabled) log.warning("i/o exception: " + ioe.getMessage)
           0
+        }
       }
 
     def perc(tick: Tick) = {

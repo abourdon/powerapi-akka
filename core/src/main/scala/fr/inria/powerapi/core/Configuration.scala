@@ -51,7 +51,7 @@ trait Configuration extends Component {
     } catch {
       case ce: ConfigException => {
         if (required) {
-          log.warning(ce.getMessage + " (using " + default + " as default value)")
+          if (log.isWarningEnabled) log.warning(ce.getMessage + " (using " + default + " as default value)")
         }
         default
       }

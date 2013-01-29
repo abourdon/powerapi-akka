@@ -49,13 +49,14 @@ trait Configuration extends fr.inria.powerapi.core.Configuration {
         })
       } catch {
         case nfe: NumberFormatException => {
-          log.warning("number format exception: " + nfe.getMessage)
+          if (log.isWarningEnabled) log.warning("number format exception: " + nfe.getMessage)
           0: Double
         }
       }
-      case _ =>
-        log.warning("unable to parse " + str + " as a Rate format")
+      case _ => {
+        if (log.isWarningEnabled) log.warning("unable to parse " + str + " as a Rate format")
         0: Double
+      }
     }
   }
 
@@ -99,7 +100,7 @@ class DiskFormula extends fr.inria.powerapi.formula.disk.api.DiskFormula with Co
     Energy.fromJoule(((now.rw("n/a")._1 - old.rw("n/a")._1) * readEnergyByByte + (now.rw("n/a")._2 - old.rw("n/a")._2) * writeEnergyByByte), now.tick.subscription.duration)
   } catch {
     case nsee: NoSuchElementException => {
-      log.warning("no such element exception: " + nsee.getMessage)
+      if (log.isWarningEnabled) log.warning("no such element exception: " + nsee.getMessage)
       Energy.fromPower(0)
     }
   }

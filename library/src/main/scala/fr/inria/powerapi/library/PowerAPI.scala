@@ -78,7 +78,7 @@ class PowerAPI extends Component {
      */
     def start(componentType: Class[_ <: Component]) {
       if (components.contains(componentType)) {
-        log.warning("component " + componentType.getCanonicalName + " already started")
+        if (log.isWarningEnabled) log.warning("component " + componentType.getCanonicalName + " already started")
       } else {
         val component = context.actorOf(Props(componentType.newInstance), name = componentType.getCanonicalName)
         val messages = Await.result(component ? MessagesToListen, timeout.duration).asInstanceOf[Array[Class[_ <: Message]]]
@@ -92,7 +92,7 @@ class PowerAPI extends Component {
     // Be aware to start the Clock if a component has been started
     if (components.size > 0 && !components.contains(classOf[Clock])) {
       start(classOf[Clock])
-      log.debug("Clock started")
+      if (log.isDebugEnabled) log.debug("Clock started")
     }
   }
 
@@ -110,7 +110,7 @@ class PowerAPI extends Component {
         context.stop(component)
         components -= componentType
       } else {
-        log.warning("Component " + componentType.getCanonicalName + " is not started")
+        if (log.isWarningEnabled) log.warning("Component " + componentType.getCanonicalName + " is not started")
       }
     }
 
@@ -119,7 +119,7 @@ class PowerAPI extends Component {
     // Be aware to stop the Clock if all other components has been stopped.
     if (components.size == 1 && components.contains(classOf[Clock])) {
       stop(classOf[Clock])
-      log.debug("Clock stopped")
+      if (log.isDebugEnabled) log.debug("Clock stopped")
     }
   }
 

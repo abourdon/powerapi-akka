@@ -77,12 +77,12 @@ class CpuSensor extends fr.inria.powerapi.sensor.cpu.proc.CpuSensor with Configu
           Resource.fromInputStream(new FileInputStream(new URL(timeInStateFile).getPath)).lines().foreach(f = line => {
             line match {
               case TimeInStateFormat(freq, t) => result += (freq.toInt -> (t.toLong + (result getOrElse (freq.toInt, 0: Long))))
-              case _ => log.warning("unable to parse line \"" + line + "\" from file \"" + timeInStateFile)
+              case _ => if (log.isWarningEnabled) log.warning("unable to parse line \"" + line + "\" from file \"" + timeInStateFile)
             }
           })
         } catch {
           case ioe: IOException => {
-            log.warning("i/o exception: " + ioe.getMessage)
+            if (log.isWarningEnabled) log.warning("i/o exception: " + ioe.getMessage)
           }
         }
       })

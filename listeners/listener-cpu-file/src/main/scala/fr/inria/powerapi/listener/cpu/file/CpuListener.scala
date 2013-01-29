@@ -56,7 +56,7 @@ trait Configuration extends fr.inria.powerapi.core.Configuration {
  */
 class CpuListener extends Listener with Configuration {
   lazy val output = {
-    log.info("using " + filePath + " as output file")
+    if (log.isInfoEnabled) log.info("using " + filePath + " as output file")
     Resource.fromFile(filePath)
   }
 

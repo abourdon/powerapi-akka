@@ -57,7 +57,7 @@ class DiskSensor extends fr.inria.powerapi.sensor.disk.api.DiskSensor with Confi
       (line(0).toLong, line(2).toLong)
     } catch {
       case ioe: IOException => {
-        log.warning("i/o exception: " + ioe.getMessage)
+        if (log.isWarningEnabled) log.warning("i/o exception: " + ioe.getMessage)
         (0: Long, 0: Long)
       }
     }

@@ -53,9 +53,10 @@ class CpuSensor extends fr.inria.powerapi.sensor.cpu.api.CpuSensor with SigarSen
     try {
       ProcessPercent(sigar.getProcCpu(process.pid).getPercent() / cores)
     } catch {
-      case se: SigarException =>
-        log.warning(se.getMessage())
+      case se: SigarException => {
+        if (log.isWarningEnabled) log.warning(se.getMessage())
         ProcessPercent(0)
+      }
     }
   }
 

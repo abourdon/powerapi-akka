@@ -37,7 +37,9 @@ class MemFormulaListener extends Listener {
   def messagesToListen = Array(classOf[MemFormulaMessage])
   def acquire = {
     case memFormulaMessage: MemFormulaMessage => println(memFormulaMessage.energy.power)
-    case unknown => log.warning("unknown message " + unknown)
+    case unknown => {
+      if (log.isWarningEnabled) log.warning("unknown message " + unknown)
+    }
   }
 }
 

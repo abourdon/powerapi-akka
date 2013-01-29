@@ -30,7 +30,7 @@ import org.junit.Test
 import org.scalatest.junit.{ ShouldMatchersForJUnit, JUnitSuite }
 import fr.inria.powerapi.formula.cpu.max.CpuFormula
 
-class SimpleCpuListener extends Listener with ActorLogging {
+class SimpleCpuListener extends Listener {
   def acquire = {
     case values: CpuFormulaMessage => println(values)
   }

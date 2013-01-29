@@ -125,7 +125,7 @@ class CpuDiskListener extends Listener with Configuration {
     if (cache.size > 1) {
       val first = cache.minBy(_._1)
       if (processedTimestamps.contains(first._1)) {
-        log.error("already processed timestamp " + first._1)
+        if (log.isErrorEnabled) log.error("already processed timestamp " + first._1)
         clean(first._1)
         cleanupByMin()
       } else {

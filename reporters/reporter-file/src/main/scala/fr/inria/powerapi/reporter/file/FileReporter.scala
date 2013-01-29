@@ -58,7 +58,7 @@ class FileReporter extends Reporter with Configuration {
   }
 
   lazy val output = {
-    log.info("using " + filePath + " as output file")
+    if (log.isInfoEnabled) log.info("using " + filePath + " as output file")
     Resource.fromFile(filePath)
   }
 

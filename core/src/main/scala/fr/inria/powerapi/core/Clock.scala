@@ -65,13 +65,13 @@ class Clock extends Component with ClockConfiguration {
 
   def makeItTick(implicit tickIt: TickIt) {
     def subscribe(implicit tickIt: TickIt) {
-      val currentSubscriptions = subscriptions getOrElse(tickIt.subscription.duration, Set[TickSubscription]())
+      val currentSubscriptions = subscriptions getOrElse (tickIt.subscription.duration, Set[TickSubscription]())
       subscriptions += (tickIt.subscription.duration -> (currentSubscriptions + tickIt.subscription))
     }
 
     def schedule(implicit tickIt: TickIt) {
       val duration = if (tickIt.subscription.duration < minimumTickDuration) {
-        log.warning("unable to schedule a duration less than that specified in the configuration file (" + tickIt.subscription.duration + " vs " + minimumTickDuration)
+        if (log.isWarningEnabled) log.warning("unable to schedule a duration less than that specified in the configuration file (" + tickIt.subscription.duration + " vs " + minimumTickDuration)
         minimumTickDuration
       } else {
         tickIt.subscription.duration
@@ -92,7 +92,7 @@ class Clock extends Component with ClockConfiguration {
 
   def unmakeItTick(implicit untickIt: UnTickIt) {
     def unsubscribe(implicit untickIt: UnTickIt) {
-      val currentSubscriptions = subscriptions getOrElse(untickIt.subscription.duration, Set[TickSubscription]())
+      val currentSubscriptions = subscriptions getOrElse (untickIt.subscription.duration, Set[TickSubscription]())
       if (!currentSubscriptions.isEmpty) {
         subscriptions += (untickIt.subscription.duration -> (currentSubscriptions - untickIt.subscription))
       }
@@ -100,13 +100,13 @@ class Clock extends Component with ClockConfiguration {
 
     def unschedule(implicit untickIt: UnTickIt) {
       val duration = untickIt.subscription.duration
-      val currentSubscriptions = subscriptions getOrElse(untickIt.subscription.duration, Set[TickSubscription]())
+      val currentSubscriptions = subscriptions getOrElse (untickIt.subscription.duration, Set[TickSubscription]())
 
       // Iff subscriptions associated to the specified duration is empty,
       // then we have to stop schedule and delete duration reference from maps.
       if (currentSubscriptions.isEmpty) {
         // Stop schedule associated to the associated duration.
-        val schedule = schedulers getOrElse(duration, new Cancellable {
+        val schedule = schedulers getOrElse (duration, new Cancellable {
           def cancel() {}
 
           def isCancelled = true
