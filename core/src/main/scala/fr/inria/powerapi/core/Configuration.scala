@@ -50,9 +50,7 @@ trait Configuration extends Component {
       request(conf)
     } catch {
       case ce: ConfigException => {
-        if (required) {
-          if (log.isWarningEnabled) log.warning(ce.getMessage + " (using " + default + " as default value)")
-        }
+        if (required && log.isWarningEnabled) log.warning(ce.getMessage + " (using " + default + " as default value)")
         default
       }
     }

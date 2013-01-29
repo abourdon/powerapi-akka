@@ -39,7 +39,7 @@ import org.junit.Test
 import fr.inria.powerapi.processor.aggregator.device.DeviceAggregator
 
 object ConfigurationMock {
-  val testPath = "powerapi-listener-file-test"
+  val testPath = "powerapi-reporter-file-test"
 }
 
 trait ConfigurationMock extends Configuration {

@@ -39,7 +39,7 @@ trait Configuration extends fr.inria.powerapi.core.Configuration {
    * The output file path, build from prefix given by user.
    * Temporary file as default.
    */
-  lazy val filePath = load(_.getString("powerapi.listener.file.prefix") + System.nanoTime())(Path.createTempFile(prefix = "powerapi.listener-file", deleteOnExit = false).path)
+  lazy val filePath = load(_.getString("powerapi.reporter.file.prefix") + System.nanoTime())(Path.createTempFile(prefix = "powerapi.reporter-file", deleteOnExit = false).path)
 }
 
 /**
