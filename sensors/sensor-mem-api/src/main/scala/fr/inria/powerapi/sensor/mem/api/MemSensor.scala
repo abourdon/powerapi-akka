@@ -33,12 +33,9 @@ import fr.inria.powerapi.core.Sensor
  */
 case class MemSensorMessage(residentPerc: Double = 0.0, tick: Tick) extends SensorMessage
 
-trait MemSensor extends Sensor {
-  def messagesToListen = Array(classOf[Tick])
-
-  def process(tick: Tick)
-
-  def acquire = {
-    case tick: Tick => process(tick)
-  }
-}
+/**
+ * Base trait for each memory sensor module.
+ *
+ * @author abourdon
+ */
+trait MemSensor extends Sensor

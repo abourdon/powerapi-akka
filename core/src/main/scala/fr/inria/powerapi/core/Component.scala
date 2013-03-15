@@ -85,8 +85,18 @@ trait EnergyModule extends Component
 
 /**
  * Base trait for each PowerAPI sensor.
+ *
+ * Each of them should listen to a Tick message and so process it.
  */
-trait Sensor extends EnergyModule
+trait Sensor extends EnergyModule {
+  def messagesToListen = Array(classOf[Tick])
+
+  def process(tick: Tick)
+
+  def acquire = {
+    case tick: Tick => process(tick)
+  }
+}
 
 /**
  * Base trait for each PowerAPI formula.
@@ -95,6 +105,8 @@ trait Formula extends EnergyModule
 
 /**
  * Base trait for each PowerAPI processor.
+ *
+ * Each of them should listen to FormulaMessage message and so process it.
  */
 trait Processor extends Component {
   def messagesToListen = Array(classOf[FormulaMessage])

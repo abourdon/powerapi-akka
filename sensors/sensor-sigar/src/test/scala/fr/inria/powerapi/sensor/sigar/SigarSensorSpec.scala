@@ -29,11 +29,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
 class SigarSensorMock extends SigarSensor {
-  def messagesToListen = Array(classOf[Tick])
-
-  def acquire = {
-    case Tick => {}
-  }
+  def process(tick: Tick) {}
 }
 
 @RunWith(classOf[JUnitRunner])

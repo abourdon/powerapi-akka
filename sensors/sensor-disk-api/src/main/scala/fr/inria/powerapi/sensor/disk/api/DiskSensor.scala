@@ -40,16 +40,6 @@ case class DiskSensorMessage(rw: Map[String, (Long, Long)], tick: Tick) extends 
 /**
  * Base trait for disk sensor modules.
  *
- * Each of these has to listen to the Tick message and implements the associated process method.
- *
  * @author abourdon
  */
-trait DiskSensor extends Sensor {
-  def messagesToListen = Array(classOf[Tick])
-
-  def process(tick: Tick)
-
-  def acquire = {
-    case tick: Tick => process(tick)
-  }
-}
+trait DiskSensor extends Sensor

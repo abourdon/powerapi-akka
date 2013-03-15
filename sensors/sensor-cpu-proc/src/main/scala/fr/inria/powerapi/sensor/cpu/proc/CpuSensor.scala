@@ -25,6 +25,7 @@ import java.io.IOException
 import java.net.URL
 
 import fr.inria.powerapi.core.Process
+import fr.inria.powerapi.core.Sensor
 import fr.inria.powerapi.core.Tick
 import fr.inria.powerapi.core.TickSubscription
 import fr.inria.powerapi.sensor.cpu.api.CpuSensorMessage

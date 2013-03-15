@@ -46,18 +46,8 @@ case class CpuSensorMessage(
   tick: Tick) extends SensorMessage
 
 /**
- * Base trait for CPU sensor modules.
- *
- * Each of these has to listen to the Tick message and implements the associated process method.
+ * Base trait for each CpuSensor module.
  *
  * @author abourdon
  */
-trait CpuSensor extends Sensor {
-  def messagesToListen = Array(classOf[Tick])
-
-  def process(tick: Tick)
-
-  def acquire = {
-    case tick: Tick => process(tick)
-  }
-}
+trait CpuSensor extends Sensor
