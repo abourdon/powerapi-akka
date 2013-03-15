@@ -28,5 +28,6 @@
 		<module>sensor-disk-api</module>
 		<module>sensor-disk-proc</module>
 		<module>sensor-disk-atop</module>
+		<module>sensor-powerspy</module>
 	</modules>
 </project>
