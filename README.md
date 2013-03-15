@@ -57,11 +57,11 @@ cd $powerapi_akka_directory
 mvn install
 ```
 
+**By default, all modules are selected to be installed. Be careful to correctly selecting yours, depending on your environment and the use case you want to do** (see `pom.xml` file at the root directory for more details).
+
 ### How to make it compatible with the Eclipse IDE
 
 For Eclipse IDE users, make sure you have installed the [m2eclipse-scala](https://github.com/sonatype/m2eclipse-scala "m2eclipse-scala") plugin at the following update site URL: http://alchim31.free.fr/m2e-scala/update-site. For more information please read this [post](https://www.assembla.com/spaces/scala-ide/wiki/With_M2Eclipse "m2eclipse post").
-
-**By default, all modules are selected to be installed. Be careful to correctly selecting yours, depending on your environment and the use case you want to do** (see `pom.xml` file at the root directory for more details).
 
 ### How to use it
 
