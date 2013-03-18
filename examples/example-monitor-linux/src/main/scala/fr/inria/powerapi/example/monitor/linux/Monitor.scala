@@ -48,6 +48,6 @@ object Initializer {
 
 object Monitor extends App {
   Initializer.beforeStart
-  Processes.current
+  Processes.currentToChart
   Initializer.beforeEnd
 }

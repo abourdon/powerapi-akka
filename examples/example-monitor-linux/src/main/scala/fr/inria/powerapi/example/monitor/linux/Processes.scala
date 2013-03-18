@@ -25,6 +25,7 @@ import fr.inria.powerapi.core.Process
 import fr.inria.powerapi.library.PowerAPI
 import fr.inria.powerapi.processor.aggregator.device.DeviceAggregator
 import fr.inria.powerapi.reporter.file.FileReporter
+import fr.inria.powerapi.reporter.jfreechart.JFreeChartReporter
 
 /**
  * Set of different use cases of energy monitoring.
@@ -36,7 +37,7 @@ object Processes {
    * Current process monitoring.
    * Values are aggregating by devices.
    */
-  def current() {
+  def currentToFile() {
     val currentPid = java.lang.management.ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
     PowerAPI.startMonitoring(
       process = Process(currentPid),
@@ -50,6 +51,23 @@ object Processes {
       duration = 1 second,
       processor = classOf[DeviceAggregator],
       listener = classOf[FileReporter]
+    )
+  }
+  
+  def currentToChart() {
+    val currentPid = java.lang.management.ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
+    PowerAPI.startMonitoring(
+      process = Process(currentPid),
+      duration = 1 second,
+      processor = classOf[DeviceAggregator],
+      listener = classOf[JFreeChartReporter]
+    )
+    Thread.sleep((1 minute).toMillis)
+    PowerAPI.stopMonitoring(
+      process = Process(currentPid),
+      duration = 1 second,
+      processor = classOf[DeviceAggregator],
+      listener = classOf[JFreeChartReporter]
     )
   }
 }

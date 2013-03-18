@@ -63,6 +63,11 @@
 			<artifactId>reporter-file</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>fr.inria.powerapi.reporter</groupId>
+			<artifactId>reporter-jfreechart</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>
