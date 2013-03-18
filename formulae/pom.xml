@@ -22,6 +22,7 @@
 		<module>formula-mem-single</module>
 		<module>formula-disk-api</module>
 		<module>formula-disk-single</module>
+		<module>formula-powerspy</module>
 	</modules>
 
 </project>

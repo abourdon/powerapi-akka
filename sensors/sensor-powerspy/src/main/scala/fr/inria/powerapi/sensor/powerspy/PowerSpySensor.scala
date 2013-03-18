@@ -95,10 +95,8 @@ class PowerSpySensor extends Sensor with Configuration {
 
   def process(powerSpySensorDelegateMessage: PowerSpySensorDelegateMessage) {
     currentTickLock.acquire
-    val usableTick = currentTick
+    publish(PowerSpySensorMessage(powerSpySensorDelegateMessage.currentRMS, powerSpySensorDelegateMessage.uScale, powerSpySensorDelegateMessage.iScale, currentTick))
     currentTickLock.release
-
-    publish(PowerSpySensorMessage(powerSpySensorDelegateMessage.currentRMS, powerSpySensorDelegateMessage.uScale, powerSpySensorDelegateMessage.iScale, usableTick))
   }
 
   def acquireDelegate: Receive = {
