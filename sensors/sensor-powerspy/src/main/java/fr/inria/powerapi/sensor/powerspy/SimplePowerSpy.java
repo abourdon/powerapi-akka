@@ -1,3 +1,23 @@
+/**
+ * Copyright (C) 2012 Inria, University Lille 1.
+ *
+ * This file is part of PowerAPI.
+ *
+ * PowerAPI is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * PowerAPI is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with PowerAPI. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Contact: powerapi-user-list@googlegroups.com.
+ */
 package fr.inria.powerapi.sensor.powerspy;
 
 import java.io.BufferedReader;
@@ -351,9 +371,9 @@ public class SimplePowerSpy implements PowerSpy {
 		}
 	}
 
-	public void firePowerUpdated(Double power) {
+	public void fireDataUpdated(PowerSpyEvent event) {
 		for (PowerSpyListener listener : listeners) {
-			listener.powerUpdated(new PowerSpyEvent(power));
+			listener.dataUpdated(event);
 		}
 	}
 
@@ -364,7 +384,7 @@ public class SimplePowerSpy implements PowerSpy {
 	@Override
 	public void startPowerMonitoring() {
 		if (powerMonitoring == null) {
-			powerMonitoring = new SimplePowerSpyMonitoring(this);
+			powerMonitoring = new SimplePowerSpyMonitoring();
 			monitoringExecutor.execute(powerMonitoring);
 		}
 	}
@@ -381,6 +401,106 @@ public class SimplePowerSpy implements PowerSpy {
 				}
 			}
 		}
+	}
+
+	class SimplePowerSpyMonitoring implements Runnable {
+
+		private boolean toContinue = true;
+
+		private boolean initPScale() {
+			if (pScale() == null) {
+				if (LOG.isEnabledFor(Level.WARN)) {
+					LOG.warn("Unable to get uscale");
+				}
+				return false;
+			}
+			return true;
+		}
+
+		private boolean init() {
+			// PowerSpy initialization
+			reset();
+			try {
+				Thread.sleep(SimplePowerSpy.DEFAULT_TIMEOUT);
+			} catch (InterruptedException e) {
+				if (LOG.isEnabledFor(Level.WARN)) {
+					LOG.warn(e.getMessage());
+				}
+			}
+
+			// Power scale initialization
+			if (!initPScale()) {
+				return false;
+			}
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Monitoring initialized");
+			}
+			return true;
+		}
+
+		public void startMonitoring() {
+			send("J20");
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Monitoring started");
+			}
+		}
+
+		public synchronized void stopMonitoring() {
+			setToContinue(false);
+			reset();
+			flushInput();
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Monitoring stopped");
+			}
+		}
+
+		private Double currentRMS() {
+			String recvData = null;
+			do {
+				recvData = recv(SimplePowerSpy.DEFAULT_TIMEOUT, true);
+			} while (recvData == null || recvData.split(" ").length != 5);
+			try {
+				return Double.valueOf(Integer.valueOf(recvData.split(" ")[2],
+						16));
+			} catch (NumberFormatException e) {
+				if (LOG.isEnabledFor(Level.WARN)) {
+					LOG.warn(e.getMessage());
+				}
+				return Double.valueOf(-1);
+			}
+		}
+
+		public void monitor() {
+			fireDataUpdated(new PowerSpyEvent(currentRMS(), uScale(), iScale()));
+		}
+
+		@Override
+		public void run() {
+			if (init()) {
+				startMonitoring();
+				while (hasToContinue()) {
+					monitor();
+				}
+			} else {
+				if (LOG.isEnabledFor(Level.WARN)) {
+					LOG.warn("Unable to initialize monitoring");
+				}
+			}
+		}
+
+		public synchronized boolean hasToContinue() {
+			return toContinue;
+		}
+
+		public synchronized void setToContinue(boolean toContinue) {
+			this.toContinue = toContinue;
+		}
+
+		@Override
+		public String toString() {
+			return "PowerSpyMonitoring";
+		}
+
 	}
 
 }
