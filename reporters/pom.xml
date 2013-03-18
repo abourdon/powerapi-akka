@@ -16,6 +16,7 @@
 
 	<modules>
 		<module>reporter-file</module>
+		<module>reporter-jfreechart</module>
 	</modules>
 
 </project>

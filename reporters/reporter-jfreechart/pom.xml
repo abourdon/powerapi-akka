@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>fr.inria.powerapi.reporter</groupId>
+	<name>${project.artifactId}</name>
+	<description>Reporter of ProcessedMessages, displaying them into a JFreeChart graph. See also http://www.jfree.org/jfreechart</description>
+	<artifactId>reporter-jfreechart</artifactId>
+	<inceptionYear>2013</inceptionYear>
+
+	<parent>
+		<groupId>fr.inria.powerapi</groupId>
+		<artifactId>reporters</artifactId>
+		<version>1.5-SNAPSHOT</version>
+	</parent>
+
+	<dependencies>
+		<dependency>
+			<groupId>fr.inria.powerapi</groupId>
+			<artifactId>core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>jfree</groupId>
+			<artifactId>jfreechart</artifactId>
+			<version>1.0.13</version>
+		</dependency>
+
+		<!-- Test scope -->
+		<dependency>
+			<groupId>fr.inria.powerapi</groupId>
+			<artifactId>library</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>fr.inria.powerapi.sensor</groupId>
+			<artifactId>sensor-cpu-sigar</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>fr.inria.powerapi.formula</groupId>
+			<artifactId>formula-cpu-max</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>fr.inria.powerapi.sensor</groupId>
+			<artifactId>sensor-mem-sigar</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>fr.inria.powerapi.formula</groupId>
+			<artifactId>formula-mem-single</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>fr.inria.powerapi.processor</groupId>
+			<artifactId>device-aggregator</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>
