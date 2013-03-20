@@ -9,6 +9,19 @@
 	<description>PowerAPI sensor providing power metrics from a PowerSpy outlet under a Linux platform. See also http://www.alciom.com/fr/produits/powerspy2.html</description>
 	<inceptionYear>2013</inceptionYear>
 
+	<repositories>
+		<repository>
+			<id>pyx4j-web-snapshot</id>
+			<url>http://repository.pyx4j.com/maven2-snapshot</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</repository>
+	</repositories>
+
 	<parent>
 		<groupId>fr.inria.powerapi</groupId>
 		<artifactId>sensors</artifactId>
