@@ -52,7 +52,7 @@ case object PowerSpySensorDelegateMessage {
 case class PowerSpySensorDelegateMessage(currentRMS: Double, uScale: Float, iScale: Float) extends Message {
   def +(that: PowerSpySensorDelegateMessage) = new PowerSpySensorDelegateMessage(currentRMS + that.currentRMS, uScale + that.uScale, iScale + that.iScale)
 
-  def /(that: Integer) = new PowerSpySensorDelegateMessage(currentRMS / that, uScale / that, iScale / that)
+  def /(that: java.lang.Integer) = new PowerSpySensorDelegateMessage(currentRMS / that, uScale / that, iScale / that)
 }
 
 object PowerSpyDelegate {
@@ -104,6 +104,7 @@ class PowerSpySensor extends Sensor with Configuration {
     } else {
       powerSpySensorDelegateMessagesLock.acquire
       if (!powerSpySensorDelegateMessages.isEmpty) {
+        // Even if each PowerSpySensorDelegateMessage has the same uScale and iScale, we make an average of all of the PowerSpySensorDelegateMessage attributes for a better comprehension
         publish(PowerSpySensorDelegateMessage.avg(powerSpySensorDelegateMessages.toList))
         powerSpySensorDelegateMessages.clear
       } else {
