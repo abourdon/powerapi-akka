@@ -61,7 +61,9 @@ mvn install
 
 ### How to make it compatible with the Eclipse IDE
 
-For Eclipse IDE users, make sure you have installed the [m2eclipse-scala](https://github.com/sonatype/m2eclipse-scala "m2eclipse-scala") plugin at the following update site URL: http://alchim31.free.fr/m2e-scala/update-site. For more information please read this [post](https://www.assembla.com/spaces/scala-ide/wiki/With_M2Eclipse "m2eclipse post").
+For Eclipse IDE users, make sure you have installed both:
+* the Eclipse [Scala IDE](http://scala-ide.org "Scala IDE") plugin, depending on your Eclipse version ;
+* the [m2eclipse-scala](https://github.com/sonatype/m2eclipse-scala "m2eclipse-scala") plugin at the following update site URL: http://alchim31.free.fr/m2e-scala/update-site. You can have more information in reading this [post](https://www.assembla.com/spaces/scala-ide/wiki/With_M2Eclipse "m2eclipse post").
 
 ### How to use it
 
