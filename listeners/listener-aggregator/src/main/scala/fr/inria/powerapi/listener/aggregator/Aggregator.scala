@@ -35,7 +35,6 @@ import fr.inria.powerapi.core.TickSubscription
  *
  * Aggregator can process FormulaMessages in order to make an high level message, thus an "aggregated" message.
  *
- * @deprecated
  * @author abourdon
  */
 
@@ -46,13 +45,13 @@ import fr.inria.powerapi.core.TickSubscription
  *
  * @author abourdon
  */
-@deprecated
+@deprecated("Moved to fr.inria.powerapi:core", "1.5")
 trait ProcessedMessage extends TickedMessage with DevicedMessage {
   def energy: Energy
 }
-@deprecated
+@deprecated("Moved to processors package", "1.5")
 case class RowMessage(energy: Energy, device: String, tick: Tick) extends ProcessedMessage
-@deprecated
+@deprecated("Moved to processors package", "1.5")
 case class AggregatedMessage(tick: Tick, device: String = "timestamp", messages: collection.mutable.Set[ProcessedMessage] = collection.mutable.Set[ProcessedMessage]()) extends ProcessedMessage {
   def energy = Energy.fromPower(messages.foldLeft(0: Double) { (acc, message) => acc + message.energy.power })
   def add(message: ProcessedMessage) {
@@ -66,10 +65,9 @@ case class AggregatedMessage(tick: Tick, device: String = "timestamp", messages:
 /**
  * Aggregates FormulaMessages by their timestamp.
  *
- * @deprecated
  * @author abourdon
  */
-@deprecated
+@deprecated("Moved to processors package", "1.5")
 class TimestampAggregator extends Listener {
   // Cache has to be created during the instance creation in order to limit overhead
   // and thus reduce latency when receiving formula messages.
@@ -114,10 +112,9 @@ class TimestampAggregator extends Listener {
 /**
  * Aggregates FormulaMessages by their timestamp and device.
  *
- * @deprecated
  * @author abourdon
  */
-@deprecated
+@deprecated("Moved to processors package", "1.5")
 class DeviceAggregator extends TimestampAggregator {
   def byDevices(implicit timestamp: Long): Iterable[AggregatedMessage] = {
     val base = cache(timestamp)
@@ -132,10 +129,9 @@ class DeviceAggregator extends TimestampAggregator {
 /**
  * Aggregates FormulaMessages by their timestamp and process.
  *
- * @deprecated
  * @author abourdon
  */
-@deprecated
+@deprecated("Moved to processors package", "1.5")
 class ProcessAggregator extends TimestampAggregator {
   def byProcesses(implicit timestamp: Long): Iterable[AggregatedMessage] = {
     val base = cache(timestamp)
