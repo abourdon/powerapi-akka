@@ -42,7 +42,7 @@ class PowerSpySensorListener extends Listener {
 }
 
 class PowerSpySensorSuite extends JUnitSuite with ShouldMatchersForJUnit {
-
+  
   @Ignore
   @Test
   def testTick() {

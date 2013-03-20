@@ -27,7 +27,6 @@ import java.io.Reader
 import java.io.Writer
 
 import scala.Array.canBuildFrom
-import scala.annotation.migration
 import scala.concurrent.Lock
 
 import akka.actor.actorRef2Scala
@@ -44,7 +43,17 @@ case object StartMonitoring
 case object StopMonitoring
 case object Close
 case class PowerSpySensorMessage(currentRMS: Double, uScale: Float, iScale: Float, tick: Tick) extends SensorMessage
-case class PowerSpySensorDelegateMessage(currentRMS: Double, uScale: Float, iScale: Float) extends Message
+case object PowerSpySensorDelegateMessage {
+  def avg(msgs: List[PowerSpySensorDelegateMessage]): PowerSpySensorDelegateMessage = {
+    val sum = msgs.reduceLeft((acc, msg) => acc + msg)
+    sum / msgs.size
+  }
+}
+case class PowerSpySensorDelegateMessage(currentRMS: Double, uScale: Float, iScale: Float) extends Message {
+  def +(that: PowerSpySensorDelegateMessage) = new PowerSpySensorDelegateMessage(currentRMS + that.currentRMS, uScale + that.uScale, iScale + that.iScale)
+
+  def /(that: Integer) = new PowerSpySensorDelegateMessage(currentRMS / that, uScale / that, iScale / that)
+}
 
 object PowerSpyDelegate {
   def apply(sppUrl: String): Option[PowerSpyDelegate] = {
@@ -95,9 +104,7 @@ class PowerSpySensor extends Sensor with Configuration {
     } else {
       powerSpySensorDelegateMessagesLock.acquire
       if (!powerSpySensorDelegateMessages.isEmpty) {
-        val lastMessage = powerSpySensorDelegateMessages.pop
-        publish(PowerSpySensorMessage(lastMessage.currentRMS, lastMessage.uScale, lastMessage.iScale, tick))
-        if (log.isDebugEnabled) powerSpySensorDelegateMessages.foreach(msg => log.debug("Droping " + msg))
+        publish(PowerSpySensorDelegateMessage.avg(powerSpySensorDelegateMessages.toList))
         powerSpySensorDelegateMessages.clear
       } else {
         if (log.isDebugEnabled) log.debug("No PowerSpy message received. Retry the next Tick")
