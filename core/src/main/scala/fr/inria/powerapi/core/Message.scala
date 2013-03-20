@@ -47,7 +47,9 @@ case class TickSubscription(process: Process, duration: Duration)
  * Each time period is "ticked", as a clock "tick", according to a specific timestamp.
  * A Tick is a wrapper of this specific timestamp, according a given TickSubscription.
  */
-case class Tick(subscription: TickSubscription, timestamp: Long = System.currentTimeMillis) extends Message
+case class Tick(subscription: TickSubscription, timestamp: Long = System.currentTimeMillis) extends Message with Ordering[Tick] {
+  def compare(a: Tick, b: Tick) = a.timestamp compare b.timestamp
+}
 
 /**
  * Base trait for each PowerAPI message.

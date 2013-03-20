@@ -439,6 +439,8 @@ public class SimplePowerSpy implements PowerSpy {
 		}
 
 		public void startMonitoring() {
+			// Start PowerSpy monitoring in receiving results every 20 averaging
+			// periods
 			send("J20");
 			if (LOG.isDebugEnabled()) {
 				LOG.debug("Monitoring started");

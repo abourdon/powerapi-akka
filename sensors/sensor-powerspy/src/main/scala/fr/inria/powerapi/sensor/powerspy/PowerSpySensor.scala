@@ -27,6 +27,7 @@ import java.io.Reader
 import java.io.Writer
 
 import scala.Array.canBuildFrom
+import scala.annotation.migration
 import scala.concurrent.Lock
 
 import akka.actor.actorRef2Scala
@@ -80,23 +81,35 @@ trait Configuration extends fr.inria.powerapi.core.Configuration {
 
 class PowerSpySensor extends Sensor with Configuration {
 
-  lazy val powerSpyDelegate = context.actorOf(Props(PowerSpyDelegate(sppUrl).getOrElse(null)))
+  lazy val powerSpySensorDelegate = context.actorOf(Props(PowerSpyDelegate(sppUrl).getOrElse(null)))
 
-  var currentTick: Tick = null
-  val currentTickLock = new Lock()
+  lazy val powerSpySensorDelegateMessages = new collection.mutable.SynchronizedStack[PowerSpySensorDelegateMessage]()
+  lazy val powerSpySensorDelegateMessagesLock = new Lock
+
+  var monitoringStarted = false
 
   def process(tick: Tick) {
-    currentTickLock.acquire
-    currentTick = tick
-    currentTickLock.release
-
-    powerSpyDelegate ! StartMonitoring
+    if (!monitoringStarted) {
+      powerSpySensorDelegate ! StartMonitoring
+      monitoringStarted = true
+    } else {
+      powerSpySensorDelegateMessagesLock.acquire
+      if (!powerSpySensorDelegateMessages.isEmpty) {
+        val lastMessage = powerSpySensorDelegateMessages.pop
+        publish(PowerSpySensorMessage(lastMessage.currentRMS, lastMessage.uScale, lastMessage.iScale, tick))
+        if (log.isDebugEnabled) powerSpySensorDelegateMessages.foreach(msg => log.debug("Droping " + msg))
+        powerSpySensorDelegateMessages.clear
+      } else {
+        if (log.isDebugEnabled) log.debug("No PowerSpy message received. Retry the next Tick")
+      }
+      powerSpySensorDelegateMessagesLock.release
+    }
   }
 
-  def process(powerSpySensorDelegateMessage: PowerSpySensorDelegateMessage) {
-    currentTickLock.acquire
-    publish(PowerSpySensorMessage(powerSpySensorDelegateMessage.currentRMS, powerSpySensorDelegateMessage.uScale, powerSpySensorDelegateMessage.iScale, currentTick))
-    currentTickLock.release
+  def process(message: PowerSpySensorDelegateMessage) {
+    powerSpySensorDelegateMessagesLock.acquire
+    powerSpySensorDelegateMessages.push(message)
+    powerSpySensorDelegateMessagesLock.release
   }
 
   def acquireDelegate: Receive = {
@@ -106,8 +119,8 @@ class PowerSpySensor extends Sensor with Configuration {
   override def messagesToListen = super.messagesToListen ++ Array(classOf[PowerSpySensorDelegateMessage])
 
   override def postStop() {
-    powerSpyDelegate ! StopMonitoring
-    powerSpyDelegate ! Close
+    powerSpySensorDelegate ! StopMonitoring
+    powerSpySensorDelegate ! Close
     super.postStop()
   }
 
