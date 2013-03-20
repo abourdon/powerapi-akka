@@ -7,6 +7,16 @@
 	<description>Set of monitoring use cases.</description>
 	<inceptionYear>2012</inceptionYear>
 
+	<repositories>
+		<repository>
+			<id>OSS Sonatype snapshot repository</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
 	<parent>
 		<groupId>fr.inria.powerapi</groupId>
 		<artifactId>examples</artifactId>
@@ -64,10 +74,10 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.scala-tools</groupId>
-				<artifactId>maven-scala-plugin</artifactId>
+				<groupId>net.alchim31.maven</groupId>
+				<artifactId>scala-maven-plugin</artifactId>
 				<configuration>
-					<mainClass>fr.inria.powerapi.example.monitor.linux.Monitor</mainClass>
+					<mainClass>fr.inria.powerapi.example.sandbox.Monitor</mainClass>
 				</configuration>
 			</plugin>
 		</plugins>

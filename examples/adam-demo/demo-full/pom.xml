@@ -85,8 +85,8 @@
 				<defaultGoal>scala:console</defaultGoal>
 				<plugins>
 					<plugin>
-						<groupId>org.scala-tools</groupId>
-						<artifactId>maven-scala-plugin</artifactId>
+						<groupId>net.alchim31.maven</groupId>
+						<artifactId>scala-maven-plugin</artifactId>
 						<configuration>
 							<args>
 								<!-- See https://groups.google.com/forum/?fromgroups=#!topic/akka-user/JcsEJS7687s -->
