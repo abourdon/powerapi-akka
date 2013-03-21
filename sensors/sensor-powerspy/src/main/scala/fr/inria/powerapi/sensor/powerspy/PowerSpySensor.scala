@@ -105,7 +105,8 @@ class PowerSpySensor extends Sensor with Configuration {
       powerSpySensorDelegateMessagesLock.acquire
       if (!powerSpySensorDelegateMessages.isEmpty) {
         // Even if each PowerSpySensorDelegateMessage has the same uScale and iScale, we make an average of all of the PowerSpySensorDelegateMessage attributes for a better comprehension
-        publish(PowerSpySensorDelegateMessage.avg(powerSpySensorDelegateMessages.toList))
+        val delegateMsg = PowerSpySensorDelegateMessage.avg(powerSpySensorDelegateMessages.toList)
+        publish(PowerSpySensorMessage(delegateMsg.currentRMS, delegateMsg.uScale, delegateMsg.iScale, tick))
         powerSpySensorDelegateMessages.clear
       } else {
         if (log.isDebugEnabled) log.debug("No PowerSpy message received. Retry the next Tick")
