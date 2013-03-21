@@ -89,7 +89,14 @@ mvn install
 
 <p><strong>By default, all modules are selected to be installed. Be careful to correctly selecting yours, depending on your environment and the use case you want to do</strong> (see <code>pom.xml</code> file at the root directory for more details).</p>
 
-<h3>How to use it</h3>
+<h3>How to make it compatible with the Eclipse IDE</h3>
+
+<p>For Eclipse IDE users, make sure you have installed both:</p>
+
+<ul>
+<li>the Eclipse <a href="http://scala-ide.org" title="Scala IDE">Scala IDE</a> plugin, depending on your Eclipse version ;</li>
+<li>the <a href="https://github.com/sonatype/m2eclipse-scala" title="m2eclipse-scala">m2eclipse-scala</a> plugin at the following update site URL: <a href="http://alchim31.free.fr/m2e-scala/update-site">http://alchim31.free.fr/m2e-scala/update-site</a>. More information can be find on this <a href="https://www.assembla.com/spaces/scala-ide/wiki/With_M2Eclipse" title="m2eclipse post">post</a>.</li>
+</ul><h3>How to use it</h3>
 
 <p>In the way you acquire PowerAPI from <a href="http://maven.apache.org" title="Maven">Maven</a> repositories, you can directly use it as a <em>Jar project</em> in your <code>pom.xml</code> file.</p>
 
@@ -172,7 +179,7 @@ Thus, we need to use the <em>procfs</em> CPU <code>Sensor</code> implementation 
 <ol>
 <li>Activate the desired modules:</li>
 </ol><div class="highlight"><pre><span class="nc">Array</span><span class="o">(</span>
-    <span class="n">classOf</span><span class="o">[</span><span class="kt">fr.inria.powerapi.sensor.cpu.proc.CpuSensor</span><span class="o">],</span>
+    <span class="n">classOf</span><span class="o">[</span><span class="kt">fr.inria.powerapi.sensor.cpu.proc.times.CpuSensor</span><span class="o">],</span>
     <span class="n">classOf</span><span class="o">[</span><span class="kt">fr.inria.powerapi.formula.cpu.dvfs.CpuFormula</span><span class="o">]</span>
 <span class="o">).</span><span class="n">foreach</span><span class="o">(</span><span class="nc">PowerAPI</span><span class="o">.</span><span class="n">startEnergyModule</span><span class="o">(</span><span class="k">_</span><span class="o">))</span>
 </pre></div>
