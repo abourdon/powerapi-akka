@@ -135,7 +135,7 @@ Set of `Processor`, which listen to `Formula` events sending by the common event
 
 ### Reporters
 
-Set of `Reporter`, which listen to `Processor` events in order to display them to the final user. Thus, a `Reporter` is __just__ a graphical representation of the PowerAPI request to the final user, which can be displayed for example into a console, a file or a graph.
+Set of `Reporter`, which listen to `Processor` events in order to display them to the final user. Thus, a `Reporter` is _just_ a graphical representation of the PowerAPI request to the final user, which can be displayed for example into a console, a file or a graph.
 
 ### Library
 
