@@ -120,6 +120,10 @@ class DemoListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
     demoListener.add(timestamp, 456, "cpu", 1)
     demoListener.cache should equal(Map(timestamp -> Map(-1 -> Map("cpu" -> 1), 456 -> Map("cpu" -> 1))))
+
+    // Just for the test in order to clean what has been added.
+    // Do NOT do this in a common way.
+    DemoListener.pidNames.clear
   }
 
 }
