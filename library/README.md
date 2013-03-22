@@ -16,24 +16,27 @@ Array(
 ).foreach(PowerAPI.startEnergyModule(_))
 ```
 
-2. Request to PowerAPI system the CPU energy spent by the 123 process, every 500 milliseconds:
+2. Ask to PowerAPI to provide the CPU energy spent by the 123 process, every 500 milliseconds, using a _console Reporter_ and aggregating results by timestamp produced every 500 milliseconds:
 
-``` scala
+```scala
 PowerAPI.startMonitoring(
-    Process(123),
-    500 milliseconds,
-    classOf[fr.inria.powerapi.listener.cpu.console.CpuListener]
+    process = Process(123),
+    duration = 500 milliseconds,
+    processor = classOf[fr.inria.powerapi.processor.TimestampAggregator],
+    listener = classOf[fr.inria.powerapi.reporter.ConsoleReporter],
 )
 ```
 
+Note that we use `listener` as parameter instead of `reporter` for legacy reasons.
+
 ### Based on the first request, how can I display CPU energy information into a chart too?
 
-Based on the previous code, we simply have to add a new `Listener` that is able to display CPU energy information into a chart.
-PowerAPI integrates a `Listener` using the [JFreeChart](http://www.jfree.org/jfreechart "JFreeChart") implementation. So let's add it to the PowerAPI system:
+Based on the previous code, we simply have to add a new `Reporter` which will be able to display CPU energy information into a chart.
+PowerAPI integrates a `Reporter` using the [JFreeChart](http://www.jfree.org/jfreechart "JFreeChart") Java graph library. So let's add it to the PowerAPI system:
 
-``` scala
+```scala
 PowerAPI.startMonitoring(
-    listener = classOf[fr.inria.powerapi.listener.cpu.jfreechart.CpuListener]
+    listener = classOf[fr.inria.powerapi.reporter.JFreeChartReporter]
 )
 ```
 
