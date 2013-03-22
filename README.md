@@ -129,9 +129,13 @@ As information is given by operating system, there is one `Sensor` implementatio
 Set of `Formula`, responsible of the computation of the energy spent by a process on a particular hardware resource (e.g CPU, memory, disk, network), following information provided by its associated `Sensor`.
 A `Formula` may depend on the type of the monitored hardware resource. Thus, for the same hardware resource, several `Formula` implementations could exist.
 
-### Listeners
+### Processors
 
-Set of `Listener`, which listen `Formula` events sending by the common event bus. A `Listener` define the actions to do when receiving results from the energy computation (e.g displaying information or producing and submitting information to the common event bus).
+Set of `Processor`, which listen to `Formula` events sending by the common event bus in order to process them before their display by `Reporters`. Thus `Processor` can be, for example, an aggregating process unit, aggregating messages sent by `Formula` module to be more meaningful during the display by a given `Reporter`.
+
+### Reporters
+
+Set of `Reporter`, which listen to `Processor` events in order to display them to the final user. Thus, a `Reporter` is __just__ a graphical representation of the PowerAPI request to the final user, which can be displayed for example into a console, a file or a graph.
 
 ### Library
 
@@ -155,24 +159,27 @@ Array(
 ).foreach(PowerAPI.startEnergyModule(_))
 ```
 
-2. Ask to PowerAPI to provide the CPU energy spent by the 123 process, every 500 milliseconds, using a _console Listener_:
+2. Ask to PowerAPI to provide the CPU energy spent by the 123 process, every 500 milliseconds, using a _console Reporter_ and aggregating results by timestamp produced every 500 milliseconds:
 
 ```scala
 PowerAPI.startMonitoring(
-    Process(123),
-    500 milliseconds,
-    classOf[fr.inria.powerapi.listener.cpu.console.CpuListener]
+    process = Process(123),
+    duration = 500 milliseconds,
+    processor = classOf[fr.inria.powerapi.processor.TimestampAggregator],
+    listener = classOf[fr.inria.powerapi.reporter.ConsoleReporter],
 )
 ```
 
+Note that we use `listener` as parameter instead of `reporter` for legacy reasons.
+
 ### Based on the first request, how can I display CPU energy information into a chart too?
 
-Based on the previous code, we simply have to add a new `Listener` which will be able to display CPU energy information into a chart.
-PowerAPI integrates a `Listener` using the [JFreeChart](http://www.jfree.org/jfreechart "JFreeChart") Java graph library. So let's add it to the PowerAPI system:
+Based on the previous code, we simply have to add a new `Reporter` which will be able to display CPU energy information into a chart.
+PowerAPI integrates a `Reporter` using the [JFreeChart](http://www.jfree.org/jfreechart "JFreeChart") Java graph library. So let's add it to the PowerAPI system:
 
 ```scala
 PowerAPI.startMonitoring(
-    listener = classOf[fr.inria.powerapi.listener.cpu.jfreechart.CpuListener]
+    listener = classOf[fr.inria.powerapi.reporter.JFreeChartReporter]
 )
 ```
 
@@ -184,7 +191,7 @@ We are working on new _energy modules_ (`Sensor` + `Formula`) development. If yo
 
 <h2 id="license">License</h2>
 
-Copyright (C) 2012 Inria, University Lille 1.
+Copyright (C) 2013 Inria, University Lille 1.
 
 PowerAPI is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
