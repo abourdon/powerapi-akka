@@ -20,7 +20,6 @@
  */
 package fr.inria.powerapi.reporter.file
 
-import akka.util.duration.intToDurationInt
 import fr.inria.powerapi.core.Energy
 import fr.inria.powerapi.core.Listener
 import fr.inria.powerapi.library.PowerAPI

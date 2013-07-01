@@ -21,6 +21,7 @@
 package fr.inria.powerapi.sensor.disk.proc
 import java.net.URL
 
+import scala.concurrent.duration.DurationInt
 import scala.util.Properties
 
 import org.junit.Test
@@ -32,7 +33,6 @@ import akka.actor.Actor
 import akka.actor.ActorSystem
 import akka.actor.Props
 import akka.testkit.TestActorRef
-import akka.util.duration.intToDurationInt
 import fr.inria.powerapi.core.Clock
 import fr.inria.powerapi.core.Process
 import fr.inria.powerapi.core.Tick
@@ -56,7 +56,7 @@ class DiskSensorSuite extends JUnitSuite with ShouldMatchersForJUnit {
   }
 
   implicit val system = ActorSystem("DiskSensorSuite")
-  implicit val tick = Tick(TickSubscription(Process(123), 1 second))
+  implicit val tick = Tick(TickSubscription(Process(123), 1.second))
   val diskSensor = TestActorRef(new DiskSensor with ConfigurationMock)
 
   @Test
@@ -75,9 +75,9 @@ class DiskSensorSuite extends JUnitSuite with ShouldMatchersForJUnit {
     system.eventStream.subscribe(diskSensor, classOf[Tick])
     system.eventStream.subscribe(diskReceiver, classOf[DiskSensorMessage])
 
-    clock ! TickIt(TickSubscription(Process(123), 10 seconds))
+    clock ! TickIt(TickSubscription(Process(123), 10.seconds))
     Thread.sleep(1000)
-    clock ! UnTickIt(TickSubscription(Process(123), 10 seconds))
+    clock ! UnTickIt(TickSubscription(Process(123), 10.seconds))
 
     diskReceiver.underlyingActor.receivedValues match {
       case None => fail()

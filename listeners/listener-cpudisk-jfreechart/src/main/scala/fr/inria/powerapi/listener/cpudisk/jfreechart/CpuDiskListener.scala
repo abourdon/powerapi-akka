@@ -19,6 +19,9 @@
  * Contact: powerapi-user-list@googlegroups.com.
  */
 package fr.inria.powerapi.listener.cpudisk.jfreechart
+
+import scala.concurrent.duration.{Duration, DurationInt}
+
 import fr.inria.powerapi.core.Listener
 import fr.inria.powerapi.formula.cpu.api.CpuFormulaMessage
 import fr.inria.powerapi.formula.disk.api.DiskFormulaMessage
@@ -27,8 +30,6 @@ import fr.inria.powerapi.core.Energy
 import fr.inria.powerapi.core.Process
 import scalaz._
 import Scalaz._
-import akka.util.duration._
-import akka.util.Duration
 import akka.actor.Cancellable
 import javax.swing.SwingUtilities
 
@@ -41,7 +42,11 @@ trait Configuration extends fr.inria.powerapi.core.Configuration {
   /**
    * Result display refresh rate. 1 second as default.
    */
-  lazy val refreshRate = load(conf => Duration.parse(conf.getString("powerapi.listener-cpudisk-jfreechart.refresh-rate")))(1 second)
+  lazy val refreshRate = load{ conf =>
+    Duration.create(conf.getString("powerapi.listener-cpudisk-jfreechart.refresh-rate")) match {
+      case Duration(length, unit) => Duration(length, unit)
+    }
+  }(1.second)
 
   /**
    * If result has to be aggregated by hardware device (CPU, disk) or not.
@@ -74,7 +79,7 @@ class CpuDiskListener extends Listener with Configuration {
   override def preStart() {
     cleanupSchedule = context.system.scheduler.schedule(Duration.Zero, refreshRate) {
       cleanupByMin()
-    }
+    }(context.system.dispatcher)
     SwingUtilities.invokeLater(new Runnable {
       def run() {
         Chart.run()

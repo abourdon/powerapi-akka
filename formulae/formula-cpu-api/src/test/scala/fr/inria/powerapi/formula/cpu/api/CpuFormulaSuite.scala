@@ -20,11 +20,12 @@
  */
 package fr.inria.powerapi.formula.cpu.api
 
+import scala.concurrent.Await
+import scala.concurrent.duration.DurationInt
+
 import akka.actor.{ Props, ActorSystem }
-import akka.dispatch.Await
 import akka.pattern.ask
 import akka.util.Timeout
-import akka.util.duration._
 import fr.inria.powerapi.core.{ Message, MessagesToListen }
 import fr.inria.powerapi.sensor.cpu.api.CpuSensorMessage
 import org.junit.Test

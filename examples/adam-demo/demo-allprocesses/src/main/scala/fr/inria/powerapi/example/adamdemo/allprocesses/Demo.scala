@@ -20,12 +20,13 @@
  */
 package fr.inria.powerapi.example.adamdemo.allprocesses
 
+import scala.concurrent.duration.DurationInt
+
 import fr.inria.powerapi.formula.cpu.api.CpuFormulaMessage
 import fr.inria.powerapi.sensor.cpu.proc.CpuSensor
 import fr.inria.powerapi.core.Process
 import scalax.io.Resource
 import fr.inria.powerapi.library.PowerAPI
-import akka.util.duration._
 import java.lang.management.ManagementFactory
 import scalax.file.Path
 import scalax.io.StandardOpenOption.WriteTruncate
@@ -80,9 +81,9 @@ object Demo extends App {
     def run() {
       update()
     }
-  }, 0, (250 milliseconds).toMillis)
+  }, 0, (250.milliseconds).toMillis)
 
-  Thread.sleep((2 hours).toMillis)
+  Thread.sleep((2.hours).toMillis)
 
   timer.cancel()
   PowerAPI.stopMonitoring(listener = classOf[DemoListener])

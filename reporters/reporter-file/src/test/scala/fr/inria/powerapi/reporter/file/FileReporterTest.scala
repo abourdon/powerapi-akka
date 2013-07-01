@@ -20,6 +20,8 @@
  */
 package fr.inria.powerapi.reporter.file
 
+import scala.concurrent.duration.DurationInt
+
 import org.scalatest.junit.ShouldMatchersForJUnit
 import akka.actor.ActorSystem
 import akka.testkit.TestActorRef
@@ -28,7 +30,6 @@ import fr.inria.powerapi.formula.mem.single.MemFormula
 import fr.inria.powerapi.sensor.cpu.sigar.CpuSensor
 import fr.inria.powerapi.sensor.mem.sigar.MemSensor
 import fr.inria.powerapi.core.Process
-import akka.util.duration.intToDurationInt
 import fr.inria.powerapi.library.PowerAPI
 import java.lang.management.ManagementFactory
 import scalax.file.Path
@@ -65,14 +66,14 @@ class FileReporterTest extends JUnitSuite with ShouldMatchersForJUnit {
     val currentPid = ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
     PowerAPI.startMonitoring(
       process = Process(currentPid),
-      duration = 1 second,
+      duration = 1.second,
       processor = classOf[DeviceAggregator],
       listener = classOf[FileReporterMock]
     )
     Thread.sleep((6 seconds).toMillis)
     PowerAPI.stopMonitoring(
       process = Process(currentPid),
-      duration = 1 second,
+      duration = 1.second,
       processor = classOf[DeviceAggregator],
       listener = classOf[FileReporterMock]
     )

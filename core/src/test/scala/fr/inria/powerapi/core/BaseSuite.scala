@@ -21,10 +21,10 @@
 package fr.inria.powerapi.core
 
 import akka.actor.{Props, ActorSystem}
-import akka.dispatch.Await
+import scala.concurrent.Await
+import scala.concurrent.duration.DurationInt
 import akka.pattern.ask
 import akka.util.Timeout
-import akka.util.duration._
 import org.junit.Test
 import org.scalatest.junit.{ShouldMatchersForJUnit, JUnitSuite}
 
@@ -44,7 +44,7 @@ class SimpleActor extends Component {
 class BaseSuite extends JUnitSuite with ShouldMatchersForJUnit {
   val system = ActorSystem("base-suite")
   val simpleActor = system.actorOf(Props[SimpleActor])
-  implicit val timeout = Timeout(5 seconds)
+  implicit val timeout = Timeout(5.seconds)
 
   @Test
   def testMessagesToListen() {

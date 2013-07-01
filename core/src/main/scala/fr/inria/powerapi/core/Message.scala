@@ -19,7 +19,8 @@
  * Contact: powerapi-user-list@googlegroups.com.
  */
 package fr.inria.powerapi.core
-import akka.util.Duration
+
+import scala.concurrent.duration.FiniteDuration
 
 /**
  * Base types used to describe PowerAPI messages.
@@ -40,7 +41,7 @@ import akka.util.Duration
  * - a time period or computation duration
  * Thus, a TickSubscription represents this PowerAPI request composition.
  */
-case class TickSubscription(process: Process, duration: Duration)
+case class TickSubscription(process: Process, duration: FiniteDuration)
 
 /**
  * Each PowerAPI's request is created according to a specific time period.

@@ -24,11 +24,10 @@ import java.util.Timer
 import java.util.TimerTask
 
 import scala.collection.JavaConversions
+import scala.concurrent.duration.{Duration, DurationInt}
 
 import com.typesafe.config.ConfigFactory
 
-import akka.util.Duration
-import akka.util.duration.intToDurationInt
 import fr.inria.powerapi.core.Process
 import fr.inria.powerapi.library.PowerAPI
 import fr.inria.powerapi.processor.aggregator.device.DeviceAggregator
@@ -51,14 +50,14 @@ object Processes {
   def fromConf() {
     pids.foreach(pid => PowerAPI.startMonitoring(
       process = Process(pid),
-      duration = 1 second,
+      duration = 1.second,
       processor = classOf[DeviceAggregator],
       listener = classOf[FileReporter]
     ))
-    Thread.sleep((5 minutes).toMillis)
+    Thread.sleep((5.minutes).toMillis)
     pids.foreach(pid => PowerAPI.stopMonitoring(
       process = Process(pid),
-      duration = 1 second,
+      duration = 1.second,
       processor = classOf[DeviceAggregator],
       listener = classOf[FileReporter]
     ))
@@ -74,10 +73,10 @@ object Processes {
       processor = classOf[DeviceAggregator],
       listener = classOf[FileReporter]
     )
-    Thread.sleep((5 minutes).toMillis)
+    Thread.sleep((5.minutes).toMillis)
     PowerAPI.stopMonitoring(
       process = Process(12758),
-      duration = 1 second,
+      duration = 1.second,
       processor = classOf[DeviceAggregator],
       listener = classOf[FileReporter]
     )
@@ -90,14 +89,14 @@ object Processes {
   def persoFile() {
     pids.foreach(pid => PowerAPI.startMonitoring(
       process = Process(pid),
-      duration = 1 second,
+      duration = 1.second,
       processor = classOf[DeviceAggregator],
       listener = classOf[FileReporter]
     ))
-    Thread.sleep((5 minutes).toMillis)
+    Thread.sleep((5.minutes).toMillis)
     pids.foreach(pid => PowerAPI.stopMonitoring(
       process = Process(pid),
-      duration = 1 second,
+      duration = 1.second,
       processor = classOf[DeviceAggregator],
       listener = classOf[FileReporter]
     ))
@@ -111,14 +110,14 @@ object Processes {
     val currentPid = java.lang.management.ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
     PowerAPI.startMonitoring(
       process = Process(currentPid),
-      duration = 1 second,
+      duration = 1.second,
       processor = classOf[DeviceAggregator],
       listener = classOf[FileReporter]
     )
-    Thread.sleep((5 minutes).toMillis)
+    Thread.sleep((5.minutes).toMillis)
     PowerAPI.stopMonitoring(
       process = Process(currentPid),
-      duration = 1 second,
+      duration = 1.second,
       processor = classOf[DeviceAggregator],
       listener = classOf[FileReporter]
     )
@@ -147,7 +146,7 @@ object Processes {
     }
 
     val pids = scala.collection.mutable.Set[Int]()
-    val dur = 1 second
+    val dur = 1.second
     def udpateMonitoredPids() {
       val currentPids = scala.collection.mutable.Set[Int](getPids: _*)
 
@@ -166,9 +165,9 @@ object Processes {
       def run() {
         udpateMonitoredPids
       }
-    }, Duration.Zero.toMillis, (250 milliseconds).toMillis)
+    }, Duration.Zero.toMillis, (250.milliseconds).toMillis)
 
-    Thread.sleep((1 hour).toMillis)
+    Thread.sleep((1.hour).toMillis)
     timer.cancel
     PowerAPI.stopMonitoring(processor = classOf[DeviceAggregator], listener = classOf[FileReporter])
   }

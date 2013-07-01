@@ -20,7 +20,7 @@
  */
 package fr.inria.powerapi.core
 
-import akka.util.duration.intToDurationInt
+import scala.concurrent.duration.DurationInt
 import org.junit.Test
 import org.scalatest.junit.{ ShouldMatchersForJUnit, JUnitSuite }
 
@@ -33,7 +33,7 @@ class EnergySuite extends JUnitSuite with ShouldMatchersForJUnit {
   @Test
   def testFromJoule() {
     Energy.fromJoule(15).power should equal(15)
-    Energy.fromJoule(15, 3 seconds).power should equal(5)
+    Energy.fromJoule(15, 3.seconds).power should equal(5)
   }
 
   @Test
@@ -48,6 +48,6 @@ class EnergySuite extends JUnitSuite with ShouldMatchersForJUnit {
 
   @Test
   def testEquals() {
-    Energy.fromPower(6) should equal(Energy.fromJoule(3, 500 milliseconds))
+    Energy.fromPower(6) should equal(Energy.fromJoule(3, 500.milliseconds))
   }
 }

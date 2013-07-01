@@ -20,12 +20,13 @@
  */
 package fr.inria.powerapi.example.adamdemo.oneprocess
 
+import scala.concurrent.duration.DurationInt
+
 import fr.inria.powerapi.formula.cpu.api.CpuFormulaMessage
 import fr.inria.powerapi.sensor.cpu.proc.CpuSensor
 import fr.inria.powerapi.core.Process
 import scalax.io.Resource
 import fr.inria.powerapi.library.PowerAPI
-import akka.util.duration._
 import java.lang.management.ManagementFactory
 import scalax.file.Path
 import scalax.io.StandardOpenOption.WriteTruncate
@@ -53,9 +54,9 @@ object Demo extends App {
       }
   })
 
-  pids.foreach(pid => PowerAPI.startMonitoring(process = Process(pid), duration = 1 second, listener = classOf[CpuListener]))
-  Thread.sleep((2 hours).toMillis)
-  pids.foreach(pid => PowerAPI.stopMonitoring(process = Process(pid), duration = 1 second, listener = classOf[CpuListener]))
+  pids.foreach(pid => PowerAPI.startMonitoring(process = Process(pid), duration = 1.second, listener = classOf[CpuListener]))
+  Thread.sleep((2.hours).toMillis)
+  pids.foreach(pid => PowerAPI.stopMonitoring(process = Process(pid), duration = 1.second, listener = classOf[CpuListener]))
 
   Array(
     classOf[CpuSensor],

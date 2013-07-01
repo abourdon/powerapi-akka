@@ -20,7 +20,8 @@
  */
 package fr.inria.powerapi.example.sandbox
 
-import akka.util.duration.intToDurationInt
+import scala.concurrent.duration.DurationInt
+
 import fr.inria.powerapi.core.Process
 import fr.inria.powerapi.library.PowerAPI
 import fr.inria.powerapi.processor.aggregator.device.DeviceAggregator
@@ -37,14 +38,14 @@ object Processes {
     val currentPid = java.lang.management.ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
     PowerAPI.startMonitoring(
       process = Process(currentPid),
-      duration = 1 second,
+      duration = 1.second,
       processor = classOf[DeviceAggregator],
       listener = classOf[JFreeChartReporter]
     )
-    Thread.sleep((1 minute).toMillis)
+    Thread.sleep((1.minute).toMillis)
     PowerAPI.stopMonitoring(
       process = Process(currentPid),
-      duration = 1 second,
+      duration = 1.second,
       processor = classOf[DeviceAggregator],
       listener = classOf[JFreeChartReporter]
     )

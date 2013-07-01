@@ -21,9 +21,9 @@
 package fr.inria.powerapi.core
 
 import akka.actor.Cancellable
-import akka.util.Duration
-import akka.util.duration.intToDurationInt
+import scala.concurrent.duration.{FiniteDuration, Duration, DurationInt}
 import collection.mutable
+import java.util.concurrent.TimeUnit
 
 /**
  * Clock's messages definition.
@@ -39,9 +39,11 @@ case class UnTickIt(subscription: TickSubscription) extends Message
  * @author abourdon
  */
 trait ClockConfiguration extends Configuration {
-  lazy val minimumTickDuration = load {
-    conf => Duration.parse(conf.getString("akka.scheduler.tick-duration"))
-  }(10 milliseconds)
+  lazy val minimumTickDuration = load { conf =>
+    Duration.create(conf.getString("akka.scheduler.tick-duration")) match {
+      case Duration(length, unit) => FiniteDuration(length, unit)
+    }
+  }(10.milliseconds)
 }
 
 /**
@@ -60,8 +62,8 @@ trait ClockConfiguration extends Configuration {
  * @author abourdon
  */
 class Clock extends Component with ClockConfiguration {
-  val subscriptions = new mutable.HashMap[Duration, Set[TickSubscription]] with mutable.SynchronizedMap[Duration, Set[TickSubscription]]
-  val schedulers = new mutable.HashMap[Duration, Cancellable]
+  val subscriptions = new mutable.HashMap[FiniteDuration, Set[TickSubscription]] with mutable.SynchronizedMap[FiniteDuration, Set[TickSubscription]]
+  val schedulers = new mutable.HashMap[FiniteDuration, Cancellable]
 
   def makeItTick(implicit tickIt: TickIt) {
     def subscribe(implicit tickIt: TickIt) {
@@ -82,7 +84,7 @@ class Clock extends Component with ClockConfiguration {
             val timestamp = System.currentTimeMillis
             subscriptions(duration).foreach(subscription => publish(Tick(subscription, timestamp)))
           }
-        }))
+        })(context.system.dispatcher))
       }
     }
 

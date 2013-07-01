@@ -19,6 +19,7 @@
  * Contact: powerapi-user-list@googlegroups.com.
  */
 package fr.inria.powerapi.formula.cpu.max
+
 import org.scalatest.FlatSpec
 import org.scalatest.junit.ShouldMatchersForJUnit
 import scala.collection.mutable.Stack
@@ -26,7 +27,6 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import akka.actor.ActorSystem
 import akka.testkit.TestActorRef
-import akka.util.duration._
 import akka.pattern.ask
 import fr.inria.powerapi.core.Listener
 import fr.inria.powerapi.core.Tick
@@ -39,7 +39,6 @@ import fr.inria.powerapi.sensor.cpu.api.GlobalElapsedTime
 import fr.inria.powerapi.sensor.cpu.api.TimeInStates
 import fr.inria.powerapi.formula.cpu.api.CpuFormulaMessage
 import akka.util.Timeout
-import akka.dispatch.Await
 import fr.inria.powerapi.sensor.cpu.api.ProcessPercent
 import fr.inria.powerapi.sensor.cpu.api.ProcessPercent
 

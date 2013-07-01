@@ -20,10 +20,11 @@
  */
 package fr.inria.powerapi.sensor.powerspy
 
+import scala.concurrent.duration.DurationInt
+
 import org.junit.Test
 import org.scalatest.junit.JUnitSuite
 import org.scalatest.junit.ShouldMatchersForJUnit
-import akka.util.duration._
 import fr.inria.powerapi.core.Listener
 import fr.inria.powerapi.core.Process
 import fr.inria.powerapi.library.PowerAPI
@@ -47,11 +48,11 @@ class PowerSpySensorSuite extends JUnitSuite with ShouldMatchersForJUnit {
   @Test
   def testTick() {
     PowerAPI.startEnergyModule(classOf[PowerSpySensor])
-    PowerAPI.startMonitoring(process = Process(1), duration = 500 milliseconds, listener = classOf[PowerSpySensorListener])
+    PowerAPI.startMonitoring(process = Process(1), duration = 500.milliseconds, listener = classOf[PowerSpySensorListener])
 
-    Thread.sleep((30 seconds).toMillis)
+    Thread.sleep((30.seconds).toMillis)
 
-    PowerAPI.stopMonitoring(process = Process(1), duration = 500 milliseconds, listener = classOf[PowerSpySensorListener])
+    PowerAPI.stopMonitoring(process = Process(1), duration = 500.milliseconds, listener = classOf[PowerSpySensorListener])
     PowerAPI.stopEnergyModule(classOf[PowerSpySensor])
   }
 
