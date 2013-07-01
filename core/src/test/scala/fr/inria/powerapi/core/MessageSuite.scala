@@ -19,6 +19,10 @@
  * Contact: powerapi-user-list@googlegroups.com.
  */
 package fr.inria.powerapi.core
+
+import scala.concurrent.Await
+import scala.concurrent.duration.DurationInt
+
 import org.junit.Test
 import org.scalatest.junit.JUnitSuite
 import org.scalatest.junit.ShouldMatchersForJUnit
@@ -27,9 +31,7 @@ import akka.actor.actorRef2Scala
 import akka.actor.Actor
 import akka.actor.ActorSystem
 import akka.actor.Props
-import akka.dispatch.Await
 import akka.pattern.ask
-import akka.util.duration.intToDurationInt
 import akka.util.Timeout
 
 class MessageSuite extends JUnitSuite with ShouldMatchersForJUnit {
@@ -46,7 +48,7 @@ class MessageSuite extends JUnitSuite with ShouldMatchersForJUnit {
       }
     }))
 
-    implicit val timeout = Timeout(5 seconds)
+    implicit val timeout = Timeout(5.seconds)
     val result = Await.result(actor ? LeafMessage(null), timeout.duration).asInstanceOf[Boolean]
 
     result should equal(true)
@@ -64,7 +66,7 @@ class MessageSuite extends JUnitSuite with ShouldMatchersForJUnit {
       }
     }))
 
-    implicit val timeout = Timeout(5 seconds)
+    implicit val timeout = Timeout(5.seconds)
     val result = Await.result(actor ? LeafMessage(null, null, null), timeout.duration).asInstanceOf[Boolean]
 
     result should equal(true)

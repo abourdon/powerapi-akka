@@ -19,6 +19,9 @@
  * Contact: powerapi-user-list@googlegroups.com.
  */
 package fr.inria.powerapi.listener.disk.console
+
+import scala.concurrent.duration.DurationInt
+
 import org.junit.Test
 import org.scalatest.junit.JUnitSuite
 import org.scalatest.junit.ShouldMatchersForJUnit
@@ -26,7 +29,6 @@ import fr.inria.powerapi.formula.disk.single.DiskFormula
 import fr.inria.powerapi.library.PowerAPI
 import fr.inria.powerapi.sensor.disk.proc.DiskSensor
 import fr.inria.powerapi.core.Process
-import akka.util.duration._
 import org.junit.Before
 import org.junit.After
 import scalax.io.Resource
@@ -47,17 +49,17 @@ class DiskListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
   @Ignore
   @Test
   def testPid {
-    PowerAPI.startMonitoring(process = Process(31658), duration = 5 seconds, listener = classOf[DiskListener])
-    Thread.sleep((10 minutes).toMillis)
-    PowerAPI.stopMonitoring(process = Process(31658), duration = 5 seconds, listener = classOf[DiskListener])
+    PowerAPI.startMonitoring(process = Process(31658), duration = 5.seconds, listener = classOf[DiskListener])
+    Thread.sleep((10.minutes).toMillis)
+    PowerAPI.stopMonitoring(process = Process(31658), duration = 5.seconds, listener = classOf[DiskListener])
   }
 
   @Test
   def testCurrentPid {
     val currentPid = java.lang.management.ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
-    PowerAPI.startMonitoring(process = Process(currentPid), duration = 500 milliseconds, listener = classOf[DiskListener])
-    Thread.sleep((10 seconds).toMillis)
-    PowerAPI.stopMonitoring(process = Process(currentPid), duration = 500 milliseconds, listener = classOf[DiskListener])
+    PowerAPI.startMonitoring(process = Process(currentPid), duration = 500.milliseconds, listener = classOf[DiskListener])
+    Thread.sleep((10.seconds).toMillis)
+    PowerAPI.stopMonitoring(process = Process(currentPid), duration = 500.milliseconds, listener = classOf[DiskListener])
   }
 
   @Ignore
@@ -73,11 +75,11 @@ class DiskListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
     })
 
     PowerAPI.startMonitoring(listener = classOf[DiskListener])
-    pids.foreach(pid => PowerAPI.startMonitoring(process = Process(pid), duration = 500 milliseconds))
+    pids.foreach(pid => PowerAPI.startMonitoring(process = Process(pid), duration = 500.milliseconds))
 
-    Thread.sleep((10 seconds).toMillis)
+    Thread.sleep((10.seconds).toMillis)
 
     PowerAPI.stopMonitoring(listener = classOf[DiskListener])
-    pids.foreach(pid => PowerAPI.stopMonitoring(process = Process(pid), duration = 500 milliseconds))
+    pids.foreach(pid => PowerAPI.stopMonitoring(process = Process(pid), duration = 500.milliseconds))
   }
 }

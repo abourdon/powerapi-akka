@@ -21,6 +21,7 @@
 package fr.inria.powerapi.sensor.cpu.proc.times
 import java.net.URL
 
+import scala.concurrent.duration.DurationInt
 import scala.util.Properties
 
 import org.junit.runner.RunWith
@@ -30,7 +31,6 @@ import org.scalatest.FlatSpec
 
 import akka.actor.ActorSystem
 import akka.testkit.TestActorRef
-import akka.util.duration.intToDurationInt
 import fr.inria.powerapi.core.Process
 import fr.inria.powerapi.core.Tick
 import fr.inria.powerapi.core.TickSubscription
@@ -47,7 +47,7 @@ class CpuSensorSpec extends FlatSpec with ShouldMatchersForJUnit {
   }
 
   implicit val system = ActorSystem("cpusensorsuite")
-  implicit val tick = Tick(TickSubscription(Process(123), 1 second))
+  implicit val tick = Tick(TickSubscription(Process(123), 1.second))
   val cpuSensor = TestActorRef(new CpuSensor with ConfigurationMock)
 
   "Frequencies' time in states" should "be correctly read from the dedicated system file" in {

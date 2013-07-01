@@ -19,6 +19,8 @@
  * Contact: powerapi-user-list@googlegroups.com.
  */
 package fr.inria.powerapi.sensor.disk.atop
+
+import scala.concurrent.duration.DurationInt
 import java.io.IOException
 import fr.inria.powerapi.sensor.disk.api.DiskSensorMessage
 import fr.inria.powerapi.core.Process
@@ -38,7 +40,6 @@ import org.junit.Test
 import akka.actor.ActorSystem
 import akka.testkit.TestActorRef
 import akka.actor.Props
-import akka.util.duration._
 
 trait ConfigurationMock extends Configuration {
   lazy val basedir = new URL("file", Properties.propOrEmpty("basedir"), "")
@@ -79,9 +80,9 @@ class DiskSensorSuite extends JUnitSuite with ShouldMatchersForJUnit {
     system.eventStream.subscribe(diskSensor, classOf[Tick])
     system.eventStream.subscribe(diskSensorReceiver, classOf[DiskSensorMessage])
 
-    clock ! TickIt(TickSubscription(Process(123), 10 seconds))
+    clock ! TickIt(TickSubscription(Process(123), 10.seconds))
     Thread.sleep(1000)
-    clock ! UnTickIt(TickSubscription(Process(123), 10 seconds))
+    clock ! UnTickIt(TickSubscription(Process(123), 10.seconds))
 
     diskSensorReceiver.underlyingActor.receivedData should have size 1
     diskSensorReceiver.underlyingActor.receivedData("n/a") should equal((1.0, 3.0))

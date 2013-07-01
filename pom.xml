@@ -69,8 +69,9 @@
 		<maven.compiler.source>1.6</maven.compiler.source>
 		<maven.compiler.target>1.6</maven.compiler.target>
 		<encoding>UTF-8</encoding>
-		<scala.version>2.9.1</scala.version>
-		<akka.version>2.0.1</akka.version>
+		<scala.version>2.10</scala.version>
+        <scala.library>2.10.0</scala.library>
+		<akka.version>2.1.0</akka.version>
 		<firstAuthor.name>Aurelien Bourdon</firstAuthor.name>
 		<firstAuthor.email>aurelien.bourdon@inria.fr</firstAuthor.email>
 	</properties>
@@ -88,12 +89,12 @@
 			<dependency>
 				<groupId>com.github.scala-incubator.io</groupId>
 				<artifactId>scala-io-core_${scala.version}</artifactId>
-				<version>0.4.0</version>
+				<version>0.4.2</version>
 			</dependency>
 			<dependency>
 				<groupId>com.github.scala-incubator.io</groupId>
 				<artifactId>scala-io-file_${scala.version}</artifactId>
-				<version>0.4.0</version>
+				<version>0.4.2</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -102,18 +103,18 @@
 		<dependency>
 			<groupId>org.scala-lang</groupId>
 			<artifactId>scala-library</artifactId>
-			<version>${scala.version}</version>
+			<version>${scala.library}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.typesafe.akka</groupId>
-			<artifactId>akka-actor</artifactId>
+			<artifactId>akka-actor_${scala.version}</artifactId>
 			<version>${akka.version}</version>
 		</dependency>
 
 		<!-- Test scope -->
 		<dependency>
 			<groupId>com.typesafe.akka</groupId>
-			<artifactId>akka-testkit</artifactId>
+			<artifactId>akka-testkit_${scala.version}</artifactId>
 			<version>${akka.version}</version>
 			<scope>test</scope>
 		</dependency>
@@ -126,7 +127,7 @@
 		<dependency>
 			<groupId>org.scalatest</groupId>
 			<artifactId>scalatest_${scala.version}</artifactId>
-			<version>1.8</version>
+			<version>1.9.1</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -155,7 +156,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<scalaVersion>${scala.version}</scalaVersion>
+					<scalaVersion>${scala.library}</scalaVersion>
 					<args>
 						<arg>-deprecation</arg>
 					</args>

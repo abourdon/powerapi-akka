@@ -20,16 +20,17 @@
  */
 package fr.inria.powerapi.formula.powerspy
 
-import scala.concurrent.Lock
+import scala.concurrent.{Lock, Await}
+import scala.concurrent.duration.DurationInt
+
+
 import org.junit.Test
 import org.scalatest.junit.JUnitSuite
 import org.scalatest.junit.ShouldMatchersForJUnit
 import akka.actor.ActorRef
 import akka.actor.ActorSystem
-import akka.dispatch.Await
 import akka.pattern.ask
 import akka.testkit.TestActorRef
-import akka.util.duration.intToDurationInt
 import akka.util.Timeout
 import fr.inria.powerapi.core.Listener
 import fr.inria.powerapi.core.Energy
@@ -94,9 +95,9 @@ class PowerSpyFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
   def testAll() {
     Array(classOf[PowerSpySensor], classOf[PowerSpyFormula]).foreach(module => PowerAPI.startEnergyModule(module))
 
-    PowerAPI.startMonitoring(process = Process(1), duration = 500 milliseconds, listener = classOf[PowerSpyFormulaListener])
-    Thread.sleep((30 seconds).toMillis)
-    PowerAPI.stopMonitoring(process = Process(1), duration = 500 milliseconds, listener = classOf[PowerSpyFormulaListener])
+    PowerAPI.startMonitoring(process = Process(1), duration = 500.milliseconds, listener = classOf[PowerSpyFormulaListener])
+    Thread.sleep((30.seconds).toMillis)
+    PowerAPI.stopMonitoring(process = Process(1), duration = 500.milliseconds, listener = classOf[PowerSpyFormulaListener])
 
     Array(classOf[PowerSpySensor], classOf[PowerSpyFormula]).foreach(module => PowerAPI.stopEnergyModule(module))
   }

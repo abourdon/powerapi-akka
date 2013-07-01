@@ -22,6 +22,8 @@ package fr.inria.powerapi.core
 
 import scala.collection.mutable.HashMap
 import scala.collection.mutable.SynchronizedMap
+import scala.concurrent.Await
+import scala.concurrent.duration.DurationInt
 
 import org.junit.Ignore
 import org.junit.Test
@@ -31,11 +33,9 @@ import org.scalatest.junit.ShouldMatchersForJUnit
 import akka.actor.ActorLogging
 import akka.actor.ActorSystem
 import akka.actor.actorRef2Scala
-import akka.dispatch.Await
 import akka.pattern.ask
 import akka.testkit.TestActorRef
 import akka.util.Timeout
-import akka.util.duration.intToDurationInt
 
 case object Result
 
@@ -68,7 +68,7 @@ class ClockSuite extends JUnitSuite with ShouldMatchersForJUnit {
 
   @Test
   def testMessagesToListen() {
-    implicit val timeout = Timeout(5 seconds)
+    implicit val timeout = Timeout(5.seconds)
     val request = clock ? MessagesToListen
     val messages = Await.result(request, timeout.duration).asInstanceOf[Array[Class[_ <: Message]]]
 
@@ -82,25 +82,25 @@ class ClockSuite extends JUnitSuite with ShouldMatchersForJUnit {
     val tickReceiver = TestActorRef[ByProcessTickReceiver]
     system.eventStream.subscribe(tickReceiver, classOf[Tick])
 
-    clock ! TickIt(TickSubscription(Process(123), 500 milliseconds))
-    clock ! TickIt(TickSubscription(Process(124), 1000 milliseconds))
-    clock ! TickIt(TickSubscription(Process(125), 1500 milliseconds))
+    clock ! TickIt(TickSubscription(Process(123), 500.milliseconds))
+    clock ! TickIt(TickSubscription(Process(124), 1000.milliseconds))
+    clock ! TickIt(TickSubscription(Process(125), 1500.milliseconds))
     Thread.sleep(3200)
 
-    clock ! UnTickIt(TickSubscription(Process(123), 500 milliseconds))
+    clock ! UnTickIt(TickSubscription(Process(123), 500.milliseconds))
     Thread.sleep(2200)
 
-    clock ! UnTickIt(TickSubscription(Process(124), 500 milliseconds))
-    clock ! UnTickIt(TickSubscription(Process(125), 1500 milliseconds))
+    clock ! UnTickIt(TickSubscription(Process(124), 500.milliseconds))
+    clock ! UnTickIt(TickSubscription(Process(125), 1500.milliseconds))
 
     val receivedTicks = tickReceiver.underlyingActor.receivedTicks
-    receivedTicks getOrElse(TickSubscription(Process(123), 500 milliseconds), 0) should {
+    receivedTicks getOrElse(TickSubscription(Process(123), 500.milliseconds), 0) should {
       equal(7) or equal(7 + 1)
     }
-    receivedTicks getOrElse(TickSubscription(Process(124), 1000 milliseconds), 0) should {
+    receivedTicks getOrElse(TickSubscription(Process(124), 1000.milliseconds), 0) should {
       equal(5) or equal(5 + 1)
     }
-    receivedTicks getOrElse(TickSubscription(Process(125), 1500 milliseconds), 0) should {
+    receivedTicks getOrElse(TickSubscription(Process(125), 1500.milliseconds), 0) should {
       equal(4) or equal(4 + 1)
     }
   }
@@ -109,8 +109,8 @@ class ClockSuite extends JUnitSuite with ShouldMatchersForJUnit {
   @Test
   def testReceivedIntensiveTicks() {
     val tickReceiver = TestActorRef[SimpleTickReceiver]
-    val duration = 100 milliseconds
-    val sleep = 10 seconds
+    val duration = 100.milliseconds
+    val sleep = 10.seconds
     val pids = (0 to 500)
     system.eventStream.subscribe(tickReceiver, classOf[Tick])
 

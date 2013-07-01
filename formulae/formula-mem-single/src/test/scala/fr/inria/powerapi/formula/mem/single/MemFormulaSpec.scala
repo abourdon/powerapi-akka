@@ -19,11 +19,13 @@
  * Contact: powerapi-user-list@googlegroups.com.
  */
 package fr.inria.powerapi.formula.mem.single
+
+import scala.concurrent.duration.DurationInt
+
 import org.scalatest.junit.ShouldMatchersForJUnit
 import org.scalatest.FlatSpec
 import fr.inria.powerapi.library.PowerAPI
 import fr.inria.powerapi.core.Process
-import akka.util.duration.intToDurationInt
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import fr.inria.powerapi.core.Listener
@@ -66,11 +68,11 @@ class MemFormulaSpec extends FlatSpec with ShouldMatchersForJUnit {
     val currentPid = java.lang.management.ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
 
     Array(classOf[MemSensor], classOf[MemFormula]).foreach(PowerAPI.startEnergyModule(_))
-    PowerAPI.startMonitoring(process = Process(currentPid), duration = 1 second, listener = classOf[MemFormulaListener])
+    PowerAPI.startMonitoring(process = Process(currentPid), duration = 1.second, listener = classOf[MemFormulaListener])
 
-    Thread.sleep((5 seconds).toMillis)
+    Thread.sleep((5.seconds).toMillis)
 
-    PowerAPI.stopMonitoring(process = Process(currentPid), duration = 1 second, listener = classOf[MemFormulaListener])
+    PowerAPI.stopMonitoring(process = Process(currentPid), duration = 1.second, listener = classOf[MemFormulaListener])
     Array(classOf[MemSensor], classOf[MemFormula]).foreach(PowerAPI.stopEnergyModule(_))
   }
 

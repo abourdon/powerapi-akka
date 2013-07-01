@@ -19,6 +19,9 @@
  * Contact: powerapi-user-list@googlegroups.com.
  */
 package fr.inria.powerapi.listener.cpudisk.console
+
+import scala.concurrent.duration.{Duration, DurationInt}
+
 import fr.inria.powerapi.core.Listener
 import fr.inria.powerapi.formula.cpu.api.CpuFormulaMessage
 import fr.inria.powerapi.formula.disk.api.DiskFormulaMessage
@@ -27,8 +30,6 @@ import fr.inria.powerapi.core.Energy
 import fr.inria.powerapi.core.Process
 import scalaz._
 import Scalaz._
-import akka.util.duration._
-import akka.util.Duration
 import akka.actor.Cancellable
 
 /**
@@ -40,7 +41,11 @@ trait Configuration extends fr.inria.powerapi.core.Configuration {
   /**
    * Result display refresh rate. 1 second by default.
    */
-  lazy val refreshRate = load(conf => Duration.parse(conf.getString("powerapi.listener-cpudisk-console.refresh-rate")))(1 second)
+  lazy val refreshRate = load { conf =>
+    Duration.create(conf.getString("powerapi.listener-cpudisk-console.refresh-rate")) match {
+      case Duration(length, unit) => Duration(length, unit)
+    }
+  }(1.second)
 }
 
 /**
@@ -61,7 +66,7 @@ class CpuDiskListener extends Listener with Configuration {
   override def preStart() {
     cleanupSchedule = context.system.scheduler.schedule(Duration.Zero, refreshRate) {
       cleanupByMin()
-    }
+    }(context.system.dispatcher)
   }
 
   override def postStop() {

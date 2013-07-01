@@ -20,6 +20,8 @@
  */
 package fr.inria.powerapi.listener.aggregator
 
+import scala.concurrent.duration.DurationInt
+
 import org.junit.runner.RunWith
 import org.scalatest.FlatSpec
 import org.scalatest.junit.JUnitRunner
@@ -27,7 +29,6 @@ import org.scalatest.junit.ShouldMatchersForJUnit
 
 import akka.actor.ActorSystem
 import akka.testkit.TestActorRef
-import akka.util.duration.intToDurationInt
 import fr.inria.powerapi.core.Energy
 import fr.inria.powerapi.core.FormulaMessage
 import fr.inria.powerapi.core.Process
@@ -55,19 +56,19 @@ class TimestampAggregatorSpec extends FlatSpec with ShouldMatchersForJUnit {
   }
 
   "A TimestampAggregator" should "process a FormulaMessage" in {
-    timestampAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(1), Tick(TickSubscription(Process(123), 1 second), 1)))
-    timestampAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(2), Tick(TickSubscription(Process(123), 1 second), 1)))
-    timestampAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(3), Tick(TickSubscription(Process(123), 1 second), 1)))
+    timestampAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(1), Tick(TickSubscription(Process(123), 1.second), 1)))
+    timestampAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(2), Tick(TickSubscription(Process(123), 1.second), 1)))
+    timestampAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(3), Tick(TickSubscription(Process(123), 1.second), 1)))
 
     timestampAggregator.underlyingActor.sent should be('empty)
 
-    timestampAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(1), Tick(TickSubscription(Process(123), 1 second), 2)))
+    timestampAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(1), Tick(TickSubscription(Process(123), 1.second), 2)))
 
     timestampAggregator.underlyingActor.sent should have size 1
     timestampAggregator.underlyingActor.sent should contain key 1
     timestampAggregator.underlyingActor.sent(1).energy should equal(Energy.fromPower(1 + 2 + 3))
 
-    timestampAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(1), Tick(TickSubscription(Process(123), 1 second), 3)))
+    timestampAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(1), Tick(TickSubscription(Process(123), 1.second), 3)))
 
     timestampAggregator.underlyingActor.sent should have size 2
     timestampAggregator.underlyingActor.sent should contain key 2
@@ -94,13 +95,13 @@ class DeviceAggregatorSpec extends FlatSpec with ShouldMatchersForJUnit {
   }
 
   "A DeviceAggregator" should "process a FormulaMessage" in {
-    deviceAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(1), Tick(TickSubscription(Process(123), 1 second), 1), device = "cpu"))
-    deviceAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(2), Tick(TickSubscription(Process(345), 1 second), 1), device = "cpu"))
-    deviceAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(3), Tick(TickSubscription(Process(123), 1 second), 1), device = "mem"))
+    deviceAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(1), Tick(TickSubscription(Process(123), 1.second), 1), device = "cpu"))
+    deviceAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(2), Tick(TickSubscription(Process(345), 1.second), 1), device = "cpu"))
+    deviceAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(3), Tick(TickSubscription(Process(123), 1.second), 1), device = "mem"))
 
     deviceAggregator.underlyingActor.sent should be('empty)
 
-    deviceAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(1), Tick(TickSubscription(Process(123), 1 second), 2), device = "cpu"))
+    deviceAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(1), Tick(TickSubscription(Process(123), 1.second), 2), device = "cpu"))
 
     deviceAggregator.underlyingActor.sent should have size 2
     deviceAggregator.underlyingActor.sent should (contain key ("cpu") and contain key ("mem"))
@@ -128,13 +129,13 @@ class ProcessAggregatorSpec extends FlatSpec with ShouldMatchersForJUnit {
   }
 
   "A ProcessAggregator" should "process a FormulaMessage" in {
-    processAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(1), Tick(TickSubscription(Process(123), 1 second), 1), device = "cpu"))
-    processAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(2), Tick(TickSubscription(Process(123), 1 second), 1), device = "mem"))
-    processAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(3), Tick(TickSubscription(Process(345), 1 second), 1), device = "cpu"))
+    processAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(1), Tick(TickSubscription(Process(123), 1.second), 1), device = "cpu"))
+    processAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(2), Tick(TickSubscription(Process(123), 1.second), 1), device = "mem"))
+    processAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(3), Tick(TickSubscription(Process(345), 1.second), 1), device = "cpu"))
 
     processAggregator.underlyingActor.sent should be('empty)
 
-    processAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(1), Tick(TickSubscription(Process(123), 1 second), 2), device = "cpu"))
+    processAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(1), Tick(TickSubscription(Process(123), 1.second), 2), device = "cpu"))
 
     processAggregator.underlyingActor.sent should have size 2
     processAggregator.underlyingActor.sent should (contain key (Process(123)) and contain key (Process(345)))

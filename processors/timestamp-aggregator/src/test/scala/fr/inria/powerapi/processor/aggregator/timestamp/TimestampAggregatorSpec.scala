@@ -20,6 +20,8 @@
  */
 package fr.inria.powerapi.processor.aggregator.timestamp
 
+import scala.concurrent.duration.DurationInt
+
 import org.junit.runner.RunWith
 import org.scalatest.FlatSpec
 import org.scalatest.junit.JUnitRunner
@@ -27,7 +29,6 @@ import org.scalatest.junit.ShouldMatchersForJUnit
 import akka.actor.ActorSystem
 import akka.testkit.TestActorRef
 import akka.testkit.TestActorRef
-import akka.util.duration.intToDurationInt
 import fr.inria.powerapi.core.Energy
 import fr.inria.powerapi.core.FormulaMessage
 import fr.inria.powerapi.core.Tick
@@ -55,19 +56,19 @@ class TimestampAggregatorSpec extends FlatSpec with ShouldMatchersForJUnit {
   }
 
   "A TimestampAggregator" should "process a FormulaMessage" in {
-    timestampAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(1), Tick(TickSubscription(Process(123), 1 second), 1)))
-    timestampAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(2), Tick(TickSubscription(Process(123), 1 second), 1)))
-    timestampAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(3), Tick(TickSubscription(Process(123), 1 second), 1)))
+    timestampAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(1), Tick(TickSubscription(Process(123), 1.second), 1)))
+    timestampAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(2), Tick(TickSubscription(Process(123), 1.second), 1)))
+    timestampAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(3), Tick(TickSubscription(Process(123), 1.second), 1)))
 
     timestampAggregator.underlyingActor.sent should be('empty)
 
-    timestampAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(1), Tick(TickSubscription(Process(123), 1 second), 2)))
+    timestampAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(1), Tick(TickSubscription(Process(123), 1.second), 2)))
 
     timestampAggregator.underlyingActor.sent should have size 1
     timestampAggregator.underlyingActor.sent should contain key 1
     timestampAggregator.underlyingActor.sent(1).energy should equal(Energy.fromPower(1 + 2 + 3))
 
-    timestampAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(1), Tick(TickSubscription(Process(123), 1 second), 3)))
+    timestampAggregator.underlyingActor.process(FormulaMessageMock(Energy.fromPower(1), Tick(TickSubscription(Process(123), 1.second), 3)))
 
     timestampAggregator.underlyingActor.sent should have size 2
     timestampAggregator.underlyingActor.sent should contain key 2

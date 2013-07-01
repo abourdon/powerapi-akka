@@ -20,11 +20,12 @@
  */
 package fr.inria.powerapi.library
 
+import scala.concurrent.Await
+import scala.concurrent.duration.{FiniteDuration, Duration, DurationInt}
+
 import akka.actor.{ Props, ActorSystem, ActorPath }
-import akka.dispatch.Await
 import akka.pattern.ask
-import akka.util.duration._
-import akka.util.{ Timeout, Duration }
+import akka.util.Timeout
 import fr.inria.powerapi.core.Clock
 import fr.inria.powerapi.core.EnergyModule
 import fr.inria.powerapi.core.{ Message, MessagesToListen, Listener, Component, TickIt, UnTickIt, TickSubscription, Process }
@@ -40,12 +41,12 @@ case class StartComponent(componentType: Class[_ <: Component]) extends Message
 case class StopComponent(componentType: Class[_ <: Component]) extends Message
 case class StartMonitoring(
   process: Process = Process(-1),
-  duration: Duration = Duration.Zero,
+  duration: FiniteDuration = Duration.Zero,
   processor: Class[_ <: Processor] = null,
   listener: Class[_ <: Listener] = null) extends Message
 case class StopMonitoring(
   process: Process = Process(-1),
-  duration: Duration = Duration.Zero,
+  duration: FiniteDuration = Duration.Zero,
   processor: Class[_ <: Processor] = null,
   listener: Class[_ <: Listener] = null) extends Message
 
@@ -59,7 +60,7 @@ case class StopMonitoring(
  */
 class PowerAPI extends Component {
   val components = collection.mutable.HashMap[Class[_ <: Component], ActorPath]()
-  implicit val timeout = Timeout(5 seconds)
+  implicit val timeout = Timeout(5.seconds)
 
   def messagesToListen = Array(classOf[StartComponent], classOf[StopComponent], classOf[StartMonitoring], classOf[StopMonitoring])
 
@@ -132,7 +133,7 @@ class PowerAPI extends Component {
      * @param processor: processor type which will be aware by monitoring results.
      * @param listener: listener type which will be aware by processor messages and display final results.
      */
-    def start(proc: Process, duration: Duration, processor: Class[_ <: Processor], listener: Class[_ <: Listener]) {
+    def start(proc: Process, duration: FiniteDuration, processor: Class[_ <: Processor], listener: Class[_ <: Listener]) {
       if (processor != null) {
         process(StartComponent(processor))
       }
@@ -156,7 +157,7 @@ class PowerAPI extends Component {
      * @param processor : processor type which will be unaware by monitoring results.
      * @param listener: listener type which will be unaware by processor messages.
      */
-    def stop(proc: Process, duration: Duration, processor: Class[_ <: Processor], listener: Class[_ <: Listener]) {
+    def stop(proc: Process, duration: FiniteDuration, processor: Class[_ <: Processor], listener: Class[_ <: Listener]) {
       if (processor != null) {
         process(StopComponent(processor))
       }
@@ -208,7 +209,7 @@ object PowerAPI {
    * @param processor: processor type which will be aware by monitoring results.
    * @param reporter: reporter type which will be aware by processor messages and display final results.
    */
-  def startMonitoring(process: Process = Process(-1), duration: Duration = Duration.Zero, processor: Class[_ <: Processor] = null, listener: Class[_ <: Listener] = null) {
+  def startMonitoring(process: Process = Process(-1), duration: FiniteDuration = Duration.Zero, processor: Class[_ <: Processor] = null, listener: Class[_ <: Listener] = null) {
     engine ! StartMonitoring(process, duration, processor, listener)
   }
 
@@ -221,7 +222,7 @@ object PowerAPI {
    * @param processor : processor type which will be unaware by monitoring results.
    * @param reporter: reporter type which will be unaware by processor messages.
    */
-  def stopMonitoring(process: Process = Process(-1), duration: Duration = Duration.Zero, processor: Class[_ <: Processor] = null, listener: Class[_ <: Listener] = null) {
+  def stopMonitoring(process: Process = Process(-1), duration: FiniteDuration = Duration.Zero, processor: Class[_ <: Processor] = null, listener: Class[_ <: Listener] = null) {
     engine ! StopMonitoring(process, duration, processor, listener)
   }
 }
