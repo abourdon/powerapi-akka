@@ -22,6 +22,7 @@ package fr.inria.powerapi.sensor.mem.proc
 
 import java.net.URL
 
+import scala.concurrent.duration.Duration
 import scala.util.Properties
 
 import org.junit.runner.RunWith
@@ -31,7 +32,6 @@ import org.scalatest.FlatSpec
 
 import akka.actor.ActorSystem
 import akka.testkit.TestActorRef
-import akka.util.Duration
 import fr.inria.powerapi.core.Process
 import fr.inria.powerapi.core.Tick
 import fr.inria.powerapi.core.TickSubscription

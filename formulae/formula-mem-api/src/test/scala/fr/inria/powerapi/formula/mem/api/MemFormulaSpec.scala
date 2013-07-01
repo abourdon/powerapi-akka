@@ -20,25 +20,26 @@
  */
 package fr.inria.powerapi.formula.mem.api
 
+import scala.concurrent.Await
+import scala.concurrent.duration.DurationInt
+
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.junit.ShouldMatchersForJUnit
 import org.scalatest.FlatSpec
 import akka.actor.ActorSystem
-import akka.util.duration.intToDurationInt
 import akka.util.Timeout
 import fr.inria.powerapi.sensor.mem.api.MemSensorMessage
 import akka.actor.Props
 import akka.pattern.ask
 import fr.inria.powerapi.core.MessagesToListen
-import akka.dispatch.Await
 import fr.inria.powerapi.core.Message
 
 @RunWith(classOf[JUnitRunner])
 class MemFormulaSpec extends FlatSpec with ShouldMatchersForJUnit {
 
   lazy val system = ActorSystem("mem-formula-suite")
-  implicit lazy val timeout = Timeout(5 seconds)
+  implicit lazy val timeout = Timeout(5.seconds)
 
   "A MemFormula" should "react to MemSensorMessage" in {
     val memFormula = system.actorOf(Props(new MemFormula {

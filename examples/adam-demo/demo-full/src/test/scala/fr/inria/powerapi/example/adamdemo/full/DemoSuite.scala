@@ -20,10 +20,11 @@
  */
 package fr.inria.powerapi.example.adamdemo.full
 
+import scala.concurrent.duration.DurationInt
+
 import org.junit.Test
 import org.scalatest.junit.JUnitSuite
 import org.scalatest.junit.ShouldMatchersForJUnit
-import akka.util.duration.intToDurationInt
 import org.junit.Ignore
 
 class DemoSuite extends JUnitSuite with ShouldMatchersForJUnit {
@@ -35,7 +36,7 @@ class DemoSuite extends JUnitSuite with ShouldMatchersForJUnit {
       println("Running demonstration: \"" + demo.name + "\"")
       if (demo.init) {
         demo.start()
-        Thread.sleep((15 seconds).toMillis)
+        Thread.sleep((15.seconds).toMillis)
         demo.stop()
       } else {
         fail("Initialization error")
@@ -47,18 +48,18 @@ class DemoSuite extends JUnitSuite with ShouldMatchersForJUnit {
   @Test
   def testSetProcessForOneProcessScenario() {
     Runtime.getRuntime().exec("firefox")
-    Thread.sleep((5 seconds).toMillis)
+    Thread.sleep((5.seconds).toMillis)
     if (!Demo.demo1.init) {
       fail("Initialization error")
     }
     Demo.demo1.start()
-    Thread.sleep((15 seconds).toMillis)
+    Thread.sleep((15.seconds).toMillis)
 
     Runtime.getRuntime().exec(Array("stress", "-c", "1"))
-    Thread.sleep((5 seconds).toMillis)
+    Thread.sleep((5.seconds).toMillis)
 
     Demo.demo1.setProcess("stress")
-    Thread.sleep((15 seconds).toMillis)
+    Thread.sleep((15.seconds).toMillis)
     Demo.demo1.stop()
   }
 
@@ -66,18 +67,18 @@ class DemoSuite extends JUnitSuite with ShouldMatchersForJUnit {
   @Test
   def testSetProcessForGranularityScenario() {
     Runtime.getRuntime().exec("firefox")
-    Thread.sleep((5 seconds).toMillis)
+    Thread.sleep((5.seconds).toMillis)
     if (!Demo.demo3.init) {
       fail("Initialization error")
     }
     Demo.demo3.start()
-    Thread.sleep((15 seconds).toMillis)
+    Thread.sleep((15.seconds).toMillis)
 
     Runtime.getRuntime().exec(Array("stress", "-c", "1"))
-    Thread.sleep((5 seconds).toMillis)
+    Thread.sleep((5.seconds).toMillis)
 
     Demo.demo3.setProcess("stress")
-    Thread.sleep((15 seconds).toMillis)
+    Thread.sleep((15.seconds).toMillis)
     Demo.demo3.stop()
   }
 

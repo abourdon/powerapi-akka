@@ -20,8 +20,8 @@
  */
 package fr.inria.powerapi.library
 
+import scala.concurrent.duration.DurationInt
 import akka.actor.ActorLogging
-import akka.util.duration._
 import fr.inria.powerapi.core.{ Listener, Process }
 import fr.inria.powerapi.formula.cpu.api.CpuFormulaMessage
 import fr.inria.powerapi.sensor.cpu.proc.CpuSensor
@@ -44,9 +44,9 @@ class PowerAPISuite extends JUnitSuite with ShouldMatchersForJUnit {
     Array(classOf[CpuSensor], classOf[CpuFormula]).foreach(PowerAPI.startEnergyModule(_))
 
     val currentPid = ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
-    PowerAPI.startMonitoring(process = Process(currentPid), duration = 500 milliseconds, listener = classOf[SimpleCpuListener])
-    Thread.sleep((10 seconds).toMillis)
-    PowerAPI.stopMonitoring(process = Process(currentPid), duration = 500 milliseconds, listener = classOf[SimpleCpuListener])
+    PowerAPI.startMonitoring(process = Process(currentPid), duration = 500.milliseconds, listener = classOf[SimpleCpuListener])
+    Thread.sleep((10.seconds).toMillis)
+    PowerAPI.stopMonitoring(process = Process(currentPid), duration = 500.milliseconds, listener = classOf[SimpleCpuListener])
 
     Array(classOf[CpuSensor], classOf[CpuFormula]).foreach(PowerAPI.stopEnergyModule(_))
   }

@@ -19,12 +19,14 @@
  * Contact: powerapi-user-list@googlegroups.com.
  */
 package fr.inria.powerapi.formula.disk.api
+
+import scala.concurrent.Await
+import scala.concurrent.duration.DurationInt
+
 import org.junit.Test
 import akka.actor.ActorSystem
 import akka.actor.Props
-import akka.dispatch.Await
 import akka.pattern.ask
-import akka.util.duration._
 import akka.util.Timeout
 import fr.inria.powerapi.core.Message
 import fr.inria.powerapi.core.MessagesToListen
@@ -38,7 +40,7 @@ class DiskFormulaMock extends DiskFormula {
 
 class DiskFormulaSuite extends JUnitSuite with ShouldMatchersForJUnit {
   lazy val system = ActorSystem("CpuFormulaSuite")
-  implicit lazy val timeout = Timeout(5 seconds)
+  implicit lazy val timeout = Timeout(5.seconds)
 
   @Test
   def testMessagesToListen() {

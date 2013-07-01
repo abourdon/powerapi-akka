@@ -22,6 +22,8 @@ package fr.inria.powerapi.sensor.cpu.proc
 
 import java.net.URL
 
+import scala.concurrent.duration.DurationInt
+
 import scala.util.Properties
 
 import org.junit.runner.RunWith
@@ -31,7 +33,6 @@ import org.scalatest.FlatSpec
 
 import akka.actor.ActorSystem
 import akka.testkit.TestActorRef
-import akka.util.duration.intToDurationInt
 import fr.inria.powerapi.core.Process
 import fr.inria.powerapi.core.Tick
 import fr.inria.powerapi.core.TickSubscription
@@ -48,7 +49,7 @@ class CpuSensorSpec extends FlatSpec with ShouldMatchersForJUnit {
 
   implicit val system = ActorSystem("cpusensorsuite")
   val cpuSensor = TestActorRef(new CpuSensor with ConfigurationMock)
-  val tick = Tick(TickSubscription(Process(123), 1 second))
+  val tick = Tick(TickSubscription(Process(123), 1.second))
   val processElapsedTime = 2 + 2
   val globalElapsedTime = 441650 + 65 + 67586 + 3473742 + 31597 + 0 + 7703 + 0 + 0 + 0
 

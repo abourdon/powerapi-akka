@@ -20,7 +20,8 @@
  */
 package fr.inria.powerapi.listener.cpu.file
 
-import akka.util.duration.intToDurationInt
+import scala.concurrent.duration.DurationInt
+
 import fr.inria.powerapi.core.Process
 import fr.inria.powerapi.library.PowerAPI
 import fr.inria.powerapi.sensor.cpu.proc.CpuSensor
@@ -47,9 +48,9 @@ class CpuListenerSuite extends JUnitSuite with ShouldMatchersForJUnit {
   @Test
   def testCurrentPid() {
     val currentPid = ManagementFactory.getRuntimeMXBean.getName.split("@")(0).toInt
-    PowerAPI.startMonitoring(process = Process(currentPid), duration = 500 milliseconds, listener = classOf[CpuListenerMock])
-    Thread.sleep((5 seconds).toMillis)
-    PowerAPI.stopMonitoring(process = Process(currentPid), duration = 500 milliseconds, listener = classOf[CpuListenerMock])
+    PowerAPI.startMonitoring(process = Process(currentPid), duration = 500.milliseconds, listener = classOf[CpuListenerMock])
+    Thread.sleep((5.seconds).toMillis)
+    PowerAPI.stopMonitoring(process = Process(currentPid), duration = 500.milliseconds, listener = classOf[CpuListenerMock])
   }
 
   @After

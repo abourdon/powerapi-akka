@@ -20,8 +20,7 @@
  */
 package fr.inria.powerapi.core
 
-import akka.util.duration.intToDurationInt
-import akka.util.Duration
+import scala.concurrent.duration.{FiniteDuration, DurationInt}
 
 /**
  * Energy information wrapper.
@@ -53,5 +52,5 @@ case class Energy private (val power: Double) {
 object Energy {
   def fromPower(power: Double) = new Energy(power)
 
-  def fromJoule(joule: Double, duration: Duration = 1 second) = new Energy(joule / (duration.toMillis / 1000.0))
+  def fromJoule(joule: Double, duration: FiniteDuration = 1.second) = new Energy(joule / (duration.toMillis / 1000.0))
 }
